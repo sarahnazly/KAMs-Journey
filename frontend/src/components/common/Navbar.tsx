@@ -1,62 +1,52 @@
-"use client";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-const Navbar = () => {
-  const pathname = usePathname();
-
-  const menuItems = [
-    { name: "Upload File", href: "/upload" },
-    { name: "AM Journey", href: "/journey" },
-  ];
-
-  const getLinkClass = (href: string) => {
-    const isActive = pathname === href;
-    return `ml-6 font-medium transition-colors ${
-      isActive
-        ? "text-[#02214C]"
-        : "text-[#64748b] hover:text-[#164E9D]"
-    }`;
-  };
-
+export default function Navbar() {
   return (
-    <nav className="w-full border-b bg-white">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
-        {/* Left: Logo + Title */}
-        <div className="flex items-center space-x-3">
+    <nav className="w-full h-[90px] border-b-[1.5px] border-[#CBD5E1] bg-white flex items-center font-sans">
+      {/* Section kiri */}
+      <div className="flex items-center h-full pl-5" style={{ paddingLeft: 20 }}>
+        <div className="flex flex-row items-center gap-[10px]">
           <Image
             src="/logo.png"
             alt="Logo"
-            width={40}
-            height={40}
+            width={80}
+            height={80}
+            className="rounded-[14.87px] object-cover"
+            priority
           />
-          <span className="text-gray-300 text-xl">|</span>
-          <div className="flex flex-col leading-tight">
-            <span className="text-lg font-semibold text-[#02214C]">
+          {/* Garis vertikal */}
+          <div className="h-[44px] w-[2px] bg-[#94A3B8]" />
+          {/* Title */}
+          <div className="flex flex-col justify-center">
+            <span className="font-bold text-[22px] leading-[28px] text-[#0F172A] w-[180px]">
               KAMs Journey
             </span>
-            <span className="text-sm text-gray-500">
+            <span className="text-[13px] font-normal leading-5 text-[#64748B] w-[180px]">
               Dashboard Analytics
             </span>
           </div>
         </div>
-
-        {/* Right: Menu */}
-        <div className="flex items-center">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={getLinkClass(item.href)}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </div>
+      </div>
+      {/* Spacer agar kanan di kanan */}
+      <div className="flex-1"></div>
+      {/* Section kanan */}
+      <div
+        className="flex flex-row gap-8 pr-5 h-full items-center"
+        style={{ paddingRight: 20 }}
+      >
+        <button
+          className="text-center text-[17px] font-medium leading-[26px] text-[#02214C] hover:text-[#164E9D] transition-colors duration-150 bg-transparent border-none outline-none cursor-pointer whitespace-nowrap"
+          style={{ background: "none" }}
+        >
+          Upload File
+        </button>
+        <button
+          className="text-center text-[17px] font-normal leading-[26px] text-[#64748B] hover:text-[#164E9D] transition-colors duration-150 bg-transparent border-none outline-none cursor-pointer whitespace-nowrap"
+          style={{ background: "none" }}
+        >
+          AM Journey
+        </button>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}

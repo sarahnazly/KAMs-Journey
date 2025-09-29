@@ -1,18 +1,11 @@
-import Image from "next/image";
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* konten utama */}
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        <h1 className="text-2xl font-bold text-[#02214C] mb-4">
-          Welcome to KAMs Journey
-        </h1>
-        <p className="text-gray-600">
-          Upload your data and start analyzing with our machine learning
-          features.
-        </p>
-      </main>
+    <div className="min-h-screen w-full bg-[#F8FAFC]">
+      {/* Konten halaman utama */}
+      <div className="container mx-auto pt-32">
+        <h1 className="text-4xl font-bold text-primary mb-2">KAMs Journey</h1>
+        <p className="text-lg text-muted-foreground">Dashboard Analytics for AM Journey</p>
+      </div>
     </div>
   );
 }

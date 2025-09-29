@@ -13,16 +13,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans bg-background text-foreground`}>
+      <body className={`${inter.variable} font-sans bg-[#F8FAFC] text-foreground`}>
         <header className="sticky top-0 z-50 bg-white shadow-sm">
           <Navbar />
         </header>
-        <main>{children}</main>
+        <main className="min-h-screen w-full flex flex-col items-center justify-start">
+          {children}
+        </main>
       </body>
     </html>
   );

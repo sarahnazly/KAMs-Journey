@@ -1,7 +1,9 @@
 "use client";
 
+import InfoAlert from "@/components/dashboard/InfoAlert";
 import TabStage from "../components/dashboard/TabStage";
 import React, { useState } from "react";
+import WarningAlert from "@/components/dashboard/WarningAlert";
 
 export default function HomePage() {
   const [stage, setStage] = useState("Onboarding");
@@ -25,7 +27,17 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-center">
+    <div className="min-h-screen w-full bg-[#F8FAFC] gap-6 pt-8 flex flex-col items-center justify-center">
+      <InfoAlert
+        message={
+          <>
+            This prediction uses <span className="font-bold">XGBoost</span> algorithm with <span className="font-bold">85% accuracy rate</span>. The model was trained using <span className="font-bold">500 data</span>.
+          </>
+        }
+      />
+      <WarningAlert
+        message="Input dokumen tidak konsisten. Silakan cek kembali data Anda sebelum melanjutkan."
+      />
       <TabStage onStageChange={setStage} />
       <div className="mt-10 w-[800px] h-[260px] bg-white rounded-2xl flex items-center justify-center border border-[#e5e7eb] shadow">
         <span className="text-xl font-inter text-[#164E9D]">{getStageContent(stage)}</span>

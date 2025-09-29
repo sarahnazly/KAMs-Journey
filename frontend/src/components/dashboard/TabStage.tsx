@@ -32,7 +32,7 @@ const TabStage: React.FC<TabStageProps> = ({ onStageChange, width="1200px", heig
         className="
           w-full
           bg-white
-          rounded-[28px]
+          rounded-[20px]
           outline outline-1 outline-[#E2E8F0]
           outline-offset-[-1px]
           shadow-[0_4px_16px_0_rgba(0,0,0,0.10)]
@@ -40,7 +40,7 @@ const TabStage: React.FC<TabStageProps> = ({ onStageChange, width="1200px", heig
         "
         style={{ width, height }}
       >
-        <div className="flex w-full px-8 py-20 gap-[20px] justify-center items-center">
+        <div className="flex w-full px-4 py-20 gap-[20px] justify-center items-center">
           {stages.map((stage) => (
             <button
               key={stage}

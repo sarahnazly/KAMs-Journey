@@ -1,103 +1,130 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import Table, { TableColumn } from "@/components/dashboard/Table";
+import InfoAlert from "@/components/dashboard/InfoAlert";
+import WarningAlert from "@/components/dashboard/WarningAlert";
+import FilterYear from "@/components/dashboard/FilterYear";
+import Toast, { ToastType } from "@/components/common/Toast";
+import TabStage from "@/components/dashboard/TabStage";
+
+export default function HomePage() {
+  // Data dinamis
+  const [data, setData] = useState<Record<string, any>[] | null>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  // Toast
+  const [toast, setToast] = useState<{ open: boolean; title: string; message: string; type: ToastType }>({
+    open: false, title: "", message: "", type: "success"
+  });
+  const showToast = (title: string, message: string, type: ToastType) =>
+    setToast({ open: true, title, message, type });
+  const closeToast = () => setToast({ ...toast, open: false });
+
+  // Filter tahun
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+
+  // TabStage
+  const [stage, setStage] = useState("Onboarding");
+  const handleStageChange = (newStage: string) => {
+    setStage(newStage);
+    showToast("Berhasil", `Pindah ke stage ${newStage}`, "success");
+  };
+
+  // Table columns dinamis
+  const columns: TableColumn[] = [
+    { label: "NIK", key: "nik", sortable: true },
+    { label: "Nama", key: "nama", sortable: true },
+    { label: "Basic Understanding", key: "score1", sortable: true },
+    { label: "Twinning", key: "score2", sortable: true },
+    { label: "Customer Matching", key: "score3", sortable: true }
+  ];
+
+  // Simulasi ambil data
+  useEffect(() => {
+    setLoading(true);
+    setError("");
+    setTimeout(() => {
+      if (year === 2024) {
+        setError("Gagal mengambil data untuk tahun 2024.");
+        setData(null);
+      } else if (year === 2023) {
+        setData([]);
+      } else {
+        setData([
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
+        ]);
+      }
+      setLoading(false);
+    }, 1200);
+  }, [year, stage]);
+
+  // Detail action
+  const handleDetail = (row: Record<string, any>) => {
+    showToast("Detail Karyawan", `Nama: ${row.nama}\nNIK: ${row.nik}`, "info");
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6">
+      {/* Filter Year di kanan atas */}
+      <div className="w-full flex justify-end mb-2 px-[80px]">
+        <FilterYear onChange={setYear} />
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Info & warning alert */}
+      <div className="max-w-[1100px] w-full flex flex-col items-center gap-4">
+        <InfoAlert
+          message={
+            <>
+              This prediction uses <span className="font-bold">XGBoost</span> algorithm with <span className="font-bold">85% accuracy rate</span>. The model was trained using <span className="font-bold">500 data</span>.
+            </>
+          }
+        />
+        <WarningAlert
+          message="Input dokumen tidak konsisten. Silakan cek kembali data Anda sebelum melanjutkan."
+        />
+      </div>
+
+      {/* TabStage align center */}
+      <div className="w-full flex items-center justify-center mb-4">
+        <div className="max-w-[1100px] w-full flex items-center justify-center">
+          <TabStage onStageChange={handleStageChange} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </div>
+
+      {/* Table align center */}
+      <div className="w-full flex items-center justify-center mb-10">
+        <div className="max-w-[1100px] w-full">
+          <Table
+            columns={columns}
+            data={data}
+            loading={loading}
+            error={error}
+            pageSize={4}
+            onDetail={handleDetail}
+            showAction={true}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
+
+      {/* Toast di pojok kanan bawah */}
+      {Toast({
+        open: toast.open,
+        title: toast.title,
+        message: toast.message,
+        type: toast.type,
+        onClose: closeToast
+      })}
     </div>
   );
 }

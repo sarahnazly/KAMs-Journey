@@ -5,6 +5,7 @@ import Table, { TableColumn } from "@/components/dashboard/Table";
 import InfoAlert from "@/components/dashboard/InfoAlert";
 import WarningAlert from "@/components/dashboard/WarningAlert";
 import FilterYear from "@/components/dashboard/FilterYear";
+import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
 
@@ -21,6 +22,9 @@ export default function HomePage() {
   const showToast = (title: string, message: string, type: ToastType) =>
     setToast({ open: true, title, message, type });
   const closeToast = () => setToast({ ...toast, open: false });
+
+  // Filter quarter
+  const [quarter, setQuarter] = useState<string>("Q1");
 
   // Filter tahun
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -47,27 +51,29 @@ export default function HomePage() {
     setError("");
     setTimeout(() => {
       if (year === 2024) {
-        setError("Gagal mengambil data untuk tahun 2024.");
+        setError(`Gagal mengambil data untuk periode ${quarter} tahun ${year}.`);
         setData(null);
       } else if (year === 2023) {
         setData([]);
       } else {
-        setData([
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86 },
-        ]);
+        const allData = [
+          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86, quarter: "Q1" },
+          { nik: "20920", nama: "Budi Santoso", score1: 85, score2: 75, score3: 81, quarter: "Q2" },
+          { nik: "20921", nama: "Nicholas Saputra", score1: 92, score2: 82, score3: 90, quarter: "Q3" },
+          { nik: "20922", nama: "Pinky Siwi Nastiti", score1: 88, score2: 78, score3: 85, quarter: "Q4" },
+          // duplikasi untuk demo (filter akan pilih sesuai quarter)
+          { nik: "20923", nama: "Anindya Maulida Widyatmoko", score1: 90, score2: 80, score3: 86, quarter: "Q1" },
+          { nik: "20924", nama: "Sarah Nazly Nuraya", score1: 85, score2: 75, score3: 81, quarter: "Q2" },
+          { nik: "20925", nama: "Celina", score1: 92, score2: 82, score3: 90, quarter: "Q3" },
+          { nik: "20926", nama: "Alya Ghina", score1: 88, score2: 78, score3: 85, quarter: "Q4" },
+        ];
+        // Filter berdasarkan quarter yang dipilih
+        const filteredData = allData.filter((row) => row.quarter === quarter);
+        setData(filteredData);
       }
       setLoading(false);
     }, 1200);
-  }, [year, stage]);
+  }, [year, quarter, stage]);
 
   // Detail action
   const handleDetail = (row: Record<string, any>) => {
@@ -76,9 +82,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6">
-      {/* Filter Year di kanan atas */}
+      {/* Filter Quarter and Year */}
       <div className="w-full flex justify-end mb-2 px-[80px]">
-        <FilterYear onChange={setYear} />
+        <div className="flex flex-row gap-4">
+          <FilterQuarter onChange={setQuarter} />
+          <FilterYear onChange={setYear} />
+        </div>
       </div>
 
       {/* Info & warning alert */}

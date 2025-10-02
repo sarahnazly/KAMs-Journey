@@ -6,8 +6,12 @@ import InfoAlert from "@/components/dashboard/InfoAlert";
 import WarningAlert from "@/components/dashboard/WarningAlert";
 import FilterYear from "@/components/dashboard/FilterYear";
 import FilterQuarter from "@/components/dashboard/FilterQuarter";
+import SearchBar from "@/components/dashboard/SearchBar";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"], weight: ["400", "600"] });
 
 export default function HomePage() {
   // Data dinamis
@@ -22,6 +26,9 @@ export default function HomePage() {
   const showToast = (title: string, message: string, type: ToastType) =>
     setToast({ open: true, title, message, type });
   const closeToast = () => setToast({ ...toast, open: false });
+
+  // Search Bar
+  const [search, setSearch] = useState("");
 
   // Filter quarter
   const [quarter, setQuarter] = useState<string>("Q1");
@@ -53,27 +60,36 @@ export default function HomePage() {
       if (year === 2024) {
         setError(`Gagal mengambil data untuk periode ${quarter} tahun ${year}.`);
         setData(null);
-      } else if (year === 2023) {
+        setLoading(false);
+        return;
+      } 
+      if (year === 2023) {
         setData([]);
-      } else {
-        const allData = [
-          { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86, quarter: "Q1" },
-          { nik: "20920", nama: "Budi Santoso", score1: 85, score2: 75, score3: 81, quarter: "Q2" },
-          { nik: "20921", nama: "Nicholas Saputra", score1: 92, score2: 82, score3: 90, quarter: "Q3" },
-          { nik: "20922", nama: "Pinky Siwi Nastiti", score1: 88, score2: 78, score3: 85, quarter: "Q4" },
-          // duplikasi untuk demo (filter akan pilih sesuai quarter)
-          { nik: "20923", nama: "Anindya Maulida Widyatmoko", score1: 90, score2: 80, score3: 86, quarter: "Q1" },
-          { nik: "20924", nama: "Sarah Nazly Nuraya", score1: 85, score2: 75, score3: 81, quarter: "Q2" },
-          { nik: "20925", nama: "Celina", score1: 92, score2: 82, score3: 90, quarter: "Q3" },
-          { nik: "20926", nama: "Alya Ghina", score1: 88, score2: 78, score3: 85, quarter: "Q4" },
-        ];
-        // Filter berdasarkan quarter yang dipilih
-        const filteredData = allData.filter((row) => row.quarter === quarter);
-        setData(filteredData);
+        setLoading(false);
+        return;
       }
+      const allData = [
+        { nik: "20919", nama: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86, quarter: "Q1" },
+        { nik: "20920", nama: "Budi Santoso", score1: 85, score2: 75, score3: 81, quarter: "Q2" },
+        { nik: "20921", nama: "Nicholas Saputra", score1: 92, score2: 82, score3: 90, quarter: "Q3" },
+        { nik: "20922", nama: "Pinky Siwi Nastiti", score1: 88, score2: 78, score3: 85, quarter: "Q4" },
+        { nik: "20923", nama: "Anindya Maulida Widyatmoko", score1: 90, score2: 80, score3: 86, quarter: "Q1" },
+        { nik: "20924", nama: "Sarah Nazly Nuraya", score1: 85, score2: 75, score3: 81, quarter: "Q2" },
+        { nik: "20925", nama: "Celina", score1: 92, score2: 82, score3: 90, quarter: "Q3" },
+        { nik: "20926", nama: "Alya Ghina", score1: 88, score2: 78, score3: 85, quarter: "Q4" },
+      ];
+      let filtered = allData.filter((row) => row.quarter === quarter);
+      if (search) {
+        filtered = filtered.filter(
+          row =>
+            row.nama.toLowerCase().includes(search.toLowerCase()) ||
+            row.nik.includes(search)
+        );
+      }
+      setData(filtered);
       setLoading(false);
     }, 1200);
-  }, [year, quarter, stage]);
+  }, [year, quarter, stage, search]);
 
   // Detail action
   const handleDetail = (row: Record<string, any>) => {
@@ -81,12 +97,28 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6">
-      {/* Filter Quarter and Year */}
-      <div className="w-full flex justify-end mb-2 px-[80px]">
-        <div className="flex flex-row gap-4">
-          <FilterQuarter onChange={setQuarter} />
-          <FilterYear onChange={setYear} />
+    <div className={`min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6 ${inter.className}`}>
+      {/* SearchBar, Year, and Quarter Filter Card */}
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] flex flex-row items-center gap-4 px-5 py-[30px]" style={{ outlineOffset: -1 }}>
+          <div className="flex-1 flex flex-col items-start">
+            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search KAMs</div>
+            <SearchBar value={search} onChange={setSearch} className="w-full" />
+          </div>
+          <div className="flex flex-row items-center gap-4">
+            <div className="w-[200px]">
+              <div className="text-black text-[20px] font-semibold leading-[24px]">Tahun</div>
+              <div className="w-full flex items-center justify-between gap-[72px] bg-white rounded-[5px] border-[#CBD5E1] mt-1">
+                <FilterYear value={year} onChange={setYear} />
+              </div>
+            </div>
+            <div className="w-[200px]">
+              <div className="text-black text-[20px] font-semibold leading-[24px]">Periode</div>
+              <div className="w-full flex items-center justify-between gap-[72px] bg-white rounded-[5px] border-[#CBD5E1] mt-1">
+                <FilterQuarter value={quarter} onChange={setQuarter} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

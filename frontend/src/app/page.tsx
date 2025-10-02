@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Card from "@/components/common/Card";
 import Table, { TableColumn } from "@/components/dashboard/Table";
 import InfoAlert from "@/components/dashboard/InfoAlert";
 import WarningAlert from "@/components/dashboard/WarningAlert";
@@ -182,15 +183,17 @@ export default function HomePage() {
       {/* Table align center */}
       <div className="w-full flex items-center justify-center mb-10">
         <div className="max-w-[1100px] w-full">
-          <Table
-            columns={columns}
-            data={data}
-            loading={loading}
-            error={error}
-            pageSize={4}
-            onDetail={handleDetail}
-            showAction={true}
-          />
+          <Card heading="Daftar Karyawan" description="Data karyawan berdasarkan periode yang dipilih">
+            <Table
+              columns={columns}
+              data={data}
+              loading={loading}
+              error={error}
+              pageSize={4}
+              onDetail={handleDetail}
+              showAction={true}
+            />
+          </Card>
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import SearchBar from "@/components/dashboard/SearchBar";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
+import PopUpWindow from "@/components/modal/PopUpWindow";
 import { Button } from "@/components/common/Button";
 import { Inter } from "next/font/google";
 import { Upload, ArrowRight } from "lucide-react";
@@ -46,6 +47,9 @@ export default function HomePage() {
     showToast("Berhasil", `Pindah ke stage ${newStage}`, "success");
   };
 
+  // Pop-Up Window
+  const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+
   // Table columns dinamis
   const columns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
@@ -53,6 +57,13 @@ export default function HomePage() {
     { label: "Basic Understanding", key: "score1", sortable: true },
     { label: "Twinning", key: "score2", sortable: true },
     { label: "Customer Matching", key: "score3", sortable: true }
+  ];
+
+  // Data dummy untuk isi pop-up tabel 
+  const detailData = [ 
+    { no: 1, assessmentTime: "2024-01-10", score: 85 }, 
+    { no: 2, assessmentTime: "2024-02-14", score: 90 }, 
+    { no: 3, assessmentTime: "2024-03-20", score: 88 }, 
   ];
 
   // Simulasi ambil data
@@ -192,10 +203,52 @@ export default function HomePage() {
               pageSize={4}
               onDetail={handleDetail}
               showAction={true}
+              extraAction={(row) => (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setIsPopUpOpen(true)}
+                >
+                  Open Pop-Up
+                </Button>
+              )}
             />
           </Card>
         </div>
       </div>
+
+      {/* PopUpWindow */} 
+      <PopUpWindow 
+        title="Detail Pop-Up Example" 
+        isOpen={isPopUpOpen} 
+        onClose={() => setIsPopUpOpen(false)} 
+      > 
+        <div className="overflow-x-auto"> 
+          <table className="w-full border-collapse rounded-[10px] overflow-hidden"> 
+            <thead> 
+              <tr className="bg-[#2C2966] text-left text-white font-semibold text-[16px]"> 
+                <th className="px-4 py-3">No.</th> 
+                <th className="px-4 py-3">Assessment Time</th> 
+                <th className="px-4 py-3">Score</th> 
+              </tr> 
+            </thead> 
+            <tbody> 
+              {detailData.map((row, idx) => ( 
+                <tr 
+                  key={row.no} 
+                  className={`${ 
+                    idx % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]" 
+                    } text-[15px] text-[#334155]`} 
+                > 
+                  <td className="px-4 py-3">{row.no}</td> 
+                  <td className="px-4 py-3">{row.assessmentTime}</td> 
+                  <td className="px-4 py-3">{row.score}</td> 
+                </tr> 
+              ))} 
+            </tbody> 
+          </table> 
+        </div> 
+      </PopUpWindow>
 
       {/* Toast di pojok kanan bawah */}
       {Toast({

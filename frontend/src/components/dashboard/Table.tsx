@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Button } from "@/components/common/Button";
 
 export type TableColumn = {
   label: string;
@@ -17,6 +18,7 @@ interface TableProps {
   pageSize?: number;
   onDetail?: (row: Record<string, any>) => void;
   showAction?: boolean;
+  extraAction?: (row: Record<string, any>) => React.ReactNode; // Temporary untuk demo pop-up window aja
 }
 
 function SortIcon({ active, direction }: { active: boolean; direction: "asc" | "desc" }) {
@@ -122,6 +124,7 @@ export const Table: React.FC<TableProps> = ({
   pageSize = 10,
   onDetail,
   showAction = true,
+  extraAction, // Temporary untuk demo pop-up window aja
 }) => {
   // Pagination
   const [page, setPage] = useState(1);
@@ -261,14 +264,21 @@ export const Table: React.FC<TableProps> = ({
                     : row[col.key] ?? ""}
                 </td>
               ))}
-              {showAction && (
-                <td className="px-3 py-5 text-center align-middle">
-                  <button
-                    className="w-full px-5 py-2 rounded-[10px] border-2 border-[#02214C] text-[#0F172A] font-inter font-medium hover:bg-[#F0FAFF] transition"
-                    onClick={() => onDetail && onDetail(row)}
-                  >
-                    Detail
-                  </button>
+              {showAction && ( 
+                <td 
+                  className="px-3 py-5 text-center flex gap-2 justify-center"> 
+                    {/* Tombol detail default, pakai komponen Button */} 
+                    {onDetail && ( 
+                      <Button 
+                        variant="tertiary"
+                        size="sm"
+                        onClick={() => onDetail(row)} 
+                      > 
+                        Detail 
+                      </Button> 
+                    )} 
+                    {/* Extra Action temporary */} 
+                    {extraAction && extraAction(row)}
                 </td>
               )}
             </tr>

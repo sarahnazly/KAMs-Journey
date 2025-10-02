@@ -183,7 +183,7 @@ export default function HomePage() {
       {/* Table align center */}
       <div className="w-full flex items-center justify-center mb-10">
         <div className="max-w-[1100px] w-full">
-          <Card heading="Daftar Karyawan" description="Data karyawan berdasarkan periode yang dipilih">
+          <Card heading="Daftar Account Manager" description="Data Account Manager berdasarkan periode yang dipilih">
             <Table
               columns={columns}
               data={data}

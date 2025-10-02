@@ -184,7 +184,7 @@ export const Table: React.FC<TableProps> = ({
   const isLastRow = (idx: number) => idx === pagedData.length - 1;
 
   return (
-    <div className="w-full overflow-x-auto bg-white rounded-[12px] border border-[#CBD5E1] shadow-md p-2">
+    <div className="w-full overflow-x-auto">
       <table className="min-w-full table-auto font-inter">
         <thead>
           <tr className="">

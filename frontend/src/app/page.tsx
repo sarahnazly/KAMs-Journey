@@ -9,7 +9,9 @@ import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import SearchBar from "@/components/dashboard/SearchBar";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
+import { Button } from "@/components/common/Button";
 import { Inter } from "next/font/google";
+import { Upload, ArrowRight } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "600"] });
 
@@ -96,6 +98,11 @@ export default function HomePage() {
     showToast("Detail Karyawan", `Nama: ${row.nama}\nNIK: ${row.nik}`, "info");
   };
 
+  // Button click handler for demo
+  const handleButtonClick = (type: string) => {
+    showToast("Button Clicked", `You clicked the ${type} button!`, "success");
+  };
+
   return (
     <div className={`min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6 ${inter.className}`}>
       {/* SearchBar, Year, and Quarter Filter Card */}
@@ -134,6 +141,35 @@ export default function HomePage() {
         <WarningAlert
           message="Input dokumen tidak konsisten. Silakan cek kembali data Anda sebelum melanjutkan."
         />
+      </div>
+
+      {/* Button Demo Section */}
+      <div className="w-full flex items-center justify-center">
+        <div className="max-w-[1100px] w-full flex flex-col gap-6">
+          <h2 className="text-black text-[24px] font-semibold leading-[30px]">Button Demo</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <Button variant="primary" onClick={() => handleButtonClick("Primary")}>
+              <Upload size={20} />
+              Upload
+            </Button>
+            <Button variant="secondary" onClick={() => handleButtonClick("Secondary")}>
+              Start Processing
+              <ArrowRight size={20} />
+            </Button>
+            <Button variant="tertiary" onClick={() => handleButtonClick("Tertiary")}>
+              <Upload size={20} />
+              Button
+            </Button>
+            <Button variant="destructive" onClick={() => handleButtonClick("Delete")}>
+              Retry
+              <ArrowRight size={20} />
+            </Button>
+            <Button variant="ghost" onClick={() => handleButtonClick("Ghost")}>
+              <Upload size={20} />
+              Cancel
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* TabStage align center */}

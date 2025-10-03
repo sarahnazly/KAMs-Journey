@@ -153,76 +153,7 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-      
-      {/* Stepper */}
-      <div className="w-full flex items-center justify-center">
-        <div className="max-w-[1100px] w-full">
-          <Stepper
-            steps={steps}
-            activeStep={activeStep}
-            onStepChange={setActiveStep}
-          />
-        </div>
-      </div>
 
-      {/* Buttons for demo stepper */}
-      <div className="flex gap-4 mt-4">
-        <Button
-          variant="secondary"
-          onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
-        >
-          Back
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => setActiveStep((prev) => Math.min(prev + 1, steps.length - 1))}
-        >
-          Next
-        </Button>
-      </div>
-
-      {/* Info & warning alert */}
-      <div className="max-w-[1100px] w-full flex flex-col items-center gap-4">
-        <InfoAlert
-          message={
-            <>
-              This prediction uses <span className="font-bold">XGBoost</span> algorithm with <span className="font-bold">85% accuracy rate</span>. The model was trained using <span className="font-bold">500 data</span>.
-            </>
-          }
-        />
-        <WarningAlert
-          message="Input dokumen tidak konsisten. Silakan cek kembali data Anda sebelum melanjutkan."
-        />
-      </div>
-
-      {/* Button Demo Section */}
-      <div className="w-full flex items-center justify-center">
-        <div className="max-w-[1100px] w-full flex flex-col gap-6">
-          <h2 className="text-black text-[24px] font-semibold leading-[30px]">Button Demo</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <Button variant="primary" onClick={() => handleButtonClick("Primary")}>
-              <Upload size={20} />
-              Upload
-            </Button>
-            <Button variant="secondary" onClick={() => handleButtonClick("Secondary")}>
-              Start Processing
-              <ArrowRight size={20} />
-            </Button>
-            <Button variant="tertiary" onClick={() => handleButtonClick("Tertiary")}>
-              <Upload size={20} />
-              Button
-            </Button>
-            <Button variant="destructive" onClick={() => handleButtonClick("Delete")}>
-              Retry
-              <ArrowRight size={20} />
-            </Button>
-            <Button variant="ghost" onClick={() => handleButtonClick("Ghost")}>
-              <Upload size={20} />
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </div>
 
       {/* TabStage align center */}
       <div className="w-full flex items-center justify-center mb-4">
@@ -284,6 +215,93 @@ export default function HomePage() {
           </table> 
         </div> 
       </PopUpWindow>
+
+      {/* Button Demo Section */}
+      <div className="w-full flex items-center justify-center">
+        <div className="max-w-[1100px] w-full flex flex-col gap-6">
+          <h2 className="text-black text-[24px] font-semibold leading-[30px]">Button</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <Button variant="primary" onClick={() => handleButtonClick("Primary")}>
+              <Upload size={20} />
+              Upload
+            </Button>
+            <Button variant="secondary" onClick={() => handleButtonClick("Secondary")}>
+              Start Processing
+              <ArrowRight size={20} />
+            </Button>
+            <Button variant="tertiary" onClick={() => handleButtonClick("Tertiary")}>
+              <Upload size={20} />
+              Button
+            </Button>
+            <Button variant="destructive" onClick={() => handleButtonClick("Delete")}>
+              Retry
+              <ArrowRight size={20} />
+            </Button>
+            <Button variant="ghost" onClick={() => handleButtonClick("Ghost")}>
+              <Upload size={20} />
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Info & Warning Alert */}
+      <div className="w-full flex justify-center">
+        <div className="max-w-[1100px] w-full flex flex-col gap-4">
+
+          <h2 className="text-black text-[24px] font-semibold mb-4">
+            Info & Warning Alert
+          </h2>
+          
+          <div className="w-full flex justify-center">
+            <InfoAlert
+              message={
+                <>
+                  This prediction uses <span className="font-bold">XGBoost</span> algorithm with{" "}
+                  <span className="font-bold">85% accuracy rate</span>. The model was trained using{" "}
+                  <span className="font-bold">500 data</span>.
+                </>
+              }
+            />
+          </div>
+
+          <div className="w-full flex justify-center">
+            <WarningAlert
+              message="Input dokumen tidak konsisten. Silakan cek kembali data Anda sebelum melanjutkan."
+            />
+          </div>
+
+        </div>
+      </div>
+      
+      {/* Stepper */}
+      <div className="w-full flex justify-center">
+        <div className="max-w-[1100px] w-full">
+          <h2 className="text-black text-[24px] font-semibold mb-4">Stepper</h2>
+          <Stepper
+            steps={steps}
+            activeStep={activeStep}
+            onStepChange={setActiveStep}
+          />
+        </div>
+      </div>
+
+      {/* Buttons for demo stepper */}
+      <div className="flex gap-4 mt-4 mb-4">
+        <Button
+          variant="secondary"
+          onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
+        >
+          Back
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => setActiveStep((prev) => Math.min(prev + 1, steps.length - 1))}
+        >
+          Next
+        </Button>
+      </div>
+
 
       {/* Toast di pojok kanan bawah */}
       {Toast({

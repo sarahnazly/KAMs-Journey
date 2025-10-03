@@ -8,6 +8,7 @@ import WarningAlert from "@/components/dashboard/WarningAlert";
 import FilterYear from "@/components/dashboard/FilterYear";
 import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import SearchBar from "@/components/dashboard/SearchBar";
+import Stepper from "@/components/dashboard/Stepper";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
 import PopUpWindow from "@/components/modal/PopUpWindow";
@@ -22,6 +23,17 @@ export default function HomePage() {
   const [data, setData] = useState<Record<string, any>[] | null>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+  // Stepper
+  const [activeStep, setActiveStep] = useState(0);
+
+  const steps = [
+    { title: "Upload File", description: "Select your Excel file containing the dataset for analysis" },
+    { title: "Validation", description: "System will validate your data format and structure" },
+    { title: "Choose Feature", description: "System will validate your data format and structure" },
+    { title: "Processing", description: "Multiple ML algorithms will process your data" },
+
+  ]
 
   // Toast
   const [toast, setToast] = useState<{ open: boolean; title: string; message: string; type: ToastType }>({
@@ -117,6 +129,7 @@ export default function HomePage() {
 
   return (
     <div className={`min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6 ${inter.className}`}>
+
       {/* SearchBar, Year, and Quarter Filter Card */}
       <div className="w-full flex justify-center">
         <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] flex flex-row items-center gap-4 px-5 py-[30px]" style={{ outlineOffset: -1 }}>
@@ -139,6 +152,33 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Stepper */}
+      <div className="w-full flex items-center justify-center">
+        <div className="max-w-[1100px] w-full">
+          <Stepper
+            steps={steps}
+            activeStep={activeStep}
+            onStepChange={setActiveStep}
+          />
+        </div>
+      </div>
+
+      {/* Buttons for demo stepper */}
+      <div className="flex gap-4 mt-4">
+        <Button
+          variant="secondary"
+          onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
+        >
+          Back
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => setActiveStep((prev) => Math.min(prev + 1, steps.length - 1))}
+        >
+          Next
+        </Button>
       </div>
 
       {/* Info & warning alert */}

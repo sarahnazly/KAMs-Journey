@@ -107,7 +107,7 @@ export default function HomePage() {
 
   // Detail action
   const handleDetail = (row: Record<string, any>) => {
-    showToast("Detail Karyawan", `Nama: ${row.nama}\nNIK: ${row.nik}`, "info");
+    setIsPopUpOpen(true);
   };
 
   // Button click handler for demo
@@ -195,24 +195,19 @@ export default function HomePage() {
       <div className="w-full flex items-center justify-center mb-10">
         <div className="max-w-[1100px] w-full">
           <Card heading="Daftar Account Manager" description="Data Account Manager berdasarkan periode yang dipilih">
-            <Table
-              columns={columns}
-              data={data}
-              loading={loading}
-              error={error}
-              pageSize={4}
-              onDetail={handleDetail}
-              showAction={true}
-              extraAction={(row) => (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => setIsPopUpOpen(true)}
-                >
-                  Open Pop-Up
-                </Button>
-              )}
-            />
+            <div className="-mx-4 sm:-mx-6 md:-mx-8">
+              <div className="px-2 sm:px-4 md:px-6">
+                <Table
+                  columns={columns}
+                  data={data}
+                  loading={loading}
+                  error={error}
+                  pageSize={4}
+                  onDetail={handleDetail}
+                  showAction={true}
+                />
+              </div>
+            </div>
           </Card>
         </div>
       </div>
@@ -226,7 +221,7 @@ export default function HomePage() {
         <div className="overflow-x-auto"> 
           <table className="w-full border-collapse rounded-[10px] overflow-hidden"> 
             <thead> 
-              <tr className="bg-[#2C2966] text-left text-white font-semibold text-[16px]"> 
+              <tr className="bg-[#02214C] text-center text-white font-semibold text-[16px]"> 
                 <th className="px-4 py-3">No.</th> 
                 <th className="px-4 py-3">Assessment Time</th> 
                 <th className="px-4 py-3">Score</th> 
@@ -238,7 +233,7 @@ export default function HomePage() {
                   key={row.no} 
                   className={`${ 
                     idx % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]" 
-                    } text-[15px] text-[#334155]`} 
+                    } text-center text-[15px] text-[#334155]`} 
                 > 
                   <td className="px-4 py-3">{row.no}</td> 
                   <td className="px-4 py-3">{row.assessmentTime}</td> 

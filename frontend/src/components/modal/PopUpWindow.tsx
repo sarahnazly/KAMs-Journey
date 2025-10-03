@@ -26,7 +26,7 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({
           
           {/* Title */} 
           <div className="flex justify-between items-center mb-6"> 
-            <h2 className="text-[#2C2966] text-2xl font-bold font-inter leading-[28.8px]"> 
+            <h2 className="text-[#02214C] text-2xl font-bold font-inter leading-[28.8px]"> 
               {title} 
             </h2> 
           </div> 

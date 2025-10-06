@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Button } from "../common/Button";
 
 export type TableColumn = {
   label: string;
@@ -184,7 +185,7 @@ export const Table: React.FC<TableProps> = ({
   const isLastRow = (idx: number) => idx === pagedData.length - 1;
 
   return (
-    <div className="w-full overflow-x-auto bg-white rounded-[12px] border border-[#CBD5E1] shadow-md p-2">
+    <div className="w-full overflow-x-auto">
       <table className="min-w-full table-auto font-inter">
         <thead>
           <tr className="">
@@ -263,12 +264,13 @@ export const Table: React.FC<TableProps> = ({
               ))}
               {showAction && (
                 <td className="px-3 py-5 text-center align-middle">
-                  <button
-                    className="w-full px-5 py-2 rounded-[10px] border-2 border-[#02214C] text-[#0F172A] font-inter font-medium hover:bg-[#F0FAFF] transition"
+                  <Button
+                    variant="tertiary"
+                    size="table"
                     onClick={() => onDetail && onDetail(row)}
                   >
                     Detail
-                  </button>
+                  </Button>
                 </td>
               )}
             </tr>

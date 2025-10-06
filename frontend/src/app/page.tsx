@@ -11,6 +11,7 @@ import SearchBar from "@/components/dashboard/SearchBar";
 import Stepper from "@/components/dashboard/Stepper";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
+import PopupConfirmation from "@/components/modal/PopUpConfirmation"; 
 import PopUpWindow from "@/components/modal/PopUpWindow";
 import { Button } from "@/components/common/Button";
 import { Inter } from "next/font/google";
@@ -43,6 +44,8 @@ export default function HomePage() {
     setToast({ open: true, title, message, type });
   const closeToast = () => setToast({ ...toast, open: false });
 
+  // Popup Confirmation
+  const [popupOpen, setPopupOpen] = useState(false);
   // Search Bar
   const [search, setSearch] = useState("");
 
@@ -127,6 +130,16 @@ export default function HomePage() {
     showToast("Button Clicked", `You clicked the ${type} button!`, "success");
   };
 
+  // Handler PopupConfirmation
+  const handlePopupConfirm = () => {
+    setPopupOpen(false);
+    showToast("Konfirmasi Berhasil", "Anda menekan tombol Confirm pada popup.", "success");
+  };
+  const handlePopupCancel = () => {
+    setPopupOpen(false);
+    showToast("Popup Ditutup", "Anda membatalkan aksi pada popup.", "info");
+  };
+
   return (
     <div className={`min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6 ${inter.className}`}>
 
@@ -154,6 +167,57 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Tombol demo popup di atas halaman */}
+      <div className="flex flex-row gap-3 mb-2">
+        <button
+          className="px-4 py-2 bg-purple-600 text-white rounded font-semibold"
+          onClick={() => setPopupOpen(true)}
+        >
+          Demo Popup Confirmation
+        </button>
+      </div>
+
+      {/* Tombol uji Toast di bagian atas halaman */}
+      <div className="flex flex-row gap-3 mb-4">
+        <button
+          className="px-4 py-2 bg-green-500 text-white rounded font-semibold"
+          onClick={() =>
+            showToast("Aksi berhasil!", "Data berhasil disimpan!", "success")
+          }
+        >
+          Uji Success Toast
+        </button>
+        <button
+          className="px-4 py-2 bg-red-500 text-white rounded font-semibold"
+          onClick={() =>
+            showToast("Aksi gagal!", "Terjadi kesalahan pada server. Silakan coba lagi.", "error")
+          }
+        >
+          Uji Error Toast
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded font-semibold"
+          onClick={() =>
+            showToast("Info!", "Perlu informasi tambahan sebelum melanjutkan.", "info")
+          }
+        >
+          Uji Info Toast
+        </button>
+      </div>
+
+      {/* Info & warning alert */}
+      <div className="max-w-[1100px] w-full flex flex-col items-center gap-4">
+        <InfoAlert
+          message={
+            <>
+              This prediction uses <span className="font-bold">XGBoost</span> algorithm with <span className="font-bold">85% accuracy rate</span>. The model was trained using <span className="font-bold">500 data</span>.
+            </>
+          }
+        />
+        <WarningAlert
+          message="Input dokumen tidak konsisten. Silakan cek kembali data Anda sebelum melanjutkan."
+        />
+      </div>
 
       {/* TabStage align center */}
       <div className="w-full flex items-center justify-center mb-4">
@@ -286,6 +350,17 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Popup Confirmation */}
+      <PopupConfirmation
+        open={popupOpen}
+        title="Format File Tidak Valid!"
+        message="Pastikan format file Anda sesuai dengan ketentuan."
+        confirmLabel="Ya"
+        cancelLabel="Kembali"
+        onConfirm={handlePopupConfirm}
+        onCancel={handlePopupCancel}
+        onClose={handlePopupCancel}
+      />
       {/* Buttons for demo stepper */}
       <div className="flex gap-4 mt-4 mb-4">
         <Button

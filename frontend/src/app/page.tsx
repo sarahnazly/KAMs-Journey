@@ -7,6 +7,7 @@ import WarningAlert from "@/components/dashboard/WarningAlert";
 import FilterYear from "@/components/dashboard/FilterYear";
 import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
+import PopupConfirmation from "@/components/common/PopUpConfirmation"; 
 
 export default function HomePage() {
   // Data dinamis
@@ -21,6 +22,9 @@ export default function HomePage() {
   const showToast = (title: string, message: string, type: ToastType) =>
     setToast({ open: true, title, message, type });
   const closeToast = () => setToast({ ...toast, open: false });
+
+  // Popup Confirmation
+  const [popupOpen, setPopupOpen] = useState(false);
 
   // Filter tahun
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -74,11 +78,59 @@ export default function HomePage() {
     showToast("Detail Karyawan", `Nama: ${row.nama}\nNIK: ${row.nik}`, "info");
   };
 
+  // Handler PopupConfirmation
+  const handlePopupConfirm = () => {
+    setPopupOpen(false);
+    showToast("Konfirmasi Berhasil", "Anda menekan tombol Confirm pada popup.", "success");
+  };
+  const handlePopupCancel = () => {
+    setPopupOpen(false);
+    showToast("Popup Ditutup", "Anda membatalkan aksi pada popup.", "info");
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#F8FAFC] flex flex-col items-center justify-start pt-8 gap-6">
       {/* Filter Year di kanan atas */}
       <div className="w-full flex justify-end mb-2 px-[80px]">
         <FilterYear onChange={setYear} />
+      </div>
+
+      {/* Tombol demo popup di atas halaman */}
+      <div className="flex flex-row gap-3 mb-2">
+        <button
+          className="px-4 py-2 bg-purple-600 text-white rounded font-semibold"
+          onClick={() => setPopupOpen(true)}
+        >
+          Demo Popup Confirmation
+        </button>
+      </div>
+
+      {/* Tombol uji Toast di bagian atas halaman */}
+      <div className="flex flex-row gap-3 mb-4">
+        <button
+          className="px-4 py-2 bg-green-500 text-white rounded font-semibold"
+          onClick={() =>
+            showToast("Aksi berhasil!", "Data berhasil disimpan!", "success")
+          }
+        >
+          Uji Success Toast
+        </button>
+        <button
+          className="px-4 py-2 bg-red-500 text-white rounded font-semibold"
+          onClick={() =>
+            showToast("Aksi gagal!", "Terjadi kesalahan pada server. Silakan coba lagi.", "error")
+          }
+        >
+          Uji Error Toast
+        </button>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded font-semibold"
+          onClick={() =>
+            showToast("Info!", "Perlu informasi tambahan sebelum melanjutkan.", "info")
+          }
+        >
+          Uji Info Toast
+        </button>
       </div>
 
       {/* Info & warning alert */}
@@ -116,6 +168,18 @@ export default function HomePage() {
           />
         </div>
       </div>
+
+      {/* Popup Confirmation */}
+      <PopupConfirmation
+        open={popupOpen}
+        title="Format File Tidak Valid!"
+        message="Pastikan format file Anda sesuai dengan ketentuan."
+        confirmLabel="Ya"
+        cancelLabel="Kembali"
+        onConfirm={handlePopupConfirm}
+        onCancel={handlePopupCancel}
+        onClose={handlePopupCancel}
+      />
 
       {/* Toast di pojok kanan bawah */}
       {Toast({

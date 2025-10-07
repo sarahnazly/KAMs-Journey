@@ -204,39 +204,23 @@ const ChooseFeaturePage = () => {
   return (
     <div className="w-full flex flex-col items-center mb-12">
       {/* Stepper */}
-      <div className="w-full max-w-[1320px] mx-auto mt-[40px] mb-[40px]">
-        <Stepper steps={steps} activeStep={2} />
+      <div className="w-full flex justify-center pt-12 pb-6">
+        <div className="max-w-5xl w-full">
+          <Stepper steps={steps} activeStep={2} />
+        </div>
       </div>
 
-      {/* Main Section */}
-      <div className="flex flex-col items-center gap-4 mb-10">
-        <span
-          style={{
-            color: "#0F172A",
-            fontSize: "48px",
-            fontFamily: "Inter",
-            fontWeight: "700",
-            lineHeight: "56px",
-            textAlign: "center",
-          }}
-        >
+      {/* Title & subtitle */}
+      <div className="flex flex-col items-center justify-center mt-2">
+        <div className="text-[48px] font-bold text-[#0F172A] leading-tight text-center mb-2">
           Choose Feature
-        </span>
-        <span
-          style={{
-            color: "#64748B",
-            fontSize: "22px",
-            fontFamily: "Inter",
-            fontWeight: "400",
-            lineHeight: "30px",
-            textAlign: "center",
-          }}
-        >
+        </div>
+        <div className="text-[22px] text-[#64748B] text-center">
           Choose the feature you want to process
-        </span>
+        </div>
       </div>
       <div
-        className="w-full max-w-6xl bg-white rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.10)] flex flex-col gap-6 px-[30px] py-[22px]"
+        className="w-full max-w-6xl bg-white rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.10)] flex flex-col gap-6 px-[30px] py-[22px] mt-8"
       >
         <div className="flex flex-col gap-2">
           <span

@@ -13,6 +13,7 @@ import Toast, { ToastType } from "@/components/common/Toast";
 import TabStage from "@/components/dashboard/TabStage";
 import PopupConfirmation from "@/components/modal/PopUpConfirmation"; 
 import PopUpWindow from "@/components/modal/PopUpWindow";
+import FeatureImportanceSection from "@/components/dashboard/FeatureImportance";
 import { Button } from "@/components/common/Button";
 import { Inter } from "next/font/google";
 import { Upload, ArrowRight } from "lucide-react";
@@ -80,6 +81,19 @@ export default function HomePage() {
     { no: 2, assessmentTime: "2024-02-14", score: 90 }, 
     { no: 3, assessmentTime: "2024-03-20", score: 88 }, 
   ];
+
+  const features = [
+    { name: "Visiting Customer", importance: 0.39, description: "Level of understanding of the concept of direct customer visits, aimed at building closer relationships and gaining deeper insights into customer needs." },
+    { name: "Account Profile", importance: 0.17, description: "Comprehensive profile of customer accounts." },
+    { name: "Sales Funnel", importance: 0.13, description: "Effectiveness in moving prospects through the sales process." },
+    { name: "Account Plan", importance: 0.11, description: "Quality and execution of account planning." },
+    { name: "Bidding Management", importance: 0.09, description: "Efficiency in managing customer bids." },
+    { name: "Customer Matching", importance: 0.06, description: "Ability to match customer needs with solutions." },
+    { name: "Customer Introduction", importance: 0.05, description: "Effectiveness in introducing customers to products or services." }
+  ];
+  const model = { name: "XGBoost", accuracy: 0.85, trainCount: 500 };
+  const guidanceFeatureImportance = "These factors show what most influences success in the onboarding stage. Focus on the top ones to improve how quickly and effectively employees start their roles.";
+  const guidanceFeature = "Penjelasan fitur detail di sini...";
 
   // Simulasi ambil data
   useEffect(() => {
@@ -377,7 +391,18 @@ export default function HomePage() {
         </Button>
       </div>
 
-
+    {/* Demo Feature Importance Section */}
+      <div className="w-full flex justify-center">
+        <div className="max-w-[1200px] w-full">
+          <h2 className="text-black text-[24px] font-semibold mb-4">Feature Importance Section (Demo)</h2>
+          <FeatureImportanceSection
+            features={features}
+            model={model}
+            guidanceFeatureImportance={guidanceFeatureImportance}
+            guidanceFeature={guidanceFeature}
+          />
+        </div>
+      </div>
       {/* Toast di pojok kanan bawah */}
       {Toast({
         open: toast.open,

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "../common/Button";
+import EmptyDataValidation from "./EmptyDataState";
 
 export type TableColumn = {
   label: string;
@@ -176,7 +177,7 @@ export const Table: React.FC<TableProps> = ({
   if (error || (data && data.length === 0)) {
     return (
       <div className="w-full min-h-[180px] flex items-center justify-center text-[#EF4444] font-inter font-semibold">
-        {error ? error : "No data found."}
+        {error ? error : <EmptyDataValidation />}
       </div>
     );
   }

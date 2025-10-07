@@ -198,7 +198,7 @@ const ChooseFeaturePage = () => {
 
   // On Start Processing button click
   const handleStartProcessing = () => {
-    router.push("/progress");
+    router.push("/input/progress");
   };
 
   return (
@@ -236,7 +236,7 @@ const ChooseFeaturePage = () => {
         </span>
       </div>
       <div
-        className="w-full max-w-[900px] bg-white rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.10)] flex flex-col gap-6 px-[30px] py-[22px]"
+        className="w-full max-w-6xl bg-white rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.10)] flex flex-col gap-6 px-[30px] py-[22px]"
       >
         <div className="flex flex-col gap-2">
           <span

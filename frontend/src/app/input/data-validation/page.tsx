@@ -52,7 +52,7 @@ export default function DataValidationPage() {
       </div>
       {/* Title & subtitle */}
       <div className="flex flex-col items-center justify-center mt-2">
-        <div className="text-[48px] font-bold text-[#132B50] leading-tight text-center mb-2">Data Validation</div>
+        <div className="text-[48px] font-bold text-[#0F172A] leading-tight text-center mb-2">Data Validation</div>
         <div className="text-[22px] text-[#64748B] text-center">Validation results for your uploaded Excel file</div>
       </div>
 

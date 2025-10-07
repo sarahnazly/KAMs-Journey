@@ -48,7 +48,7 @@ export default function UploadExcelFilePage() {
       </div>
       {/* Title & subtitle */}
       <div className="flex flex-col items-center justify-center mt-2">
-        <div className="text-[48px] font-bold text-[#132B50] leading-tight text-center mb-2">Upload Excel File</div>
+        <div className="text-[48px] font-bold text-[#0F172A] leading-tight text-center mb-2">Upload Excel File</div>
         <div className="text-[22px] text-[#64748B] text-center">Upload your Excel file to start machine learning analysis.</div>
       </div>
       {/* FileUploader */}

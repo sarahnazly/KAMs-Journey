@@ -251,18 +251,24 @@ const ProgressPage = () => {
   return (
     <div className="w-full flex flex-col items-center mb-20">
       {/* Stepper */}
-      <div className="w-full max-w-[1320px] mx-auto mt-[40px] mb-[40px]">
-        <Stepper steps={steps} activeStep={3} />
+      <div className="w-full flex justify-center pt-12 pb-6">
+        <div className="max-w-5xl w-full">
+          <Stepper steps={steps} activeStep={3} />
+        </div>
       </div>
 
-      {/* Title */}
-      <div className="flex flex-col items-center gap-2 mb-10">
-        <span className="text-[48px] font-bold text-[#0F172A]">Processing Progress</span>
-        <span className="text-[22px] text-[#64748B] font-normal">Your file is being processed by multiple machine learning algorithms</span>
+      {/* Title & subtitle */}
+      <div className="flex flex-col items-center justify-center mt-2">
+        <div className="text-[48px] font-bold text-[#0F172A] leading-tight text-center mb-2">
+          Processing Progress
+        </div>
+        <div className="text-[22px] text-[#64748B] text-center">
+          Your file is being processed by multiple machine learning algorithms
+        </div>
       </div>
 
       {/* Overall Progress */}
-      <div className="w-full max-w-6xl mx-auto bg-white rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.08)] flex flex-col gap-2 px-8 py-8 mb-8">
+      <div className="w-full max-w-6xl mx-auto bg-white rounded-[16px] shadow-[0px_4px_16px_rgba(0,0,0,0.08)] flex flex-col gap-2 px-8 py-8 mb-8 mt-8">
         <div className="flex items-center justify-between">
           <span className="text-[24px] font-bold text-[#0F172A]">Overall Progress</span>
           <div className="flex items-center flex-col">

@@ -12,13 +12,30 @@ interface StepperProps {
   onStepChange?: (step: number) => void;
 }
 
+const scale = 0.89;
+const circleWidth = 53.22 * scale; 
+const circleHeight = 55.73 * scale; 
+const fontSizeCircle = 29.72 * scale; 
+const lineHeightCircle = 35.67 * scale; 
+const maxWidth = 315.44 * scale; 
+const fontSizeTitle = 22.29 * scale; 
+const lineHeightTitle = 26.75 * scale;
+const marginTopTitle = 15.27 * scale; 
+const fontSizeDesc = 16 * scale;
+const lineHeightDesc = 22.29 * scale;
+const marginTopDesc = 7.43 * scale; 
+const connectLineTop = 27.86 * scale; 
+const connectLineHeight = 10 * scale; 
+const outlineWidth = 5 * scale; 
+const outlineOffset = -5 * scale; 
+
 const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) => {
   if (!steps || steps.length === 0) {
     return null;
   }
 
   return (
-    <div className="w-full relative" style={{ height: '149.43px' }}>
+    <div className="w-full relative" style={{ height: `${149.43 * scale}px` }}>
       <div className="flex items-start justify-between relative">
         {steps.map((step, index) => {
           const isActive = index === activeStep;
@@ -29,7 +46,7 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) =>
             <div
               key={index}
               className="flex flex-col items-center text-center relative"
-              style={{ flex: 1, maxWidth: '315.44px' }}
+              style={{ flex: 1, maxWidth: `${maxWidth}px` }}
             >
               {/* Circle number */}
               <div
@@ -39,11 +56,11 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) =>
                   isCompleted && "bg-[#02214C]",
                   isInactive && "bg-[#AAB9D5]"
                 )}
-                style={{ 
-                  width: '53.22px', 
-                  height: '55.73px',
-                  fontSize: '29.72px', 
-                  lineHeight: '35.67px',
+                style={{
+                  width: `${circleWidth}px`,
+                  height: `${circleHeight}px`,
+                  fontSize: `${fontSizeCircle}px`,
+                  lineHeight: `${lineHeightCircle}px`,
                   fontWeight: '700'
                 }}
                 onClick={() => {
@@ -58,11 +75,11 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) =>
               {/* Title */}
               <div
                 className="font-bold text-black"
-                style={{ 
-                  fontSize: '22.29px', 
-                  lineHeight: '26.75px',
+                style={{
+                  fontSize: `${fontSizeTitle}px`,
+                  lineHeight: `${lineHeightTitle}px`,
                   fontWeight: '700',
-                  marginTop: '15.27px'
+                  marginTop: `${marginTopTitle}px`
                 }}
               >
                 {step.title}
@@ -71,11 +88,11 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) =>
               {/* Description */}
               <div
                 className="text-[#64748B] font-normal"
-                style={{ 
-                  fontSize: '16px', 
-                  lineHeight: '22.29px',
+                style={{
+                  fontSize: `${fontSizeDesc}px`,
+                  lineHeight: `${lineHeightDesc}px`,
                   fontWeight: '400',
-                  marginTop: '7.43px'
+                  marginTop: `${marginTopDesc}px`
                 }}
               >
                 {step.description}
@@ -86,13 +103,12 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) =>
       </div>
 
       {/* Connecting lines */}
-      <div className="absolute" style={{ top: '27.86px', left: 0, right: 0 }}>
+      <div className="absolute" style={{ top: `${connectLineTop}px`, left: 0, right: 0 }}>
         {steps.map((_, index) => {
           if (index === steps.length - 1) return null;
-          
+
           const isCompleted = index < activeStep;
-          const lineWidth = `calc((100% - ${steps.length * 53.22}px) / ${steps.length - 1})`;
-          const leftPosition = `calc(${index} * (100% / ${steps.length}) + ${53.22 / 2}px + ${index} * ${53.22}px / ${steps.length})`;
+          const lineWidth = `calc((100% - ${steps.length * circleWidth}px) / ${steps.length - 1})`;
 
           return (
             <div
@@ -102,12 +118,12 @@ const Stepper: React.FC<StepperProps> = ({ steps, activeStep, onStepChange }) =>
                 isCompleted ? "bg-[#02214C]" : "bg-[#AAB9D5]"
               )}
               style={{
-                height: '10px',
+                height: `${connectLineHeight}px`,
                 width: lineWidth,
                 left: `calc(${(index + 1) * (100 / steps.length)}% - ${(100 / steps.length) / 2}%)`,
                 top: 0,
-                outline: `5px solid ${isCompleted ? '#02214C' : '#AAB9D5'}`,
-                outlineOffset: '-5px'
+                outline: `${outlineWidth}px solid ${isCompleted ? '#02214C' : '#AAB9D5'}`,
+                outlineOffset: `${outlineOffset}px`
               }}
             />
           );

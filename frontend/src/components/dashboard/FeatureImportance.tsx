@@ -38,8 +38,8 @@ export interface FeatureImportanceProps {
 const BAR_HEIGHT = 28;
 const BAR_GAP = 20;
 const BAR_RADIUS = 4;
-const ROW_H = BAR_HEIGHT + BAR_GAP; 
-const INNER_PADDING = 60; 
+const ROW_H = BAR_HEIGHT + BAR_GAP;
+const INNER_PADDING = 60;
 
 export default function FeatureImportanceSection({
   features,
@@ -81,6 +81,28 @@ export default function FeatureImportanceSection({
     () => `${displayed.length}-${showGuidance}-${selectedIdx ?? "none"}`,
     [displayed.length, showGuidance, selectedIdx]
   );
+
+  // CLAMP/RESET selectedIdx saat daftar bar berubah
+  useEffect(() => {
+    if (!showGuidance) return;
+    if (displayed.length === 0) {
+      setSelectedIdx(null);
+      setShowGuidance(false);
+      return;
+    }
+    setSelectedIdx((prev) => {
+      if (prev == null) return 0;
+      if (prev < 0) return 0;
+      if (prev >= displayed.length) return displayed.length - 1;
+      return prev;
+    });
+  }, [displayed.length, showGuidance]);
+
+  // Fitur terpilih yang sudah di-guard supaya tidak baca undefined
+  const selectedFeature = useMemo(() => {
+    const idx = selectedIdx ?? -1;
+    return displayed[idx] ?? null;
+  }, [displayed, selectedIdx]);
 
   const chartData: ChartData<"bar"> = useMemo(
     () => ({
@@ -130,7 +152,7 @@ export default function FeatureImportanceSection({
       maintainAspectRatio: false,
       layout: {
         padding: {
-          top: BAR_GAP / 2,   
+          top: BAR_GAP / 2,
           bottom: BAR_GAP / 2,
         },
       },
@@ -170,10 +192,7 @@ export default function FeatureImportanceSection({
       onClick: (_e, elements) => {
         if (elements.length > 0) {
           const idx = elements[0].index;
-          if (showGuidance && selectedIdx === idx) {
-            setShowGuidance(false);
-            setSelectedIdx(null);
-          } else {
+          if (idx >= 0 && idx < displayed.length) {
             setShowGuidance(true);
             setSelectedIdx(idx);
           }
@@ -181,19 +200,13 @@ export default function FeatureImportanceSection({
       },
       animation: { duration: 0 },
     }),
-    [displayed, showGuidance, selectedIdx, chartFontFamily]
+    [displayed, chartFontFamily]
   );
 
+  // Reset selection saat guidance dimatikan
   useEffect(() => {
     if (!showGuidance) setSelectedIdx(null);
   }, [showGuidance]);
-
-  useEffect(() => {
-    if (selectedIdx !== null && selectedIdx >= displayed.length) {
-      setSelectedIdx(null);
-      setShowGuidance(false);
-    }
-  }, [displayed.length, selectedIdx]);
 
   const chartHeight = displayed.length * ROW_H;
 
@@ -219,6 +232,7 @@ export default function FeatureImportanceSection({
             setShowGuidance((prev) => {
               const next = !prev;
               if (!next) setSelectedIdx(null);
+              else if (selectedIdx == null && displayed.length > 0) setSelectedIdx(0);
               return next;
             })
           }
@@ -232,7 +246,7 @@ export default function FeatureImportanceSection({
         {/* Kolom kiri = Chart */}
         <div className="flex-1 min-w-0">
           <div
-            className="bg-white rounded-xl border border-[#D0D5DD] shadow p-6"
+            className="bg-white rounded-xl border border-[#D0D5DD] shadow p-6 pb-4"
             style={{
               boxShadow: "0px 4px 24px 0px #00000014",
               height: chartHeight + INNER_PADDING,
@@ -240,9 +254,11 @@ export default function FeatureImportanceSection({
           >
             <Bar key={chartKey} ref={chartRef} data={chartData} options={chartOptions} height={chartHeight + INNER_PADDING} />
             {others.length > 0 && (
-              <Button variant="secondary" size="default" className="mt-10 mb-20 ml-0" onClick={() => setSeeMore((v) => !v)}>
-                {seeMore ? "Show Less" : "Show More"}
-              </Button>
+              <div className="mt-6 flex justify-start">
+                <Button variant="secondary" size="default" className="mb-2" onClick={() => setSeeMore((v) => !v)}>
+                  {seeMore ? "Show Less" : "Show More"}
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -257,9 +273,7 @@ export default function FeatureImportanceSection({
             <div className="bg-white rounded-xl border border-[#D0D5DD] shadow px-6 py-4 min-h-[120px]">
               <div className="font-bold text-[18px] mb-1">Feature Details</div>
               <div className="text-[#607B96] text-base">
-                {selectedIdx !== null
-                  ? displayed[selectedIdx].description
-                  : "Click a bar to see details."}
+                {selectedFeature ? selectedFeature.description : "Click a bar to see details."}
               </div>
             </div>
           </div>

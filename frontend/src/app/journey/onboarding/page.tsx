@@ -52,7 +52,7 @@ export default function OnboardingOverviewPage() {
       { nik: "20921", nama: "Nicholas Saputra",   score1: 92, score2: 82, score3: 90, quarter: "Q1", year: 2025 },
       { nik: "20922", nama: "Pinky Siwi",         score1: 88, score2: 78, score3: 85, quarter: "Q1", year: 2025 },
       // Duplikat contoh (NIK sama dalam Q1-2025) — akan didedup
-      { nik: "20929", nama: "Budi Santoso",       score1: 85, score2: 75, score3: 81, quarter: "Q1", year: 2025 },
+      { nik: "20920", nama: "Budi Santoso",       score1: 85, score2: 75, score3: 81, quarter: "Q1", year: 2025 },
 
       // Kuartal lain (bukan duplikat untuk Q1-2025)
       { nik: "20920", nama: "Budi Santoso",       score1: 85, score2: 75, score3: 81, quarter: "Q2", year: 2025 },
@@ -174,7 +174,7 @@ export default function OnboardingOverviewPage() {
       <div className="w-full flex items-center justify-center mb-10">
         <div className="max-w-[1100px] w-full">
           <Card heading="Daftar Account Manager" description="Data Account Manager berdasarkan periode yang dipilih">
-            <div className="-mx-4 sm:-mx-6 md:-mx-8">
+            <div className="-mx-4 sm:-mx-6 md:-mx-8 mt-4">
               <div className="px-2 sm:px-4 md:px-6">
                 <Table
                   columns={columns}

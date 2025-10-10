@@ -391,7 +391,7 @@ export default function HomePage() {
         </Button>
       </div>
 
-    {/* Demo Feature Importance Section */}
+      {/* Demo Feature Importance Section */}
       <div className="w-full flex justify-center">
         <div className="max-w-[1200px] w-full">
           <h2 className="text-black text-[24px] font-semibold mb-4">Feature Importance Section (Demo)</h2>

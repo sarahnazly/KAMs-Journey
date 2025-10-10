@@ -65,7 +65,7 @@ async function fetchDetail(nik: string): Promise<Detail> {
           { title: "Solution", score: 85, sub: "Product knowledge and solution mapping" },
           { title: "Account Profile", score: 78, sub: "Customer profiling and analysis" },
           { title: "Account Plan", score: 50, sub: "Strategic account planning" },
-          { title: "Sales Funnel", score: 0, sub: "Pipeline management skills" }, // kosong
+          { title: "Sales Funnel", score: 0, sub: "Pipeline management skills" }, // skor 0
           { title: "Bidding Management", score: 108, sub: "Proposal and bidding expertise" }, // out of range
           { title: "Project Management", score: 90, sub: "Project delivery and control" },
         ],

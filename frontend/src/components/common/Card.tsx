@@ -1,34 +1,37 @@
 import React from "react";
 
-interface CardProps {
-  heading: string;
-  description?: string;
+export interface CardProps {
+  heading?: React.ReactNode;
+  description?: React.ReactNode;
   children: React.ReactNode;
+  className?: string;
+  headerClassName?: string;
+  contentClassName?: string;
 }
 
-const Card: React.FC<CardProps> = ({ heading, description, children }) => {
+export default function Card({
+  heading,
+  description,
+  children,
+  className = "",
+  headerClassName = "",
+  contentClassName = "",
+}: CardProps) {
   return (
-    <div className="w-full bg-[#FFFFFF] shadow-md border border-[#CBD5E1] rounded-[15px] flex flex-col">
-      {/* Header Section */}
-      <div className="w-full bg-[#F6FBFF] rounded-t-[15px] border-b border-[#CBD5E1]">
-        <div className="flex flex-col px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-5">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#0F172A] font-inter">
-            {heading}
-          </h2>
-          {description && (
-            <p className="mt-1 text-xs sm:text-sm md:text-base leading-relaxed font-normal text-[#94A3B8] font-inter">
-              {description}
-            </p>
+    <div className={`bg-white rounded-[12px] border border-[#CBD5E1] shadow-[0_4px_10px_rgba(0,0,0,0.10)] p-6 ${className}`}>
+      {(heading || description) && (
+        <div className={`-mx-6 -mt-6 px-6 py-4 bg-[#F6FBFF] border-b border-[#CBD5E1] rounded-t-[12px] ${headerClassName}`}>
+          {typeof heading === "string" || typeof description === "string" ? (
+            <div>
+              {heading && <div className="text-[#0F172A] text-[20px] md:text-[22px] font-bold">{heading}</div>}
+              {description && <div className="text-[#94A3B8] text-[14px] md:text-[16px]">{description}</div>}
+            </div>
+          ) : (
+            heading
           )}
         </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="w-full px-4 sm:px-6 md:px-8 py-5 text-sm sm:text-base md:text-lg leading-relaxed font-medium text-[#000000] font-inter">
-        {children}
-      </div>
+      )}
+      <div className={contentClassName}>{children}</div>
     </div>
   );
-};
-
-export default Card;
+}

@@ -57,7 +57,7 @@ const TabStage: React.FC<TabStageProps> = ({ onStageChange, width = "1200px", he
           w-full
           bg-white
           rounded-[20px]
-          outline outline-1 outline-[#E2E8F0]
+          outline outline-[#E2E8F0]
           outline-offset-[-1px]
           shadow-[0_4px_16px_0_rgba(0,0,0,0.10)]
           flex items-center

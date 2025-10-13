@@ -26,11 +26,11 @@ function SortIcon({ active, direction }: { active: boolean; direction: "asc" | "
   return (
     <span className="ml-1">
       {direction === "asc" ? (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M8 6L11 9H5L8 6Z" fill={active ? "#fff" : "#CBD5E1"} />
         </svg>
       ) : (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M8 10L5 7H11L8 10Z" fill={active ? "#fff" : "#CBD5E1"} />
         </svg>
       )}
@@ -75,7 +75,7 @@ function Pagination({
         aria-label="Prev"
         title="Previous page"
       >
-        <svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+        <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M11 13L6 8L11 3" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </button>
@@ -120,7 +120,7 @@ function Pagination({
         aria-label="Next"
         title="Next page"
       >
-        <svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+        <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M5 3L10 8L5 13" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </button>
@@ -150,18 +150,26 @@ export const Table: React.FC<TableProps> = ({
   const sortedData = React.useMemo(() => {
     if (!data) return [];
     const sortable = [...data];
+
     if (sortKey) {
       sortable.sort((a, b) => {
-        const aValue = a[sortKey];
-        const bValue = b[sortKey];
+        const aValue = (a as any)[sortKey];
+        const bValue = (b as any)[sortKey];
+
+        // Kedua number
         if (typeof aValue === "number" && typeof bValue === "number") {
-          return sortDir === "asc" ? aValue - bValue : bValue - aValue;
+          const res = aValue - bValue;
+          return sortDir === "asc" ? res : -res;
         }
-        return sortDir === "asc"
-          ? String(aValue).localeCompare(String(bValue))
-          : String(bValue).localeCompare(String(aValue));
+
+        // Normalisasi string (termasuk null/undefined)
+        const sa = String(aValue ?? "");
+        const sb = String(bValue ?? "");
+        const res = sa.localeCompare(sb, undefined, { sensitivity: "base", numeric: true });
+        return sortDir === "asc" ? res : -res;
       });
     }
+
     return sortable;
   }, [data, sortKey, sortDir]);
 
@@ -201,39 +209,53 @@ export const Table: React.FC<TableProps> = ({
       <table className="min-w-full table-auto font-inter">
         <thead>
           <tr>
-            {columns.map((col, i) => (
-              <th
-                key={col.key}
-                className="py-5 px-3 text-center text-[15px] font-bold text-white bg-[#02214C] select-none"
-                style={{
-                  fontFamily: "Inter, Arial, Helvetica, sans-serif",
-                  lineHeight: "19.2px",
-                  fontWeight: 700,
-                  borderTopLeftRadius: i === 0 ? 5 : 0,
-                  borderTopRightRadius: i === columns.length - (showAction ? 0 : 1) ? 5 : 0,
-                  cursor: col.sortable ? "pointer" : "default",
-                }}
-                onClick={() => {
-                  if (!col.sortable) return;
-                  setSortKey((prev) => {
-                    if (prev === col.key) {
-                      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-                      return prev;
+            {columns.map((col, i) => {
+              const isActive = sortKey === col.key;
+              const ariaSort =
+                col.sortable
+                  ? isActive
+                    ? sortDir === "asc"
+                      ? "ascending"
+                      : "descending"
+                    : "none"
+                  : undefined;
+
+              return (
+                <th
+                  key={col.key}
+                  role="columnheader"
+                  aria-sort={ariaSort as any}
+                  className="py-5 px-3 text-center text-[15px] font-bold text-white bg-[#02214C] select-none"
+                  style={{
+                    fontFamily: "Inter, Arial, Helvetica, sans-serif",
+                    lineHeight: "19.2px",
+                    fontWeight: 700,
+                    borderTopLeftRadius: i === 0 ? 5 : 0,
+                    borderTopRightRadius: i === columns.length - (showAction ? 0 : 1) ? 5 : 0,
+                    cursor: col.sortable ? "pointer" : "default",
+                  }}
+                  onClick={() => {
+                    if (!col.sortable) return;
+
+                    if (sortKey === col.key) {
+                      // Toggle asc <-> desc untuk kolom yang sama
+                      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
                     } else {
+                      // Pindah ke kolom baru, mulai dari asc
+                      setSortKey(col.key);
                       setSortDir("asc");
-                      return col.key;
                     }
-                  });
-                }}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <span>{col.label}</span>
-                  {col.sortable && (
-                    <SortIcon active={sortKey === col.key} direction={sortKey === col.key ? sortDir : "asc"} />
-                  )}
-                </div>
-              </th>
-            ))}
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span>{col.label}</span>
+                    {col.sortable && (
+                      <SortIcon active={isActive} direction={isActive ? sortDir : "asc"} />
+                    )}
+                  </div>
+                </th>
+              );
+            })}
             {showAction && (
               <th
                 className="py-5 px-3 text-center text-[15px] font-bold text-white bg-[#02214C]"
@@ -269,7 +291,7 @@ export const Table: React.FC<TableProps> = ({
                   className="px-3 py-5 text-[15px] text-[#363B3F] text-center font-medium align-middle"
                   style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}
                 >
-                  {col.render ? col.render(row[col.key], row) : row[col.key] ?? ""}
+                  {col.render ? col.render((row as any)[col.key], row) : (row as any)[col.key] ?? ""}
                 </td>
               ))}
               {showAction && (

@@ -19,6 +19,7 @@ interface TableProps {
   pageSize?: number;
   onDetail?: (row: Record<string, any>) => void;
   showAction?: boolean;
+  actionColumnLabel?: string;
 }
 
 function SortIcon({ active, direction }: { active: boolean; direction: "asc" | "desc" }) {
@@ -135,6 +136,7 @@ export const Table: React.FC<TableProps> = ({
   pageSize = 10,
   onDetail,
   showAction = true,
+  actionColumnLabel = "Action",
 }) => {
   const [page, setPage] = useState(1);
 
@@ -242,7 +244,7 @@ export const Table: React.FC<TableProps> = ({
                   borderTopRightRadius: 5,
                 }}
               >
-                Action
+                {actionColumnLabel}
               </th>
             )}
           </tr>

@@ -106,7 +106,7 @@ const BehaviorAchievementPopup: React.FC<BehaviorAchievementPopupProps> = ({
           <div className="px-6 py-3 border-t border-[#E2E8F0]">
             <button
               onClick={onClose}
-              className="w-full px-5 py-2 bg-[#02214C] text-white text-sm font-inter font-semibold rounded-lg hover:bg-[#16396E] transition-colors focus:outline-none focus:ring-2 focus:ring-[#02214C] focus:ring-offset-2"
+              className="w-full px-5 py-2 bg-[#02214C] text-white text-sm font-inter font-semibold rounded-lg hover:bg-[#E9F8FF] hover:text-[#164E9D] transition-colors focus:outline-none focus:ring-2 focus:ring-[#02214C] focus:ring-offset-2"
             >
               Tutup
             </button>

@@ -14,9 +14,7 @@ import FeatureImportanceSection, {
   Feature,
   ModelInfo,
 } from "@/components/dashboard/FeatureImportance";
-
-// Import popup dari lokasi yang kamu gunakan
-import FormalTrainingDetail, { FormalDetailRow } from "@/app/journey/development/FormalTrainingDetail";
+import FormalTrainingDetail, { FormalDetailRow } from "@/components/dashboard/development/FormalTrainingDetail";
 
 type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
 

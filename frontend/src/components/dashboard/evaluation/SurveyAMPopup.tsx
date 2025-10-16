@@ -3,23 +3,23 @@
 import React, { useMemo } from "react";
 import Table, { TableColumn } from "@/components/dashboard/Table";
 
-interface BehaviorAchievementData {
+export type SurveyAMRow = {
   no: number;
-  assessmentTime: string;
+  assessmentTime: string; // format "MM/DD/YYYY"
   score: number;
-}
+};
 
-interface BehaviorAchievementPopupProps {
+interface SurveyAMPopupProps {
   isOpen: boolean;
   onClose: () => void;
   employeeName: string;
   employeeNIK: string;
-  data: BehaviorAchievementData[];
+  data: SurveyAMRow[];
   loading?: boolean;
   error?: string;
 }
 
-const BehaviorAchievementPopup: React.FC<BehaviorAchievementPopupProps> = ({
+const SurveyAMPopup: React.FC<SurveyAMPopupProps> = ({
   isOpen,
   onClose,
   employeeName,
@@ -31,21 +31,9 @@ const BehaviorAchievementPopup: React.FC<BehaviorAchievementPopupProps> = ({
   // Define table columns
   const columns: TableColumn[] = useMemo(
     () => [
-      {
-        label: "No.",
-        key: "no",
-        sortable: true,
-      },
-      {
-        label: "Assessment Time",
-        key: "assessmentTime",
-        sortable: true,
-      },
-      {
-        label: "Score",
-        key: "score",
-        sortable: true,
-      },
+      { label: "No.", key: "no", sortable: true },
+      { label: "Assessment Time", key: "assessmentTime", sortable: true },
+      { label: "Score", key: "score", sortable: true },
     ],
     []
   );
@@ -63,16 +51,16 @@ const BehaviorAchievementPopup: React.FC<BehaviorAchievementPopupProps> = ({
 
       {/* Modal Container with 90% scale */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div 
+        <div
           className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col"
           style={{ transform: 'scale(0.9)', transformOrigin: 'center' }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-start">
+          <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-start justify-between">
             <div className="flex-1">
               <h2 className="text-[#0F172A] text-xl font-bold font-inter leading-tight">
-                Behavior Achievement Details
+                Detail Survey AM to Consumer
               </h2>
               <p className="text-[#64748B] text-md font-inter font-normal leading-relaxed mt-1">
                 {employeeName} <span className="text-[#94A3B8]">({employeeNIK})</span>
@@ -80,7 +68,7 @@ const BehaviorAchievementPopup: React.FC<BehaviorAchievementPopupProps> = ({
             </div>
           </div>
 
-          {/* Content - Fixed height, no scroll, pagination handles data */}
+          {/* Content */}
           <div className="px-6 py-4">
             <div className="w-full">
               <Table
@@ -109,4 +97,4 @@ const BehaviorAchievementPopup: React.FC<BehaviorAchievementPopupProps> = ({
   );
 };
 
-export default BehaviorAchievementPopup;
+export default SurveyAMPopup;

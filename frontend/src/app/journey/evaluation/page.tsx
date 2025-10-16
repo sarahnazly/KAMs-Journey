@@ -9,6 +9,7 @@ import MetricCard from "@/components/dashboard/evaluation/MetricCard";
 import TabStage from "@/components/dashboard/TabStage";
 import Table, { TableColumn } from "@/components/dashboard/Table";
 import BehaviorAchievementPopup from "@/components/dashboard/evaluation/BehaviorAchievementPopup";
+import SurveyAMPopup, { SurveyAMRow } from "@/components/dashboard/evaluation/SurveyAMPopup";
 import { useRouter } from "next/navigation";
 import Card from "@/components/common/Card";
 import FeatureImportanceSection, {
@@ -63,6 +64,11 @@ export default function EvaluationOverviewPage() {
   const [behaviorPopupLoading, setBehaviorPopupLoading] = useState<boolean>(false);
   const [behaviorPopupError, setBehaviorPopupError] = useState<string>("");
   const [selectedEmployee, setSelectedEmployee] = useState<{ name: string; nik: string }>({ name: "", nik: "" });
+  const [surveyPopupOpen, setSurveyPopupOpen] = useState(false);
+  const [surveyPopupLoading, setSurveyPopupLoading] = useState(false);
+  const [surveyPopupError, setSurveyPopupError] = useState("");
+  const [surveyPopupData, setSurveyPopupData] = useState<SurveyAMRow[]>([]);
+  const [selectedAM, setSelectedAM] = useState<{ name: string; nik: string }>({ name: "", nik: "" });
 
   // Dummy data
   const allData: EvaluationRow[] = useMemo(
@@ -279,6 +285,20 @@ export default function EvaluationOverviewPage() {
   const handleDetailClick = (type: string, row: Record<string, any>) => {
     if (type === "behavior") {
       handleBehaviorDetailClick(row);
+    }
+    if (type === "survey") {
+      setSelectedAM({ name: row.nama, nik: row.nik });
+      setSurveyPopupOpen(true);
+      setSurveyPopupLoading(true);
+      setSurveyPopupError("");
+      setTimeout(() => {
+        setSurveyPopupData([
+          { no: 1, assessmentTime: "01/01/2025", score: 100 },
+          { no: 2, assessmentTime: "01/04/2025", score: 95 },
+          { no: 3, assessmentTime: "01/07/2025", score: 100 },
+        ]);
+        setSurveyPopupLoading(false);
+      }, 800);
     } else {
       console.log(`${type} clicked for:`, row);
       // TODO: Add navigation logic for other types here, e.g.: survey, predictions
@@ -499,6 +519,16 @@ export default function EvaluationOverviewPage() {
         data={behaviorPopupData}
         loading={behaviorPopupLoading}
         error={behaviorPopupError}
+      />
+      {/* Survey AM to Consumer Popup */}
+      <SurveyAMPopup
+        isOpen={surveyPopupOpen}
+        onClose={() => setSurveyPopupOpen(false)}
+        employeeName={selectedAM.name}
+        employeeNIK={selectedAM.nik}
+        data={surveyPopupData}
+        loading={surveyPopupLoading}
+        error={surveyPopupError}
       />
     </div>
   );

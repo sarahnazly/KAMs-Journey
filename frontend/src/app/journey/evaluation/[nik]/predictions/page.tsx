@@ -25,78 +25,176 @@ export default function PredictionsPage() {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<any>(null);
 
-  // Mock employee data - in production, fetch based on NIK
-  const employeeData = useMemo(() => ({
-    nik: "20919",
-    name: "Ratu Nadya Anjania",
+  // Employee database - matches evaluation page data
+  const employeeDatabase = useMemo(() => ({
+    "20919": { 
+      name: "Ratu Nadya Anjania", 
+      current: { revenue: 80, sales: 80, profitability: 80, collectionRate: 70, amTools: 75, capability: 55, winRate: 95 },
+      growthTrend: "high", // High performer with good growth potential
+      evaluationCategory: "Melanjutkan"
+    },
+    "20971": { 
+      name: "Sarah Nazly Nuraya", 
+      current: { revenue: 80, sales: 80, profitability: 80, collectionRate: 75, amTools: 80, capability: 55, winRate: 95 },
+      growthTrend: "high", // High performer with strong relationships
+      evaluationCategory: "Melanjutkan"
+    },
+    "20984": { 
+      name: "Anindya Maulida Widyatmoko", 
+      current: { revenue: 80, sales: 80, profitability: 80, collectionRate: 80, amTools: 78, capability: 55, winRate: 95 },
+      growthTrend: "moderate", // Good performer, needs development
+      evaluationCategory: "Perlu Pengembangan Kompetensi"
+    },
+    "20992": { 
+      name: "John Doe", 
+      current: { revenue: 80, sales: 80, profitability: 80, collectionRate: 65, amTools: 80, capability: 55, winRate: 95 },
+      growthTrend: "low", // Underperforming, needs significant improvement
+      evaluationCategory: "SP 3"
+    },
+    "20993": { 
+      name: "Jane Smith", 
+      current: { revenue: 85, sales: 85, profitability: 85, collectionRate: 80, amTools: 85, capability: 60, winRate: 90 },
+      growthTrend: "moderate", // Good baseline, steady improvement expected
+      evaluationCategory: "SP 1"
+    },
+    "20994": { 
+      name: "Ahmad Yani", 
+      current: { revenue: 60, sales: 60, profitability: 60, collectionRate: 50, amTools: 55, capability: 40, winRate: 60 },
+      growthTrend: "declining", // Poor performance, negative trend
+      evaluationCategory: "Diberhentikan"
+    }
   }), []);
 
-  // KPI Data
-  const kpiData: KPIData[] = useMemo(() => [
-    {
-      name: "Revenue Achievement",
-      current: 78,
-      predicted: 89,
-      target: 90,
-      delta: 11,
-      deltaPercent: "+14.1%",
-      status: "On Track",
-    },
-    {
-      name: "Sales Achievement",
-      current: 82,
-      predicted: 94,
-      target: 90,
-      delta: 12,
-      deltaPercent: "+14.6%",
-      status: "Exceeds",
-    },
-    {
-      name: "Profitability Achievement",
-      current: 71,
-      predicted: 83,
-      target: 85,
-      delta: 12,
-      deltaPercent: "+16.9%",
-      status: "Near Target",
-    },
-    {
-      name: "Collection Rate Achievement",
-      current: 68,
-      predicted: 76,
-      target: 85,
-      delta: 8,
-      deltaPercent: "+11.8%",
-      status: "Needs Focus",
-    },
-    {
-      name: "AM Tools Achievement",
-      current: 85,
-      predicted: 92,
-      target: 90,
-      delta: 7,
-      deltaPercent: "+8.2%",
-      status: "Exceeds",
-    },
-    {
-      name: "Capability Achievement",
-      current: 79,
-      predicted: 88,
-      target: 85,
-      delta: 9,
-      deltaPercent: "+11.4%",
-      status: "Exceeds",
-    },
-    {
-      name: "Win Rate",
-      current: 73,
-      predicted: 91,
-      target: 80,
-      delta: 18,
-      deltaPercent: "+24.7%",
-      status: "Exceeds",
-    },
-  ], []);
+  // Generate predictions based on employee NIK and current performance
+  const generatePredictionsForEmployee = (nikParam: string) => {
+    const employee = employeeDatabase[nikParam as keyof typeof employeeDatabase];
+    if (!employee) {
+      // Default fallback for unknown NIK
+      return {
+        employeeName: "Unknown Employee",
+        kpiData: []
+      };
+    }
+
+    const { current, growthTrend } = employee;
+    
+    // Growth multipliers based on trend
+    const growthMultipliers = {
+      high: { min: 1.10, max: 1.25 }, // 10-25% improvement
+      moderate: { min: 1.05, max: 1.15 }, // 5-15% improvement
+      low: { min: 1.00, max: 1.08 }, // 0-8% improvement
+      declining: { min: 0.85, max: 0.98 } // -15% to -2% decline
+    };
+
+    const multiplier = growthMultipliers[growthTrend as keyof typeof growthMultipliers];
+    
+    // Helper function to generate prediction
+    const generatePrediction = (currentValue: number, variance: number = 0.1) => {
+      const baseGrowth = multiplier.min + Math.random() * (multiplier.max - multiplier.min);
+      const varianceAdjustment = 1 + (Math.random() - 0.5) * variance;
+      return Math.round(Math.min(100, currentValue * baseGrowth * varianceAdjustment));
+    };
+
+    // Calculate predictions
+    const predictions = {
+      revenue: generatePrediction(current.revenue),
+      sales: generatePrediction(current.sales),
+      profitability: generatePrediction(current.profitability),
+      collectionRate: generatePrediction(current.collectionRate, 0.15),
+      amTools: generatePrediction(current.amTools, 0.12),
+      capability: generatePrediction(current.capability, 0.2),
+      winRate: generatePrediction(current.winRate, 0.08)
+    };
+
+    // Calculate deltas and status
+    const calculateStatus = (current: number, predicted: number, target: number) => {
+      if (predicted >= target + 5) return "Exceeds";
+      if (predicted >= target - 2) return "On Track";
+      if (predicted >= target - 10) return "Near Target";
+      return "Needs Focus";
+    };
+
+    const kpiData = [
+      {
+        name: "Revenue Achievement",
+        current: current.revenue,
+        predicted: predictions.revenue,
+        target: 90,
+        delta: predictions.revenue - current.revenue,
+        deltaPercent: `${predictions.revenue >= current.revenue ? '+' : ''}${(((predictions.revenue - current.revenue) / current.revenue) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.revenue, predictions.revenue, 90),
+      },
+      {
+        name: "Sales Achievement", 
+        current: current.sales,
+        predicted: predictions.sales,
+        target: 90,
+        delta: predictions.sales - current.sales,
+        deltaPercent: `${predictions.sales >= current.sales ? '+' : ''}${(((predictions.sales - current.sales) / current.sales) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.sales, predictions.sales, 90),
+      },
+      {
+        name: "Profitability Achievement",
+        current: current.profitability,
+        predicted: predictions.profitability,
+        target: 85,
+        delta: predictions.profitability - current.profitability,
+        deltaPercent: `${predictions.profitability >= current.profitability ? '+' : ''}${(((predictions.profitability - current.profitability) / current.profitability) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.profitability, predictions.profitability, 85),
+      },
+      {
+        name: "Collection Rate Achievement",
+        current: current.collectionRate,
+        predicted: predictions.collectionRate,
+        target: 85,
+        delta: predictions.collectionRate - current.collectionRate,
+        deltaPercent: `${predictions.collectionRate >= current.collectionRate ? '+' : ''}${(((predictions.collectionRate - current.collectionRate) / current.collectionRate) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.collectionRate, predictions.collectionRate, 85),
+      },
+      {
+        name: "AM Tools Achievement",
+        current: current.amTools,
+        predicted: predictions.amTools,
+        target: 90,
+        delta: predictions.amTools - current.amTools,
+        deltaPercent: `${predictions.amTools >= current.amTools ? '+' : ''}${(((predictions.amTools - current.amTools) / current.amTools) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.amTools, predictions.amTools, 90),
+      },
+      {
+        name: "Capability Achievement",
+        current: current.capability,
+        predicted: predictions.capability,
+        target: 85,
+        delta: predictions.capability - current.capability,
+        deltaPercent: `${predictions.capability >= current.capability ? '+' : ''}${(((predictions.capability - current.capability) / current.capability) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.capability, predictions.capability, 85),
+      },
+      {
+        name: "Win Rate",
+        current: current.winRate,
+        predicted: predictions.winRate,
+        target: 80,
+        delta: predictions.winRate - current.winRate,
+        deltaPercent: `${predictions.winRate >= current.winRate ? '+' : ''}${(((predictions.winRate - current.winRate) / current.winRate) * 100).toFixed(1)}%`,
+        status: calculateStatus(current.winRate, predictions.winRate, 80),
+      },
+    ];
+
+    return {
+      employeeName: employee.name,
+      kpiData
+    };
+  };
+
+  // Get employee data and predictions
+  const { employeeName, kpiData } = useMemo(() => {
+    return generatePredictionsForEmployee(nik || "20919");
+  }, [nik, employeeDatabase]);
+
+  const employeeData = useMemo(() => ({
+    nik: nik || "20919",
+    name: employeeName,
+  }), [nik, employeeName]);
 
   // Initialize Chart.js
   useEffect(() => {

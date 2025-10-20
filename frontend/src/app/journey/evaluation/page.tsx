@@ -281,27 +281,37 @@ export default function EvaluationOverviewPage() {
     }, 800);
   };
 
+  // Handle Survey Detail Click
+  const handleSurveyDetailClick = (row: Record<string, any>) => {
+    setSelectedAM({ name: row.nama, nik: row.nik });
+    setSurveyPopupOpen(true);
+    setSurveyPopupLoading(true);
+    setSurveyPopupError("");
+    setTimeout(() => {
+      setSurveyPopupData([
+        { no: 1, assessmentTime: "01/01/2025", score: 100 },
+        { no: 2, assessmentTime: "01/04/2025", score: 95 },
+        { no: 3, assessmentTime: "01/07/2025", score: 100 },
+      ]);
+      setSurveyPopupLoading(false);
+    }, 800);
+  };
+
+  // Handle Predictions Detail Click - Navigate to [nik] page
+  const handlePredictionsDetailClick = (row: Record<string, any>) => {
+    router.push(`/journey/evaluation/${row.nik}/predictions`);
+  };
+
   // Detail button handlers
   const handleDetailClick = (type: string, row: Record<string, any>) => {
     if (type === "behavior") {
       handleBehaviorDetailClick(row);
-    }
-    if (type === "survey") {
-      setSelectedAM({ name: row.nama, nik: row.nik });
-      setSurveyPopupOpen(true);
-      setSurveyPopupLoading(true);
-      setSurveyPopupError("");
-      setTimeout(() => {
-        setSurveyPopupData([
-          { no: 1, assessmentTime: "01/01/2025", score: 100 },
-          { no: 2, assessmentTime: "01/04/2025", score: 95 },
-          { no: 3, assessmentTime: "01/07/2025", score: 100 },
-        ]);
-        setSurveyPopupLoading(false);
-      }, 800);
+    } else if (type === "survey") {
+      handleSurveyDetailClick(row);
+    } else if (type === "predictions") {
+      handlePredictionsDetailClick(row);
     } else {
       console.log(`${type} clicked for:`, row);
-      // TODO: Add navigation logic for other types here, e.g.: survey, predictions
     }
   };
 

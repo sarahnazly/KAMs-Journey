@@ -18,20 +18,25 @@ type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
 
 type ProcessRow = {
   nik: string;
-  nama: string;
-  revenue: string;
-  profitability: string;
-  collectionRate: string;
-  totalCustomers: number;
+  name: string;
+  aeTools: number;
+  capability: number;
+  behaviour: number;
   year: number;
   quarter: Quarter;
 };
 
 type ResultRow = {
   nik: string;
-  nama: string;
-  cnqScore: number;
-  behaviourScore: number;
+  name: string;
+  revenue: string;
+  salesDatin: number;
+  salesWifi: number;
+  salesHSI: number;
+  salesWireline: number;
+  profitability: number;
+  collectionRate: number;
+  nps: number;
   year: number;
   quarter: Quarter;
 };
@@ -39,41 +44,37 @@ type ResultRow = {
 const processData: ProcessRow[] = [
   {
     nik: "20919",
-    nama: "Ratu Nadya Anjania",
-    revenue: "Rp400.000.000",
-    profitability: "Rp25.000.000",
-    collectionRate: "80%",
-    totalCustomers: 100,
+    name: "Ratu Nadya Anjania",
+    aeTools: 100,
+    capability: 0,
+    behaviour: 14,
     year: 2025,
     quarter: "Q1",
   },
   {
     nik: "20971",
-    nama: "Sarah Nazly Nuraya",
-    revenue: "Rp400.000.000",
-    profitability: "Rp25.000.000",
-    collectionRate: "80%",
-    totalCustomers: 100,
+    name: "Sarah Nazly Nuraya",
+    aeTools: 100,
+    capability: 1,
+    behaviour: 15,
     year: 2025,
     quarter: "Q1",
   },
   {
     nik: "20984",
-    nama: "Anindya Maulida Widyatmoko",
-    revenue: "Rp400.000.000",
-    profitability: "Rp25.000.000",
-    collectionRate: "80%",
-    totalCustomers: 100,
+    name: "Anindya Maulida Widyatmoko",
+    aeTools: 100,
+    capability: 1,
+    behaviour: 143,
     year: 2025,
     quarter: "Q1",
   },
   {
     nik: "20992",
-    nama: "John Doe",
-    revenue: "Rp400.000.000",
-    profitability: "Rp25.000.000",
-    collectionRate: "80%",
-    totalCustomers: 100,
+    name: "John Doe",
+    aeTools: 100,
+    capability: 0,
+    behaviour: 5,
     year: 2025,
     quarter: "Q1",
   },
@@ -82,33 +83,57 @@ const processData: ProcessRow[] = [
 const resultData: ResultRow[] = [
   {
     nik: "20919",
-    nama: "Ratu Nadya Anjania",
-    cnqScore: 100,
-    behaviourScore: 86,
+    name: "Ratu Nadya Anjania",
+    revenue: "Rp400.000.000",
+    salesDatin: 100,
+    salesWifi: 0,
+    salesHSI: 0,
+    salesWireline: 0,
+    profitability: 0,
+    collectionRate: 0,
+    nps: 71,
     year: 2025,
     quarter: "Q1",
   },
   {
     nik: "20971",
-    nama: "Sarah Nazly Nuraya",
-    cnqScore: 100,
-    behaviourScore: 86,
+    name: "Sarah Nazly Nuraya",
+    revenue: "Rp400.000.000",
+    salesDatin: 100,
+    salesWifi: 2,
+    salesHSI: 0,
+    salesWireline: 0,
+    profitability: 0,
+    collectionRate: 0,
+    nps: 71,
     year: 2025,
     quarter: "Q1",
   },
   {
     nik: "20984",
-    nama: "Anindya Maulida Widyatmoko",
-    cnqScore: 100,
-    behaviourScore: 86,
+    name: "Anindya Maulida Widyatmoko",
+    revenue: "Rp400.000.000",
+    salesDatin: 200,
+    salesWifi: 2,
+    salesHSI: 0,
+    salesWireline: 0,
+    profitability: 0,
+    collectionRate: 0,
+    nps: 71,
     year: 2025,
     quarter: "Q1",
   },
   {
     nik: "20992",
-    nama: "John Doe",
-    cnqScore: 100,
-    behaviourScore: 86,
+    name: "John Doe",
+    revenue: "Rp400.000.000",
+    salesDatin: 0,
+    salesWifi: 0,
+    salesHSI: 2,
+    salesWireline: 2,
+    profitability: 2,
+    collectionRate: 2,
+    nps: 71,
     year: 2025,
     quarter: "Q1",
   },
@@ -141,12 +166,12 @@ export default function KinerjaPage(): JSX.Element {
       filteredProcess = filteredProcess.filter(
         (r) =>
           r.nik.includes(search) ||
-          r.nama.toLowerCase().includes(q)
+          r.name.toLowerCase().includes(q)
       );
       filteredResult = filteredResult.filter(
         (r) =>
           r.nik.includes(search) ||
-          r.nama.toLowerCase().includes(q)
+          r.name.toLowerCase().includes(q)
       );
     }
 
@@ -157,11 +182,10 @@ export default function KinerjaPage(): JSX.Element {
   const processCols: TableColumn[] = useMemo(
     () => [
       { label: "NIK", key: "nik", sortable: true },
-      { label: "Nama", key: "nama", sortable: true },
-      { label: "Revenue", key: "revenue", sortable: true },
-      { label: "Profitability", key: "profitability", sortable: true },
-      { label: "Collection Rate", key: "collectionRate", sortable: true },
-      { label: "Total Customers", key: "totalCustomers", sortable: true },
+      { label: "Name", key: "name", sortable: true },
+      { label: "AE Tools (%)", key: "aeTools", sortable: true },
+      { label: "Capability", key: "capability", sortable: true },
+      { label: "Behaviour", key: "behaviour", sortable: true },
     ],
     []
   );
@@ -169,9 +193,15 @@ export default function KinerjaPage(): JSX.Element {
   const resultCols: TableColumn[] = useMemo(
     () => [
       { label: "NIK", key: "nik", sortable: true },
-      { label: "Nama", key: "nama", sortable: true },
-      { label: "CnQ Test Score", key: "cnqScore", sortable: true },
-      { label: "Behaviour Score", key: "behaviourScore", sortable: true },
+      { label: "Name", key: "name", sortable: true },
+      { label: "Revenue", key: "revenue", sortable: true },
+      { label: "Sales Datin", key: "salesDatin", sortable: true },
+      { label: "Sales Wi-Fi", key: "salesWifi", sortable: true },
+      { label: "Sales HSI", key: "salesHSI", sortable: true },
+      { label: "Sales Wireline", key: "salesWireline", sortable: true },
+      { label: "Profitability (%)", key: "profitability", sortable: true },
+      { label: "Collection Rate (%)", key: "collectionRate", sortable: true },
+      { label: "NPS", key: "nps", sortable: true },
     ],
     []
   );
@@ -179,13 +209,13 @@ export default function KinerjaPage(): JSX.Element {
   // Feature Importance data (lihat gambar, contoh acak)
   const features: Feature[] = useMemo(
     () => [
-      { name: "Visiting Customer", importance: 0.38, description: "Frekuensi kunjungan ke pelanggan." },
-      { name: "Account Profile", importance: 0.22, description: "Profil data account yang dikelola." },
-      { name: "Sales Funnel", importance: 0.16, description: "Progress funnel penjualan." },
-      { name: "Account Plan", importance: 0.11, description: "Kualitas dan eksekusi account plan." },
-      { name: "Bidding Management", importance: 0.06, description: "Pengelolaan proses bidding/tender." },
-      { name: "Customer Matching", importance: 0.04, description: "Kesesuaian solusi dan kebutuhan customer." },
-      { name: "Customer Introduction", importance: 0.02, description: "Inisiasi pengenalan ke pelanggan baru." },
+      { name: "Account Profile Duty", importance: 0.38, description: "Frekuensi kunjungan ke pelanggan." },
+      { name: "Account Plan Duty", importance: 0.22, description: "Profil data account yang dikelola." },
+      { name: "Customer Key Person", importance: 0.16, description: "Progress funnel penjualan." },
+      { name: "Customer Requirement", importance: 0.11, description: "Kualitas dan eksekusi account plan." },
+      { name: "Prebid Preparation", importance: 0.06, description: "Pengelolaan proses bidding/tender." },
+      { name: "Invoice Pelanggan", importance: 0.04, description: "Kesesuaian solusi dan kebutuhan customer." },
+      { name: "Proses Delivery", importance: 0.02, description: "Inisiasi pengenalan ke pelanggan baru." },
     ],
     []
   );
@@ -251,26 +281,26 @@ export default function KinerjaPage(): JSX.Element {
         </div>
       </div>
 
-      {/* Process Table */}
+      {/* Result Table */}
       <div className="w-full flex items-center justify-center">
         <div className="max-w-[1100px] w-full">
-          <Card heading="Process" description="Tracking and management of AM performance metrics">
+          <Card heading="Result" description="Evaluation and outcomes of AE performance">
             <div className="-mx-4 sm:-mx-6 md:-mx-8">
               <div className="px-2 sm:px-4 md:px-6 mt-4">
-                <Table columns={processCols} data={processRows} pageSize={4} showAction={false} />
+                <Table columns={resultCols} data={resultRows} pageSize={4} showAction={false} />
               </div>
             </div>
           </Card>
         </div>
       </div>
 
-      {/* Result Table */}
+      {/* Process Table */}
       <div className="w-full flex items-center justify-center">
         <div className="max-w-[1100px] w-full">
-          <Card heading="Result" description="Evaluation and outcomes of AM performance">
+          <Card heading="Process" description="Tracking and management of AE performance metrics">
             <div className="-mx-4 sm:-mx-6 md:-mx-8">
               <div className="px-2 sm:px-4 md:px-6 mt-4">
-                <Table columns={resultCols} data={resultRows} pageSize={4} showAction={false} />
+                <Table columns={processCols} data={processRows} pageSize={4} showAction={false} />
               </div>
             </div>
           </Card>

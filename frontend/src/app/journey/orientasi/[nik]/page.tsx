@@ -1,7 +1,7 @@
 import React from "react";
 import ClientView from "./ClientView";
 
-export default function OnboardingDetailPage({
+export default function OrientasiDetailPage({
   params,
 }: {
   params: Promise<{ nik: string }>;

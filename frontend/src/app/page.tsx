@@ -17,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     // Pengecekan status upload
     if (hasUploadedFile()) {
-      router.replace("/journey/onboarding");
+      router.replace("/journey/orientasi");
     } else {
       router.replace("/input/upload-file");
     }

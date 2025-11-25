@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/input/upload-file" className={inputBtnClass}>
               Input Data
             </Link>
-            <Link href="/journey/onboarding" className={journeyBtnClass}>
+            <Link href="/journey/orientasi" className={journeyBtnClass}>
               AM Journey
             </Link>
           </div>

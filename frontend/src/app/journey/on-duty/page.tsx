@@ -175,18 +175,18 @@ export default function OnDutyOverviewPage() {
   // Map stage TabStage -> route
   const stageToPath = (stage: string) => {
     switch (stage) {
-      case "Onboarding":
-        return "/journey/onboarding";
-      case "On Duty":
+      case "Orientasi":
+        return "/journey/orientasi";
+      case "Pelaksanaan":
         return "/journey/on-duty";
-      case "Performance":
+      case "Kinerja":
         return "/journey/performance";
-      case "Evaluation":
+      case "Evaluasi":
         return "/journey/evaluation";
-      case "Development":
+      case "Pengembangan":
         return "/journey/development";
       default:
-        return "/journey/onboarding";
+        return "/journey/orientasi";
     }
   };
 

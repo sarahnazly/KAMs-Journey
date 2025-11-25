@@ -198,19 +198,19 @@ export default function PerformancePage(): JSX.Element {
   // Tab navigation
   const handleStageChange = (stage: string) => {
     switch (stage) {
-      case "Onboarding":
-        router.push("/journey/onboarding");
+      case "Orientasi":
+        router.push("/journey/orientasi");
         break;
-      case "On Duty":
+      case "Pelaksanaan":
         router.push("/journey/on-duty");
         break;
-      case "Performance":
+      case "Kinerja":
         router.push("/journey/performance");
         break;
-      case "Evaluation":
+      case "Evaluasi":
         router.push("/journey/evaluation");
         break;
-      case "Development":
+      case "Pengembangan":
         router.push("/journey/development");
         break;
       default:

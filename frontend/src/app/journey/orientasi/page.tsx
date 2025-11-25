@@ -19,7 +19,7 @@ type Row = {
   year: number;
 };
 
-export default function OnboardingOverviewPage() {
+export default function OrientasiOverviewPage() {
   const router = useRouter();
 
   // Filters
@@ -70,18 +70,18 @@ export default function OnboardingOverviewPage() {
   // Map stage TabStage -> route
   const stageToPath = (stage: string) => {
     switch (stage) {
-      case "Onboarding":
-        return "/journey/onboarding";
-      case "On Duty":
+      case "Orientasi":
+        return "/journey/orientasi";
+      case "Pelaksanaan":
         return "/journey/on-duty";
-      case "Performance":
+      case "Kinerja":
         return "/journey/performance";
-      case "Evaluation":
+      case "Evaluasi":
         return "/journey/evaluation";
-      case "Development":
+      case "Pengembangan":
         return "/journey/development";
       default:
-        return "/journey/onboarding";
+        return "/journey/orientasi";
     }
   };
 
@@ -122,10 +122,10 @@ export default function OnboardingOverviewPage() {
     return () => clearTimeout(t);
   }, [allData, quarter, year, search]);
 
-  // Detail button -> /journey/onboarding/[nik]
+  // Detail button -> /journey/orientasi/[nik]
   const handleDetail = (row: Record<string, any>) => {
     const nik = row?.nik;
-    if (nik) router.push(`/journey/onboarding/${nik}`);
+    if (nik) router.push(`/journey/orientasi/${nik}`);
   };
 
   // TabStage navigation

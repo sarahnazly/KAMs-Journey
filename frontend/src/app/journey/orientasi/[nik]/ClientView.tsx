@@ -190,7 +190,7 @@ export default function ClientView({ nik }: { nik: string }) {
             <Button variant="primary" onClick={load}>
               Coba Lagi
             </Button>
-            <Button variant="ghost" onClick={() => router.push("/journey/onboarding")}>
+            <Button variant="ghost" onClick={() => router.push("/journey/orientasi")}>
               Kembali ke Daftar
             </Button>
           </div>
@@ -214,7 +214,7 @@ export default function ClientView({ nik }: { nik: string }) {
         <Card heading="Data tidak ditemukan">
           <div className="text-[#475569]">Data untuk NIK tersebut tidak tersedia.</div>
           <div className="mt-4">
-            <Button variant="primary" onClick={() => router.push("/journey/onboarding")}>
+            <Button variant="primary" onClick={() => router.push("/journey/orientasi")}>
               Kembali ke Daftar
             </Button>
           </div>
@@ -271,7 +271,7 @@ export default function ClientView({ nik }: { nik: string }) {
         <h1 className="text-[#0F172A] text-[40px] md:text-[48px] font-bold leading-[1.2]">
           {nik} - {detail.name}
         </h1>
-        <p className="text-[#64748B] text-[18px] md:text-[20px]">Onboarding performance score</p>
+        <p className="text-[#64748B] text-[18px] md:text-[20px]">Orientasi performance score</p>
       </div>
 
       {/* Basic Understanding */}

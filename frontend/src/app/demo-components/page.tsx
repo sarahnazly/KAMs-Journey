@@ -57,7 +57,7 @@ export default function HomePage() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   // TabStage
-  const [stage, setStage] = useState("Onboarding");
+  const [stage, setStage] = useState("Orientasi");
   const handleStageChange = (newStage: string) => {
     setStage(newStage);
     showToast("Berhasil", `Pindah ke stage ${newStage}`, "success");
@@ -92,7 +92,7 @@ export default function HomePage() {
     { name: "Customer Introduction", importance: 0.05, description: "Effectiveness in introducing customers to products or services." }
   ];
   const model = { name: "XGBoost", accuracy: 0.85, trainCount: 500 };
-  const guidanceFeatureImportance = "These factors show what most influences success in the onboarding stage. Focus on the top ones to improve how quickly and effectively employees start their roles.";
+  const guidanceFeatureImportance = "These factors show what most influences success in the orientation stage. Focus on the top ones to improve how quickly and effectively employees start their roles.";
   const guidanceFeature = "Penjelasan fitur detail di sini...";
 
   // Simulasi ambil data

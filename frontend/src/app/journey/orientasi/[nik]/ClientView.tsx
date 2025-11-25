@@ -271,7 +271,7 @@ export default function ClientView({ nik }: { nik: string }) {
         <h1 className="text-[#0F172A] text-[40px] md:text-[48px] font-bold leading-[1.2]">
           {nik} - {detail.name}
         </h1>
-        <p className="text-[#64748B] text-[18px] md:text-[20px]">Orientasi performance score</p>
+        <p className="text-[#64748B] text-[18px] md:text-[20px]">Orientation performance score</p>
       </div>
 
       {/* Basic Understanding */}

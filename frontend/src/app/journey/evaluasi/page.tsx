@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/dashboard/SearchBar";
 import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import FilterYear from "@/components/dashboard/FilterYear";
-import FilterEvaluationCategory from "@/components/dashboard/evaluasi/FilterEvaluationCategory";
 import MetricCard from "@/components/dashboard/evaluasi/MetricCard";
 import TabStage from "@/components/dashboard/TabStage";
 import Table, { TableColumn } from "@/components/dashboard/Table";
@@ -18,31 +17,25 @@ import FeatureImportanceSection, {
 } from "@/components/dashboard/FeatureImportance";
 import { Search } from "lucide-react";
 
-type EvaluationRow = {
+type EvaluasiRow = {
   nik: string;
-  nama: string;
-  revenueAch: string;
-  salesAch: string;
-  profitabilityAch: string;
-  collectionRateAch: string;
-  amToolsAch: string;
-  capabilityAch: string;
-  behaviorAch: string;
-  surveyAMConsumer: string;
+  name: string;
+  revenueSalesAch: number;
+  salesAchDatin: number;
+  salesAchWifi: number;
+  salesAchHSI: number;
+  salesAchWireline: number;
+  profitabilityAch: number;
+  collectionRateAch: number;
+  aeToolsAch: number;
+  capabilityAch: number;
+  behaviourAch: number;
   nps: number;
-  winRate: string;
-  predictions: string;
-  evaluationCategory: string;
-  evaluationRemarks: string;
+  prediction: string;
+  evaluationQuadrant: number;
   quarter: "Q1" | "Q2" | "Q3" | "Q4";
   year: number;
 };
-
-interface BehaviorAchievementData {
-  no: number;
-  assessmentTime: string;
-  score: number;
-}
 
 export default function EvaluasiOverviewPage() {
   const router = useRouter();
@@ -54,155 +47,130 @@ export default function EvaluasiOverviewPage() {
   const [category, setCategory] = useState<string>("All");
 
   // Table state
-  const [data, setData] = useState<EvaluationRow[] | null>([]);
+  const [data, setData] = useState<EvaluasiRow[] | null>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  // Behavior Achievement Popup state
-  const [behaviorPopupOpen, setBehaviorPopupOpen] = useState<boolean>(false);
-  const [behaviorPopupData, setBehaviorPopupData] = useState<BehaviorAchievementData[]>([]);
-  const [behaviorPopupLoading, setBehaviorPopupLoading] = useState<boolean>(false);
-  const [behaviorPopupError, setBehaviorPopupError] = useState<string>("");
-  const [selectedEmployee, setSelectedEmployee] = useState<{ name: string; nik: string }>({ name: "", nik: "" });
-  const [surveyPopupOpen, setSurveyPopupOpen] = useState(false);
-  const [surveyPopupLoading, setSurveyPopupLoading] = useState(false);
-  const [surveyPopupError, setSurveyPopupError] = useState("");
-  const [surveyPopupData, setSurveyPopupData] = useState<SurveyAMRow[]>([]);
-  const [selectedAM, setSelectedAM] = useState<{ name: string; nik: string }>({ name: "", nik: "" });
-
   // Dummy data
-  const allData: EvaluationRow[] = useMemo(
+  const allData: EvaluasiRow[] = useMemo(
     () => [
       {
         nik: "20919",
-        nama: "Ratu Nadya Anjania",
-        revenueAch: "80%",
-        salesAch: "80%",
-        profitabilityAch: "80%",
-        collectionRateAch: "70%",
-        amToolsAch: "75%",
-        capabilityAch: "55%",
-        behaviorAch: "detail",
-        surveyAMConsumer: "detail",
-        nps: 9,
-        winRate: "95%",
-        predictions: "detail",
-        evaluationCategory: "Melanjutkan",
-        evaluationRemarks: "Win Rate tinggi",
+        name: "Ratu Nadya Anjania",
+        revenueSalesAch: 80,
+        salesAchDatin: 80,
+        salesAchWifi: 80,
+        salesAchHSI: 70,
+        salesAchWireline: 75,
+        profitabilityAch: 55,
+        collectionRateAch: 3,
+        aeToolsAch: 3,
+        capabilityAch: 3,
+        behaviourAch: 5.80,
+        nps: 3,
+        prediction: "detail",
+        evaluationQuadrant: 4,
         quarter: "Q1",
         year: 2025,
       },
       {
         nik: "20971",
-        nama: "Sarah Nazly Nuraya",
-        revenueAch: "80%",
-        salesAch: "80%",
-        profitabilityAch: "80%",
-        collectionRateAch: "75%",
-        amToolsAch: "80%",
-        capabilityAch: "55%",
-        behaviorAch: "detail",
-        surveyAMConsumer: "detail",
-        nps: 10,
-        winRate: "95%",
-        predictions: "detail",
-        evaluationCategory: "Melanjutkan",
-        evaluationRemarks: "Relasi kuat",
+        name: "Sarah Nazly Nuraya",
+        revenueSalesAch: 80,
+        salesAchDatin: 80,
+        salesAchWifi: 80,
+        salesAchHSI: 75,
+        salesAchWireline: 80,
+        profitabilityAch: 55,
+        collectionRateAch: 3,
+        aeToolsAch: 3,
+        capabilityAch: 3,
+        behaviourAch: 6.30,
+        nps: 3,
+        prediction: "detail",
+        evaluationQuadrant: 2,
         quarter: "Q1",
         year: 2025,
       },
       {
         nik: "20984",
-        nama: "Anindya Maulida Widyatmoko",
-        revenueAch: "80%",
-        salesAch: "80%",
-        profitabilityAch: "80%",
-        collectionRateAch: "80%",
-        amToolsAch: "78%",
-        capabilityAch: "55%",
-        behaviorAch: "detail",
-        surveyAMConsumer: "detail",
-        nps: 9,
-        winRate: "95%",
-        predictions: "detail",
-        evaluationCategory: "Perlu Pengembangan Kompetensi",
-        evaluationRemarks: "Kompeten tapi perlu ditingkatkan",
+        name: "Anindya Maulida Widyatmoko",
+        revenueSalesAch: 80,
+        salesAchDatin: 80,
+        salesAchWifi: 80,
+        salesAchHSI: 80,
+        salesAchWireline: 78,
+        profitabilityAch: 55,
+        collectionRateAch: 3,
+        aeToolsAch: 3,
+        capabilityAch: 3,
+        behaviourAch: 7.50,
+        nps: 3,
+        prediction: "detail",
+        evaluationQuadrant: 4,
         quarter: "Q1",
         year: 2025,
       },
       {
         nik: "20992",
-        nama: "John Doe",
-        revenueAch: "80%",
-        salesAch: "80%",
-        profitabilityAch: "80%",
-        collectionRateAch: "65%",
-        amToolsAch: "80%",
-        capabilityAch: "55%",
-        behaviorAch: "detail",
-        surveyAMConsumer: "detail",
-        nps: 6,
-        winRate: "95%",
-        predictions: "detail",
-        evaluationCategory: "SP 3",
-        evaluationRemarks: "Kurang pemahaman",
+        name: "John Doe",
+        revenueSalesAch: 80,
+        salesAchDatin: 80,
+        salesAchWifi: 80,
+        salesAchHSI: 65,
+        salesAchWireline: 80,
+        profitabilityAch: 55,
+        collectionRateAch: 3,
+        aeToolsAch: 3,
+        capabilityAch: 3,
+        behaviourAch: 5.80,
+        nps: 3,
+        prediction: "detail",
+        evaluationQuadrant: 3,
         quarter: "Q1",
         year: 2025,
       },
       {
         nik: "20993",
-        nama: "Jane Smith",
-        revenueAch: "85%",
-        salesAch: "85%",
-        profitabilityAch: "85%",
-        collectionRateAch: "80%",
-        amToolsAch: "85%",
-        capabilityAch: "60%",
-        behaviorAch: "detail",
-        surveyAMConsumer: "detail",
-        nps: 8,
-        winRate: "90%",
-        predictions: "detail",
-        evaluationCategory: "SP 1",
-        evaluationRemarks: "Perlu peningkatan",
+        name: "Jane Smith",
+        revenueSalesAch: 80,
+        salesAchDatin: 80,
+        salesAchWifi: 80,
+        salesAchHSI: 65,
+        salesAchWireline: 80,
+        profitabilityAch: 55,
+        collectionRateAch: 3,
+        aeToolsAch: 3,
+        capabilityAch: 3,
+        behaviourAch: 5.80,
+        nps: 3,
+        prediction: "detail",
+        evaluationQuadrant: 3,
         quarter: "Q1",
         year: 2025,
       },
       {
         nik: "20994",
-        nama: "Ahmad Yani",
-        revenueAch: "60%",
-        salesAch: "60%",
-        profitabilityAch: "60%",
-        collectionRateAch: "50%",
-        amToolsAch: "55%",
-        capabilityAch: "40%",
-        behaviorAch: "detail",
-        surveyAMConsumer: "detail",
-        nps: 4,
-        winRate: "60%",
-        predictions: "detail",
-        evaluationCategory: "Diberhentikan",
-        evaluationRemarks: "Performa tidak memenuhi target",
+        name: "Ahmad Yani",
+        revenueSalesAch: 80,
+        salesAchDatin: 80,
+        salesAchWifi: 80,
+        salesAchHSI: 65,
+        salesAchWireline: 80,
+        profitabilityAch: 55,
+        collectionRateAch: 3,
+        aeToolsAch: 3,
+        capabilityAch: 3,
+        behaviourAch: 5.80,
+        nps: 3,
+        prediction: "detail",
+        evaluationQuadrant: 3,
         quarter: "Q1",
         year: 2025,
       },
     ],
     []
   );
-
-  // Dummy Behavior Achievement Data Generator
-  const generateBehaviorData = (nik: string): BehaviorAchievementData[] => {
-    // Simulate different data for different employees
-    const baseScore = parseInt(nik.slice(-2));
-    return [
-      { no: 1, assessmentTime: "2025-01-15", score: baseScore + 5 },
-      { no: 2, assessmentTime: "2025-02-20", score: baseScore + 8 },
-      { no: 3, assessmentTime: "2025-03-10", score: baseScore + 3 },
-      { no: 4, assessmentTime: "2025-04-25", score: baseScore + 7 },
-      { no: 5, assessmentTime: "2025-05-18", score: baseScore + 6 },
-    ];
-  };
 
   // Map stage TabStage -> route
   const stageToPath = (stage: string) => {
@@ -223,9 +191,9 @@ export default function EvaluasiOverviewPage() {
   };
 
   // Dedupe helper
-  const dedupeByNik = (rows: EvaluationRow[]) => {
+  const dedupeByNik = (rows: EvaluasiRow[]) => {
     const seen = new Set<string>();
-    const unique: EvaluationRow[] = [];
+    const unique: EvaluasiRow[] = [];
     for (const r of rows) {
       if (!seen.has(r.nik)) {
         seen.add(r.nik);
@@ -246,12 +214,8 @@ export default function EvaluasiOverviewPage() {
       if (search) {
         const q = search.toLowerCase();
         filtered = filtered.filter(
-          (row) => row.nama.toLowerCase().includes(q) || row.nik.includes(search)
+          (row) => row.name.toLowerCase().includes(q) || row.nik.includes(search)
         );
-      }
-
-      if (category !== "All") {
-        filtered = filtered.filter((row) => row.evaluationCategory === category);
       }
 
       setData(filtered);
@@ -261,58 +225,9 @@ export default function EvaluasiOverviewPage() {
     return () => clearTimeout(t);
   }, [allData, quarter, year, search, category]);
 
-  // Handle Behavior Achievement Detail Click
-  const handleBehaviorDetailClick = (row: Record<string, any>) => {
-    setSelectedEmployee({ name: row.nama, nik: row.nik });
-    setBehaviorPopupOpen(true);
-    setBehaviorPopupLoading(true);
-    setBehaviorPopupError("");
-
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        const behaviorData = generateBehaviorData(row.nik);
-        setBehaviorPopupData(behaviorData);
-        setBehaviorPopupLoading(false);
-      } catch (err) {
-        setBehaviorPopupError("Failed to load behavior achievement data");
-        setBehaviorPopupLoading(false);
-      }
-    }, 800);
-  };
-
-  // Handle Survey Detail Click
-  const handleSurveyDetailClick = (row: Record<string, any>) => {
-    setSelectedAM({ name: row.nama, nik: row.nik });
-    setSurveyPopupOpen(true);
-    setSurveyPopupLoading(true);
-    setSurveyPopupError("");
-    setTimeout(() => {
-      setSurveyPopupData([
-        { no: 1, assessmentTime: "01/01/2025", score: 100 },
-        { no: 2, assessmentTime: "01/04/2025", score: 95 },
-        { no: 3, assessmentTime: "01/07/2025", score: 100 },
-      ]);
-      setSurveyPopupLoading(false);
-    }, 800);
-  };
-
   // Handle Predictions Detail Click - Navigate to [nik] page
   const handlePredictionsDetailClick = (row: Record<string, any>) => {
     router.push(`/journey/evaluasi/${row.nik}/predictions`);
-  };
-
-  // Detail button handlers
-  const handleDetailClick = (type: string, row: Record<string, any>) => {
-    if (type === "behavior") {
-      handleBehaviorDetailClick(row);
-    } else if (type === "survey") {
-      handleSurveyDetailClick(row);
-    } else if (type === "predictions") {
-      handlePredictionsDetailClick(row);
-    } else {
-      console.log(`${type} clicked for:`, row);
-    }
   };
 
   // TabStage navigation
@@ -324,78 +239,65 @@ export default function EvaluasiOverviewPage() {
   // Define table columns
   const evaluationColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
+    { label: "Name", key: "name", sortable: true },
     { 
-      label: "Revenue Ach.", 
-      key: "revenueAch", 
+      label: "Revenue Sales Ach. (%)", 
+      key: "revenueSalesAch", 
       sortable: true
     },
     { 
-      label: "Sales Ach.", 
-      key: "salesAch", 
+      label: "Sales Ach. Datin (%)", 
+      key: "salesAchDatin", 
       sortable: true
     },
     { 
-      label: "Profitability Ach.", 
+      label: "Sales Ach. Wifi (%)",
+      key: "salesAchWifi", 
+      sortable: true
+    },
+    { 
+      label: "Sales Ach. HSI (%)",
+      key: "salesAchHSI", 
+      sortable: true
+    },
+    { 
+      label: "Sales Ach. Wireline (%)",
+      key: "salesAchWireline", 
+      sortable: true
+    },
+    { 
+      label: "Profitability Ach. (%)", 
       key: "profitabilityAch", 
       sortable: true
     },
     { 
-      label: "Collection Rate Ach.", 
+      label: "Collection Rate Ach. (%)", 
       key: "collectionRateAch", 
       sortable: true
     },
     { 
-      label: "AM Tools Ach.", 
-      key: "amToolsAch", 
+      label: "AE Tools Ach. (%)", 
+      key: "aeToolsAch", 
       sortable: true
     },
     { 
-      label: "Capability Ach.", 
+      label: "Capability Ach. (%)", 
       key: "capabilityAch", 
       sortable: true
     },
     { 
-      label: "Behavior Ach.", 
-      key: "behaviorAch", 
+      label: "Behaviour Ach. (%)", 
+      key: "behaviourAch", 
       sortable: false,
-      render: (value, row) => (
-        <button
-          onClick={() => handleDetailClick("behavior", row)}
-          className="text-[#1464D5] hover:text-[#0D4BA6] transition-colors flex items-center justify-center mx-auto"
-          title="View Behavior Achievement Details"
-        >
-          <Search size={16} />
-        </button>
-      )
     },
-    { 
-      label: "Survey AM to Consumer", 
-      key: "surveyAMConsumer", 
-      sortable: false,
-      render: (value, row) => (
-        <button
-          onClick={() => handleDetailClick("survey", row)}
-          className="text-[#1464D5] hover:text-[#0D4BA6] transition-colors flex items-center justify-center mx-auto"
-          title="View Survey Details"
-        >
-          <Search size={16} />
-        </button>
-      )
-    },
-    { label: "NPS", key: "nps", sortable: true },
-    { 
-      label: "Win Rate", 
-      key: "winRate", 
-      sortable: true
-    },
+    { label: "NPS (%)", key: "nps", sortable: true },
     { 
       label: "Predictions", 
       key: "predictions", 
       sortable: false,
       render: (value, row) => (
         <button
-          onClick={() => handleDetailClick("predictions", row)}
+          onClick={() => handlePredictionsDetailClick(row)}
           className="text-[#1464D5] hover:text-[#0D4BA6] transition-colors flex items-center justify-center mx-auto"
           title="View Predictions"
         >
@@ -403,19 +305,19 @@ export default function EvaluasiOverviewPage() {
         </button>
       )
     },
-    { label: "Evaluation Category", key: "evaluationCategory", sortable: true },
-    { label: "Evaluation Remarks", key: "evaluationRemarks", sortable: true },
+    { label: "Evaluation Quadrant", key: "evaluationQuadrant", sortable: true },
   ];
 
   // Feature Importance data
   const features: Feature[] = useMemo(
     () => [
-      { name: "revenue", importance: 0.35, description: "Keseluruhan pendapatan AE per kuartal." },
-      { name: "profitability", importance: 0.30, description: "Keseluruhan profitabilitas AE per kuartal." },
-      { name: "collection_rate", importance: 0.25, description: "Jumlah persentase pembayaran oleh pelanggan AE." },
-      { name: "customer", importance: 0.15, description: "Jumlah pelanggan yang ditangani oleh AE." },
-      { name: "cnq_test", importance: 0.10, description: "Hasil CnQ test setelah performansi" },
-      { name: "behaviour", importance: 0.08, description: "Penilaian perilaku AE berdasarkan survei." },
+      { name: "Revenue", importance: 0.35, description: "Keseluruhan pendapatan AE per kuartal." },
+      { name: "Behaviour", importance: 0.30, description: "Jumlah frekuensi AE melakukan visiting customer." },
+      { name: "Profitability", importance: 0.25, description: "Keseluruhan profitabilitas AE per kuartal." },
+      { name: "AE Tools", importance: 0.15, description: "Tingkat ketercapaian target penggunaan tools AE." },
+      { name: "Collection Rate", importance: 0.10, description: "Jumlah persentase pembayaran oleh pelanggan AE." },
+      { name: "NPS", importance: 0.08, description: "Nilai customer untuk AE." },
+      { name: "Sales Datin", importance: 0.08, description: "Jumlah penjualan data integration." },
     ],
     []
   );
@@ -466,10 +368,10 @@ export default function EvaluasiOverviewPage() {
       {/* Metric Cards */}
       <div className="w-full flex justify-center mb-6">
         <div className="max-w-[1100px] w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard label="Avg. Revenue Achievement" value="92%" />
-          <MetricCard label="Avg. NPS" value="+45" />
-          <MetricCard label="Avg. Win Rate" value="78%" />
-          <MetricCard label="Avg. Behavior Score" value="85/100" />
+          <MetricCard label="Avg. Revenue Sales Achievement" value="92%" />
+          <MetricCard label="Avg. AE Tools Achievement" value="3%" />
+          <MetricCard label="Avg. Profitability Achievement" value="10%" />
+          <MetricCard label="Avg. NPS" value="3%" />
         </div>
       </div>
 
@@ -480,14 +382,6 @@ export default function EvaluasiOverviewPage() {
             heading="Performance Evaluation"
             description="Assessing employee metrics and follow-up details"
           >
-            {/* Evaluation Category Filter */}
-            <div className="mb-4">
-              <div className="text-black text-[16px] font-semibold leading-[24px] mt-2 mb-1">
-                Evaluation Category
-              </div>
-              <FilterEvaluationCategory value={category} onChange={setCategory} />
-            </div>
-
             {/* Table */}
             <div className="-mx-4 sm:-mx-6 md:-mx-8 mt-4">
               <div className="px-2 sm:px-4 md:px-6">
@@ -519,27 +413,6 @@ export default function EvaluasiOverviewPage() {
           />
         </div>
       </div>
-
-      {/* Behavior Achievement Popup */}
-      <BehaviorAchievementPopup
-        isOpen={behaviorPopupOpen}
-        onClose={() => setBehaviorPopupOpen(false)}
-        employeeName={selectedEmployee.name}
-        employeeNIK={selectedEmployee.nik}
-        data={behaviorPopupData}
-        loading={behaviorPopupLoading}
-        error={behaviorPopupError}
-      />
-      {/* Survey AM to Consumer Popup */}
-      <SurveyAMPopup
-        isOpen={surveyPopupOpen}
-        onClose={() => setSurveyPopupOpen(false)}
-        employeeName={selectedAM.name}
-        employeeNIK={selectedAM.nik}
-        data={surveyPopupData}
-        loading={surveyPopupLoading}
-        error={surveyPopupError}
-      />
     </div>
   );
 }

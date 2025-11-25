@@ -23,7 +23,7 @@ interface TabStageProps {
 function deriveStageFromPath(pathname?: string): Stage {
   const p = pathname || "";
   if (p.startsWith("/journey/performance")) return "Kinerja";
-  if (p.startsWith("/journey/on-duty")) return "Pelaksanaan";
+  if (p.startsWith("/journey/pelaksanaan")) return "Pelaksanaan";
   if (p.startsWith("/journey/evaluation")) return "Evaluasi";
   if (p.startsWith("/journey/development")) return "Pengembangan";
   return "Orientasi";

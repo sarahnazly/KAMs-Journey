@@ -202,7 +202,7 @@ export default function PerformancePage(): JSX.Element {
         router.push("/journey/orientasi");
         break;
       case "Pelaksanaan":
-        router.push("/journey/on-duty");
+        router.push("/journey/pelaksanaan");
         break;
       case "Kinerja":
         router.push("/journey/performance");

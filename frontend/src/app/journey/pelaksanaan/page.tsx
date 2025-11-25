@@ -178,7 +178,7 @@ export default function OnDutyOverviewPage() {
       case "Orientasi":
         return "/journey/orientasi";
       case "Pelaksanaan":
-        return "/journey/on-duty";
+        return "/journey/pelaksanaan";
       case "Kinerja":
         return "/journey/performance";
       case "Evaluasi":
@@ -226,7 +226,7 @@ export default function OnDutyOverviewPage() {
   // Detail button
   const handleDetail = (row: Record<string, any>) => {
     const nik = row?.nik;
-    if (nik) router.push(`/journey/on-duty/${nik}`);
+    if (nik) router.push(`/journey/pelaksanaan/${nik}`);
   };
 
   // TabStage navigation

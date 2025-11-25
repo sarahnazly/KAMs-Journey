@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/common/Button";
 import Table, { TableColumn } from "@/components/dashboard/Table";
-import WinProbabilityPopup from "@/components/dashboard/on-duty/WinProbabilityPopup";
+import WinProbabilityPopup from "@/components/dashboard/pelaksanaan/WinProbabilityPopup";
 import { ArrowLeftIcon } from "lucide-react";
 
 type Project = {
@@ -195,7 +195,7 @@ export default function OnDutyDetailPage() {
   );
 
   const handleBack = () => {
-    router.push("/journey/on-duty");
+    router.push("/journey/pelaksanaan");
   };
 
   const handleProjectDetail = (row: Record<string, any>) => {

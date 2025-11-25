@@ -210,7 +210,7 @@ export default function EvaluationOverviewPage() {
       case "Orientasi":
         return "/journey/orientasi";
       case "Pelaksanaan":
-        return "/journey/on-duty";
+        return "/journey/pelaksanaan";
       case "Kinerja":
         return "/journey/performance";
       case "Evaluasi":

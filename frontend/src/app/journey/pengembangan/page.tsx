@@ -14,7 +14,7 @@ import FeatureImportanceSection, {
   Feature,
   ModelInfo,
 } from "@/components/dashboard/FeatureImportance";
-import FormalTrainingDetail, { FormalDetailRow } from "@/components/dashboard/development/FormalTrainingDetail";
+import FormalTrainingDetail, { FormalDetailRow } from "@/components/dashboard/pengembangan/FormalTrainingDetail";
 
 type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
 
@@ -46,9 +46,9 @@ const stageToPath = (stage: string) => {
     case "Evaluasi":
       return "/journey/evaluasi";
     case "Pengembangan":
-      return "/journey/development";
+      return "/journey/pengembangan";
     default:
-      return "/journey/development";
+      return "/journey/pengembangan";
   }
 };
 
@@ -118,7 +118,7 @@ const ALL_ROWS: Row[] = [
   },
 ];
 
-export default function DevelopmentPage(): JSX.Element {
+export default function PengembanganPage(): JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
 

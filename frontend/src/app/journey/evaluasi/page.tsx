@@ -216,7 +216,7 @@ export default function EvaluasiOverviewPage() {
       case "Evaluasi":
         return "/journey/evaluasi";
       case "Pengembangan":
-        return "/journey/development";
+        return "/journey/pengembangan";
       default:
         return "/journey/evaluasi";
     }

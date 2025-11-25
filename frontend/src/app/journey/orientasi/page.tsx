@@ -79,7 +79,7 @@ export default function OrientasiOverviewPage() {
       case "Evaluasi":
         return "/journey/evaluasi";
       case "Pengembangan":
-        return "/journey/development";
+        return "/journey/pengembangan";
       default:
         return "/journey/orientasi";
     }

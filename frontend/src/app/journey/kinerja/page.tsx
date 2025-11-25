@@ -114,7 +114,7 @@ const resultData: ResultRow[] = [
   },
 ];
 
-export default function PerformancePage(): JSX.Element {
+export default function KinerjaPage(): JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -205,7 +205,7 @@ export default function PerformancePage(): JSX.Element {
         router.push("/journey/pelaksanaan");
         break;
       case "Kinerja":
-        router.push("/journey/performance");
+        router.push("/journey/kinerja");
         break;
       case "Evaluasi":
         router.push("/journey/evaluation");
@@ -214,7 +214,7 @@ export default function PerformancePage(): JSX.Element {
         router.push("/journey/development");
         break;
       default:
-        router.push("/journey/performance");
+        router.push("/journey/kinerja");
     }
   };
 

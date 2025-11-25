@@ -180,7 +180,7 @@ export default function OnDutyOverviewPage() {
       case "Pelaksanaan":
         return "/journey/pelaksanaan";
       case "Kinerja":
-        return "/journey/performance";
+        return "/journey/kinerja";
       case "Evaluasi":
         return "/journey/evaluation";
       case "Pengembangan":

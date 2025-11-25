@@ -211,7 +211,10 @@ export default function FeatureImportanceSection({
   const chartHeight = displayed.length * ROW_H;
 
   return (
-    <section className={className} style={{ fontFamily: chartFontFamily }}>
+    <section 
+      className={className} 
+      style={{ fontFamily: "Inter, sans-serif" }}
+    >
       <InfoAlert
         title="Model Information"
         className="mb-4 max-w-none"

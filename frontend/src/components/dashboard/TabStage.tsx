@@ -4,11 +4,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const stages = [
-  "Onboarding",
-  "On Duty",
-  "Performance",
-  "Evaluation",
-  "Development",
+  "Orientasi",
+  "Pelaksanaan",
+  "Kinerja",
+  "Evaluasi",
+  "Pengembangan",
 ] as const;
 
 type Stage = typeof stages[number];
@@ -22,11 +22,11 @@ interface TabStageProps {
 
 function deriveStageFromPath(pathname?: string): Stage {
   const p = pathname || "";
-  if (p.startsWith("/journey/performance")) return "Performance";
-  if (p.startsWith("/journey/on-duty")) return "On Duty";
-  if (p.startsWith("/journey/evaluation")) return "Evaluation";
-  if (p.startsWith("/journey/development")) return "Development";
-  return "Onboarding";
+  if (p.startsWith("/journey/performance")) return "Kinerja";
+  if (p.startsWith("/journey/on-duty")) return "Pelaksanaan";
+  if (p.startsWith("/journey/evaluation")) return "Evaluasi";
+  if (p.startsWith("/journey/development")) return "Pengembangan";
+  return "Orientasi";
 }
 
 const TabStage: React.FC<TabStageProps> = ({ onStageChange, width = "1200px", height = "85px", defaultStage }) => {

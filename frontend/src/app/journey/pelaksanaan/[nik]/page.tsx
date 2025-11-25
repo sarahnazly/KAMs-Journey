@@ -18,7 +18,7 @@ type Project = {
   winProbability: string;
 };
 
-type KAMData = {
+type AEData = {
   nik: string;
   nama: string;
   projects: Project[];
@@ -35,14 +35,14 @@ export default function OnDutyDetailPage() {
   const params = useParams();
   const nik = params?.nik as string;
 
-  const [kamData, setKamData] = useState<KAMData | null>(null);
+  const [aeData, setAeData] = useState<AEData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<SelectedProject | null>(null);
 
   // Dummy data - replace with actual API call
-  const allKAMData: KAMData[] = useMemo(
+  const allAEData: AEData[] = useMemo(
     () => [
       {
         nik: "20919",
@@ -166,19 +166,19 @@ export default function OnDutyDetailPage() {
     setError("");
 
     const timeout = setTimeout(() => {
-      const foundKAM = allKAMData.find((kam) => kam.nik === nik);
+      const foundAE = allAEData.find((ae) => ae.nik === nik);
 
-      if (foundKAM) {
-        setKamData(foundKAM);
+      if (foundAE) {
+        setAeData(foundAE);
       } else {
-        setError("Data KAM tidak ditemukan");
+        setError("Data AE tidak ditemukan");
       }
 
       setLoading(false);
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [nik, allKAMData]);
+  }, [nik, allAEData]);
 
   const columns: TableColumn[] = useMemo(
     () => [
@@ -225,7 +225,7 @@ export default function OnDutyDetailPage() {
     );
   }
 
-  if (error || !kamData) {
+  if (error || !aeData) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC] gap-6">
         <div className="text-[#EF4444] font-inter font-semibold text-lg">
@@ -257,7 +257,7 @@ export default function OnDutyDetailPage() {
 
             <div className="flex flex-col gap-3">
               <h1 className="text-[#0F172A] text-3xl sm:text-4xl lg:text-5xl font-inter font-bold leading-tight">
-                {kamData.nik} - {kamData.nama}
+                {aeData.nik} - {aeData.nama}
               </h1>
               <p className="text-[#64748B] text-base sm:text-lg font-inter font-normal leading-relaxed">
                 List of Projects
@@ -269,7 +269,7 @@ export default function OnDutyDetailPage() {
           <div className="w-full">
             <Table
               columns={columns}
-              data={kamData.projects}
+              data={aeData.projects}
               loading={false}
               error=""
               pageSize={4}

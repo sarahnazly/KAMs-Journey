@@ -314,7 +314,7 @@ const model: ModelInfo = useMemo(
           style={{ outlineOffset: -1 }}
         >
           <div className="flex-1 flex flex-col items-start">
-            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search KAMs</div>
+            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search Account Executive</div>
             <SearchBar value={search} onChange={setSearch} className="w-full" />
           </div>
           <div className="flex flex-row items-center gap-4">

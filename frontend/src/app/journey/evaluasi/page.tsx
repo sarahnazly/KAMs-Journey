@@ -410,12 +410,12 @@ export default function EvaluasiOverviewPage() {
   // Feature Importance data
   const features: Feature[] = useMemo(
     () => [
-      { name: "revenue", importance: 0.35, description: "Keseluruhan pendapatan KAM per kuartal." },
-      { name: "profitability", importance: 0.30, description: "Keseluruhan profitabilitas KAM per kuartal." },
-      { name: "collection_rate", importance: 0.25, description: "Jumlah persentase pembayaran oleh pelanggan KAM." },
-      { name: "customer", importance: 0.15, description: "Jumlah pelanggan yang ditangani oleh KAM." },
+      { name: "revenue", importance: 0.35, description: "Keseluruhan pendapatan AE per kuartal." },
+      { name: "profitability", importance: 0.30, description: "Keseluruhan profitabilitas AE per kuartal." },
+      { name: "collection_rate", importance: 0.25, description: "Jumlah persentase pembayaran oleh pelanggan AE." },
+      { name: "customer", importance: 0.15, description: "Jumlah pelanggan yang ditangani oleh AE." },
       { name: "cnq_test", importance: 0.10, description: "Hasil CnQ test setelah performansi" },
-      { name: "behaviour", importance: 0.08, description: "Penilaian perilaku KAM berdasarkan survei." },
+      { name: "behaviour", importance: 0.08, description: "Penilaian perilaku AE berdasarkan survei." },
     ],
     []
   );
@@ -435,7 +435,7 @@ export default function EvaluasiOverviewPage() {
         >
           <div className="flex-1 flex flex-col items-start">
             <div className="w-full text-black text-[20px] font-semibold leading-[30px]">
-              Search KAMs
+              Search Account Executive
             </div>
             <SearchBar value={search} onChange={setSearch} className="w-full" />
           </div>
@@ -514,7 +514,7 @@ export default function EvaluasiOverviewPage() {
           <FeatureImportanceSection
             features={features}
             model={model}
-            guidanceFeatureImportance="Feature importance menunjukkan seberapa besar pengaruh sebuah fitur terhadap prediksi model evaluasi kinerja KAM."
+            guidanceFeatureImportance="Feature importance menunjukkan seberapa besar pengaruh sebuah fitur terhadap prediksi model evaluasi kinerja AE."
             guidanceFeature="Klik bar untuk melihat penjelasan fitur."
           />
         </div>

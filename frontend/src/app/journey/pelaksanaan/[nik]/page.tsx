@@ -9,7 +9,7 @@ import { ArrowLeftIcon } from "lucide-react";
 
 type Project = {
   idProject: string;
-  namaProject: string;
+  projectName: string;
   customer: string;
   valueProject: string;
   stage: string;
@@ -50,7 +50,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F0",
@@ -60,7 +60,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F1",
@@ -70,7 +70,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F2",
@@ -80,7 +80,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F3",
@@ -96,7 +96,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20920",
-            namaProject: "Budi Santoso Project",
+            projectName: "Budi Santoso Project",
             customer: "PT. ABC",
             valueProject: "Rp15.000.000",
             stage: "F0",
@@ -106,7 +106,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20920",
-            namaProject: "Budi Santoso Project 2",
+            projectName: "Budi Santoso Project 2",
             customer: "PT. XYZ",
             valueProject: "Rp25.000.000",
             stage: "F1",
@@ -122,7 +122,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20921",
-            namaProject: "Nicholas Project",
+            projectName: "Nicholas Project",
             customer: "Bank Indonesia",
             valueProject: "Rp50.000.000",
             stage: "F2",
@@ -138,7 +138,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20922",
-            namaProject: "Pinky Project",
+            projectName: "Pinky Project",
             customer: "Kementerian",
             valueProject: "Rp30.000.000",
             stage: "F1",
@@ -183,7 +183,7 @@ export default function OnDutyDetailPage() {
   const columns: TableColumn[] = useMemo(
     () => [
       { label: "Id Project", key: "idProject", sortable: true },
-      { label: "Nama Project", key: "namaProject", sortable: true },
+      { label: "Project Name", key: "projectName", sortable: true },
       { label: "Customer", key: "customer", sortable: true },
       { label: "Value Project", key: "valueProject", sortable: true },
       { label: "Stage", key: "stage", sortable: true },

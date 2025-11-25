@@ -5,6 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { Inter } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -22,8 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   } hover:text-[#164E9D]`;
 
   return (
-    <html lang="en">
-      <body className="bg-[#F8FAFC] min-h-screen flex flex-col">
+    <html lang="en" className={inter.variable}>
+      <body className={`bg-[#F8FAFC] min-h-screen flex flex-col ${inter.className}`}>
         {/* Navbar: gaya meniru components/navbar.tsx */}
         <nav className="w-full h-[90px] border-b-[1.5px] border-[#CBD5E1] bg-white flex items-center font-sans">
           {/* Section kiri */}

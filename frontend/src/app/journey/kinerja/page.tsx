@@ -208,7 +208,7 @@ export default function KinerjaPage(): JSX.Element {
         router.push("/journey/kinerja");
         break;
       case "Evaluasi":
-        router.push("/journey/evaluation");
+        router.push("/journey/evaluasi");
         break;
       case "Pengembangan":
         router.push("/journey/development");

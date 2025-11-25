@@ -24,7 +24,7 @@ function deriveStageFromPath(pathname?: string): Stage {
   const p = pathname || "";
   if (p.startsWith("/journey/kinerja")) return "Kinerja";
   if (p.startsWith("/journey/pelaksanaan")) return "Pelaksanaan";
-  if (p.startsWith("/journey/evaluation")) return "Evaluasi";
+  if (p.startsWith("/journey/evaluasi")) return "Evaluasi";
   if (p.startsWith("/journey/development")) return "Pengembangan";
   return "Orientasi";
 }

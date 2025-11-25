@@ -364,7 +364,7 @@ export default function PredictionsPage() {
   ], []);
 
   const handleBack = () => {
-    router.push("/journey/evaluation");
+    router.push("/journey/evaluasi");
   };
 
   return (

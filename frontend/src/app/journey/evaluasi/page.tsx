@@ -4,12 +4,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/dashboard/SearchBar";
 import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import FilterYear from "@/components/dashboard/FilterYear";
-import FilterEvaluationCategory from "@/components/dashboard/evaluation/FilterEvaluationCategory";
-import MetricCard from "@/components/dashboard/evaluation/MetricCard";
+import FilterEvaluationCategory from "@/components/dashboard/evaluasi/FilterEvaluationCategory";
+import MetricCard from "@/components/dashboard/evaluasi/MetricCard";
 import TabStage from "@/components/dashboard/TabStage";
 import Table, { TableColumn } from "@/components/dashboard/Table";
-import BehaviorAchievementPopup from "@/components/dashboard/evaluation/BehaviorAchievementPopup";
-import SurveyAMPopup, { SurveyAMRow } from "@/components/dashboard/evaluation/SurveyAMPopup";
+import BehaviorAchievementPopup from "@/components/dashboard/evaluasi/BehaviorAchievementPopup";
+import SurveyAMPopup, { SurveyAMRow } from "@/components/dashboard/evaluasi/SurveyAMPopup";
 import { useRouter } from "next/navigation";
 import Card from "@/components/common/Card";
 import FeatureImportanceSection, {
@@ -44,7 +44,7 @@ interface BehaviorAchievementData {
   score: number;
 }
 
-export default function EvaluationOverviewPage() {
+export default function EvaluasiOverviewPage() {
   const router = useRouter();
 
   // Filters
@@ -214,11 +214,11 @@ export default function EvaluationOverviewPage() {
       case "Kinerja":
         return "/journey/kinerja";
       case "Evaluasi":
-        return "/journey/evaluation";
+        return "/journey/evaluasi";
       case "Pengembangan":
         return "/journey/development";
       default:
-        return "/journey/evaluation";
+        return "/journey/evaluasi";
     }
   };
 
@@ -299,7 +299,7 @@ export default function EvaluationOverviewPage() {
 
   // Handle Predictions Detail Click - Navigate to [nik] page
   const handlePredictionsDetailClick = (row: Record<string, any>) => {
-    router.push(`/journey/evaluation/${row.nik}/predictions`);
+    router.push(`/journey/evaluasi/${row.nik}/predictions`);
   };
 
   // Detail button handlers

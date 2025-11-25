@@ -27,7 +27,7 @@ const features = [
     name: "Performance Growth Prediction",
     description: "Performance growth prediction based on data trends",
     detail:
-      "Time series analysis and trend forecasting to predict future performance growth using machine learning techniques for temporal data.",
+      "Regression-based prediction that estimates next-quarter performance evaluation using machine learning techniques.",
     dependencies: ["feature-importance"],
   },
 ];
@@ -198,7 +198,7 @@ const ChooseFeaturePage = () => {
 
   // On Start Processing button click
   const handleStartProcessing = () => {
-    router.push("/input/progress");
+    router.push("/input/processing-progress");
   };
 
   return (

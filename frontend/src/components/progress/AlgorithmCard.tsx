@@ -143,25 +143,6 @@ const AlgorithmCard: React.FC<AlgorithmCardProps> = ({
             {`${percent}%`}
           </div>
         )}
-        {status === "error" && onRetry && (
-          <button
-            style={{
-              marginTop: 8,
-              padding: "4px 8px",
-              borderRadius: 8,
-              background: "#EF4444",
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 13,
-              border: "none",
-              cursor: "pointer",
-              boxShadow: "0px 2px 8px rgba(0,0,0,0.08)",
-            }}
-            onClick={onRetry}
-          >
-            Retry
-          </button>
-        )}
       </div>
     </div>
   );

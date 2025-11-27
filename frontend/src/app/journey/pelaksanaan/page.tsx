@@ -248,18 +248,18 @@ export default function OnDutyOverviewPage() {
 // Feature Importance data
 const features: Feature[] = useMemo(
     () => [
-    { name: "visiting_customer", importance: 0.20, description: "Tingkat kepahaman terhadap konsep kunjungan langsung ke pelanggan, yang bertujuan untuk membangun hubungan lebih dekat dan memahami kebutuhan pelanggan secara mendalam." },
-    { name: "account_profile", importance: 0.16, description: "Tingkat kepahaman dalam menyusun profil komprehensif dari pelanggan." },
-    { name: "sales_funnel", importance: 0.14, description: "Tingkat kepahaman terhadap efektivitas proses pergerakan prospek dalam tahapan penjualan." },
-    { name: "account_plan", importance: 0.12, description: "Tingkat kepahaman mengenai kualitas, penyusunan, dan pelaksanaan account plan." },
-    { name: "bidding_management", importance: 0.10, description: "Tingkat kepahaman dalam mengelola proses penawaran kepada pelanggan secara efisien." },
-    { name: "customer_matching", importance: 0.08, description: "Tingkat kepahaman dalam mencocokkan kebutuhan pelanggan dengan solusi yang tepat." },
-    { name: "customer_introduction", importance: 0.07, description: "Tingkat kepahaman dalam memperkenalkan produk atau layanan kepada pelanggan secara efektif." },
-    { name: "solusi", importance: 0.05, description: "Tingkat kepahaman terhadap penyusunan solusi yang sesuai untuk pelanggan." },
-    { name: "transfer_customer_knowledge", importance: 0.04, description: "Tingkat kepahaman terkait transfer pengetahuan pelanggan." },
-    { name: "project_management", importance: 0.025, description: "Tingkat kepahaman dalam mengelola proyek." },
-    { name: "transfer_customer_documentation", importance: 0.015, description: "Tingkat kepahaman terkait transfer dokumentasi pelanggan." },
-    { name: "saran_pengembangan", importance: 0.010, description: "Tingkat kepahaman dalam pemberian saran pengembangan." },
+    { name: "Visiting Customer", importance: 0.20, description: "Tingkat kepahaman terhadap konsep kunjungan langsung ke pelanggan, yang bertujuan untuk membangun hubungan lebih dekat dan memahami kebutuhan pelanggan secara mendalam." },
+    { name: "Account Profile", importance: 0.16, description: "Tingkat kepahaman dalam menyusun profil komprehensif dari pelanggan." },
+    { name: "Sales Funnel", importance: 0.14, description: "Tingkat kepahaman terhadap efektivitas proses pergerakan prospek dalam tahapan penjualan." },
+    { name: "Account Plan", importance: 0.12, description: "Tingkat kepahaman mengenai kualitas, penyusunan, dan pelaksanaan account plan." },
+    { name: "Bidding Management", importance: 0.10, description: "Tingkat kepahaman dalam mengelola proses penawaran kepada pelanggan secara efisien." },
+    { name: "Customer Matching", importance: 0.08, description: "Tingkat kepahaman dalam mencocokkan kebutuhan pelanggan dengan solusi yang tepat." },
+    { name: "Customer Introduction", importance: 0.07, description: "Tingkat kepahaman dalam memperkenalkan produk atau layanan kepada pelanggan secara efektif." },
+    { name: "Solusi", importance: 0.05, description: "Tingkat kepahaman terhadap penyusunan solusi yang sesuai untuk pelanggan." },
+    { name: "Transfer Customer Knowledge", importance: 0.04, description: "Tingkat kepahaman terkait transfer pengetahuan pelanggan." },
+    { name: "Project Management", importance: 0.025, description: "Tingkat kepahaman dalam mengelola proyek." },
+    { name: "Transfer Customer Documentation", importance: 0.015, description: "Tingkat kepahaman terkait transfer dokumentasi pelanggan." },
+    { name: "Saran Pengembangan", importance: 0.010, description: "Tingkat kepahaman dalam pemberian saran pengembangan." },
     ],
     []
 );

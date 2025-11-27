@@ -223,18 +223,55 @@ export default function PengembanganPage(): JSX.Element {
   // Feature Importance data
   const features: Feature[] = useMemo(
     () => [
-      { name: "Revenue Sales Ach.",       importance: 0.20, description: "Capaian revenue terhadap target penjualan." },
-      { name: "AE Tools Ach.",            importance: 0.16, description: "Tingkat ketercapaian target pemanfaatan tools AE." },
-      { name: "Profitability Ach.",       importance: 0.14, description: "Kontribusi margin/laba terhadap target." },
-      { name: "Sales Ach. Datin",         importance: 0.12, description: "Jumlah ketercapaian target penjualan produk Data Integration." },
-      { name: "Sales Ach. Wi-Fi",         importance: 0.10, description: "Jumlah ketercapaian target penjualan produk Wi-Fi." },
-      { name: "Collection Rate Ach.",     importance: 0.08, description: "Tingkat ketercapaian target pembayaran tagihan pelanggan." },
-      { name: "Behaviour Ach.",           importance: 0.07, description: "Ketercapaian target frekuensi kunjungan pelanggan." },
-      { name: "NPS",                      importance: 0.05, description: "Net Promoter Score Pelanggan." },
-      { name: "Sales Ach. HSI",           importance: 0.04, description: "Jumlah ketercapaian target penjualan produk HSI." },
-      { name: "Sales Ach. Wireline",      importance: 0.035, description: "Jumlah ketercapaian target penjualan produk Wireline." },
-      { name: "Capability Ach.",          importance: 0.025, description: "Jumlah frekuensi pelatihan AE terhadap target." },
-      { name: "Evaluation Quadrant",      importance: 0.015, description: "Kuadran evaluasi berdasarkan ketercapaian target scaling dan sustain." },
+      { 
+        name: "Revenue Sales Ach.",
+        importance: 0.20, 
+        description: "Capaian revenue terhadap target penjualan." 
+      },
+      { name: "AE Tools Ach.",
+        importance: 0.16, 
+        description: "Tingkat ketercapaian target pemanfaatan tools AE." 
+      },
+      { name: "Profitability Ach.",
+        importance: 0.14, 
+        description: "Tingkat ketercapaian kontribusi margin/laba terhadap target." 
+      },
+      { name: "Sales Ach. Datin",
+        importance: 0.12, 
+        description: "Jumlah ketercapaian target penjualan produk Data Integration." 
+      },
+      { name: "Sales Ach. Wi-Fi",
+        importance: 0.10, 
+        description: "Jumlah ketercapaian target penjualan produk Wi-Fi." 
+      },
+      { name: "Collection Rate Ach.",
+        importance: 0.08, 
+        description: "Tingkat ketercapaian target pembayaran tagihan pelanggan." 
+      },
+      { name: "Behaviour Ach.",           
+        importance: 0.07, 
+        description: "Ketercapaian target frekuensi kunjungan pelanggan." 
+      },
+      { name: "NPS",                      
+        importance: 0.05, 
+        description: "Tingkat ketercapaian target Net Promoter Score pelanggan." 
+      },
+      { name: "Sales Ach. HSI",           
+        importance: 0.04, 
+        description: "Jumlah ketercapaian target penjualan produk HSI." 
+      },
+      { name: "Sales Ach. Wireline",      
+        importance: 0.035, 
+        description: "Jumlah ketercapaian target penjualan produk Wireline." 
+      },
+      { name: "Capability Ach.",          
+        importance: 0.025, 
+        description: "Jumlah frekuensi pelatihan AE terhadap target." 
+      },
+      { name: "Evaluation Quadrant",      
+        importance: 0.015, 
+        description: "Kuadran evaluasi berdasarkan ketercapaian target scaling dan sustain." 
+      },
     ],
     []
   );

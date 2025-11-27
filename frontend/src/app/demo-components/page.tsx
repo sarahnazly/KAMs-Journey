@@ -57,7 +57,7 @@ export default function HomePage() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
 
   // TabStage
-  const [stage, setStage] = useState("Onboarding");
+  const [stage, setStage] = useState("Orientasi");
   const handleStageChange = (newStage: string) => {
     setStage(newStage);
     showToast("Berhasil", `Pindah ke stage ${newStage}`, "success");
@@ -92,7 +92,7 @@ export default function HomePage() {
     { name: "Customer Introduction", importance: 0.05, description: "Effectiveness in introducing customers to products or services." }
   ];
   const model = { name: "XGBoost", accuracy: 0.85, trainCount: 500 };
-  const guidanceFeatureImportance = "These factors show what most influences success in the onboarding stage. Focus on the top ones to improve how quickly and effectively employees start their roles.";
+  const guidanceFeatureImportance = "These factors show what most influences success in the orientation stage. Focus on the top ones to improve how quickly and effectively employees start their roles.";
   const guidanceFeature = "Penjelasan fitur detail di sini...";
 
   // Simulasi ambil data
@@ -161,7 +161,7 @@ export default function HomePage() {
       <div className="w-full flex justify-center">
         <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] flex flex-row items-center gap-4 px-5 py-[30px]" style={{ outlineOffset: -1 }}>
           <div className="flex-1 flex flex-col items-start">
-            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search KAMs</div>
+            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search Account Executive</div>
             <SearchBar value={search} onChange={setSearch} className="w-full" />
           </div>
           <div className="flex flex-row items-center gap-4">

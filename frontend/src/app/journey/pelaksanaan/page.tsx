@@ -15,22 +15,16 @@ import FeatureImportanceSection, {
 
 type Row = {
   nik: string;
-  nama: string;
-  accountProfile?: number;
-  accountPlan?: number;
+  name: string;
+  accountProfileDuty?: number;
+  accountPlanDuty?: number;
   customerRequirement?: number;
-  potensiProyek?: number;
-  demoPOC?: number;
-  desainProposal?: number;
+  identifikasiPotensiProyek?: number;
   prebidPreparation?: number;
-  riskAssessment?: number;
+  riskProjectAssessment?: number;
   prosesDelivery?: number;
   invoicePelanggan?: number;
-  komplainPelanggan?: number;
-  informasiPIC?: number;
-  jumlahPIC?: number;
-  actionToGrow?: number;
-  jumlahAktivitas?: number;
+  customerKeyPerson?: number;
   quarter: "Q1" | "Q2" | "Q3" | "Q4";
   year: number;
 };
@@ -53,118 +47,94 @@ export default function OnDutyOverviewPage() {
     () => [
       { 
         nik: "20919", 
-        nama: "Ratu Nadya Anjania", 
-        accountProfile: 90, 
-        accountPlan: 88,
+        name: "Ratu Nadya Anjania", 
+        accountProfileDuty: 90, 
+        accountPlanDuty: 88,
         customerRequirement: 93,
-        potensiProyek: 85,
-        demoPOC: 90,
-        desainProposal: 88,
+        identifikasiPotensiProyek: 85,
         prebidPreparation: 90,
-        riskAssessment: 88,
+        riskProjectAssessment: 88,
         prosesDelivery: 86,
         invoicePelanggan: 88,
-        komplainPelanggan: 90,
-        informasiPIC: 88,
-        jumlahPIC: 92,
-        actionToGrow: 90,
-        jumlahAktivitas: 88,
+        customerKeyPerson: 0,
         quarter: "Q1", 
         year: 2025 
       },
       { 
         nik: "20920", 
-        nama: "Budi Santoso", 
-        accountProfile: 85, 
-        accountPlan: 83,
+        name: "Budi Santoso", 
+        accountProfileDuty: 85, 
+        accountPlanDuty: 83,
         customerRequirement: 88,
-        potensiProyek: 80,
-        demoPOC: 85,
-        desainProposal: 83,
+        identifikasiPotensiProyek: 80,
         prebidPreparation: 85,
-        riskAssessment: 83,
+        riskProjectAssessment: 83,
         prosesDelivery: 81,
         invoicePelanggan: 83,
-        komplainPelanggan: 85,
-        informasiPIC: 83,
-        jumlahPIC: 87,
-        actionToGrow: 85,
-        jumlahAktivitas: 83,
+        customerKeyPerson: 10,
         quarter: "Q1", 
         year: 2025 
       },
       { 
         nik: "20921", 
-        nama: "Nicholas Saputra", 
-        accountProfile: 92, 
-        accountPlan: 90,
+        name: "Nicholas Saputra", 
+        accountProfileDuty: 92, 
+        accountPlanDuty: 90,
         customerRequirement: 95,
-        potensiProyek: 87,
-        demoPOC: 92,
-        desainProposal: 90,
+        identifikasiPotensiProyek: 87,
         prebidPreparation: 92,
-        riskAssessment: 90,
+        riskProjectAssessment: 90,
         prosesDelivery: 90,
         invoicePelanggan: 90,
-        komplainPelanggan: 92,
-        informasiPIC: 90,
-        jumlahPIC: 94,
-        actionToGrow: 92,
-        jumlahAktivitas: 90,
+        customerKeyPerson: 5,
         quarter: "Q1", 
         year: 2025 
       },
       { 
         nik: "20922", 
-        nama: "Pinky Siwi", 
-        accountProfile: 88, 
-        accountPlan: 86,
+        name: "Pinky Siwi", 
+        accountProfileDuty: 88, 
+        accountPlanDuty: 86,
         customerRequirement: 91,
-        potensiProyek: 83,
-        demoPOC: 88,
-        desainProposal: 86,
+        identifikasiPotensiProyek: 83,
         prebidPreparation: 88,
-        riskAssessment: 86,
+        riskProjectAssessment: 86,
         prosesDelivery: 85,
         invoicePelanggan: 86,
-        komplainPelanggan: 88,
-        informasiPIC: 86,
-        jumlahPIC: 90,
-        actionToGrow: 88,
-        jumlahAktivitas: 86,
+        customerKeyPerson: 40,
         quarter: "Q1", 
         year: 2025 
       },
       // Other quarters
       { 
         nik: "20920", 
-        nama: "Budi Santoso", 
-        accountProfile: 85, 
-        accountPlan: 83,
+        name: "Budi Santoso", 
+        accountProfileDuty: 85, 
+        accountPlanDuty: 83,
         quarter: "Q2", 
         year: 2025 
       },
       { 
         nik: "20921", 
-        nama: "Nicholas Saputra", 
-        accountProfile: 92, 
-        accountPlan: 90,
+        name: "Nicholas Saputra", 
+        accountProfileDuty: 92, 
+        accountPlanDuty: 90,
         quarter: "Q3", 
         year: 2025 
       },
       { 
         nik: "20922", 
-        nama: "Pinky Siwi", 
-        accountProfile: 88, 
-        accountPlan: 86,
+        name: "Pinky Siwi", 
+        accountProfileDuty: 88, 
+        accountPlanDuty: 86,
         quarter: "Q4", 
         year: 2025 
       },
       { 
         nik: "20923", 
-        nama: "Anindya Maulida", 
-        accountProfile: 90, 
-        accountPlan: 88,
+        name: "Anindya Maulida", 
+        accountProfileDuty: 90, 
+        accountPlanDuty: 88,
         quarter: "Q1", 
         year: 2024 
       },
@@ -175,18 +145,18 @@ export default function OnDutyOverviewPage() {
   // Map stage TabStage -> route
   const stageToPath = (stage: string) => {
     switch (stage) {
-      case "Onboarding":
-        return "/journey/onboarding";
-      case "On Duty":
-        return "/journey/on-duty";
-      case "Performance":
-        return "/journey/performance";
-      case "Evaluation":
-        return "/journey/evaluation";
-      case "Development":
-        return "/journey/development";
+      case "Orientasi":
+        return "/journey/orientasi";
+      case "Pelaksanaan":
+        return "/journey/pelaksanaan";
+      case "Kinerja":
+        return "/journey/kinerja";
+      case "Evaluasi":
+        return "/journey/evaluasi";
+      case "Pengembangan":
+        return "/journey/pengembangan";
       default:
-        return "/journey/onboarding";
+        return "/journey/orientasi";
     }
   };
 
@@ -213,7 +183,7 @@ export default function OnDutyOverviewPage() {
 
       if (search) {
         const q = search.toLowerCase();
-        filtered = filtered.filter((row) => row.nama.toLowerCase().includes(q) || row.nik.includes(search));
+        filtered = filtered.filter((row) => row.name.toLowerCase().includes(q) || row.nik.includes(search));
       }
 
       setData(filtered);
@@ -226,7 +196,7 @@ export default function OnDutyOverviewPage() {
   // Detail button
   const handleDetail = (row: Record<string, any>) => {
     const nik = row?.nik;
-    if (nik) router.push(`/journey/on-duty/${nik}`);
+    if (nik) router.push(`/journey/pelaksanaan/${nik}`);
   };
 
   // TabStage navigation
@@ -238,64 +208,58 @@ export default function OnDutyOverviewPage() {
   // Column definitions for each category
   const customerUnderstandingColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
-    { label: "Account Profile", key: "accountProfile", sortable: true },
-    { label: "Account Plan", key: "accountPlan", sortable: true },
+    { label: "Name", key: "name", sortable: true },
+    { label: "Account Profile Duty (%)", key: "accountProfileDuty", sortable: true },
+    { label: "Account Plan Duty", key: "accountPlanDuty", sortable: true },
   ];
 
   const leadOpportunityColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
-    { label: "Customer Requirement", key: "customerRequirement", sortable: true },
-    { label: "Potensi Proyek", key: "potensiProyek", sortable: true },
-    { label: "Demo POC", key: "demoPOC", sortable: true },
+    { label: "Name", key: "name", sortable: true },
+    { label: "Customer Requirement (%)", key: "customerRequirement", sortable: true },
+    { label: "Identifikasi Potensi Proyek", key: "identifikasiPotensiProyek", sortable: true },
   ];
 
   const solutionManagementColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
-    { label: "Desain Proposal", key: "desainProposal", sortable: true },
+    { label: "Name", key: "name", sortable: true },
     { label: "Prebid Preparation", key: "prebidPreparation", sortable: true },
-    { label: "Risk Assessment", key: "riskAssessment", sortable: true },
+    { label: "Risk Project Assessment", key: "riskProjectAssessment", sortable: true },
   ];
 
   const contractDeliveryColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
+    { label: "Name", key: "name", sortable: true },
     { label: "Proses Delivery", key: "prosesDelivery", sortable: true },
   ];
 
   const billingAssuranceColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
+    { label: "Name", key: "name", sortable: true },
     { label: "Invoice Pelanggan", key: "invoicePelanggan", sortable: true },
-    { label: "Komplain Pelanggan", key: "komplainPelanggan", sortable: true },
   ];
 
   const relationshipManagementColumns: TableColumn[] = [
     { label: "NIK", key: "nik", sortable: true },
-    { label: "Nama", key: "nama", sortable: true },
-    { label: "Informasi PIC", key: "informasiPIC", sortable: true },
-    { label: "Jumlah PIC", key: "jumlahPIC", sortable: true },
-    { label: "Action to Grow", key: "actionToGrow", sortable: true },
-    { label: "Jumlah Aktivitas", key: "jumlahAktivitas", sortable: true },
+    { label: "Name", key: "name", sortable: true },
+    { label: "Customer Key Person (%)", key: "customerKeyPerson", sortable: true },
   ];
 
 // Feature Importance data
 const features: Feature[] = useMemo(
     () => [
-    { name: "visiting_customer", importance: 0.20, description: "Tingkat kepahaman terhadap konsep kunjungan langsung ke pelanggan, yang bertujuan untuk membangun hubungan lebih dekat dan memahami kebutuhan pelanggan secara mendalam." },
-    { name: "account_profile", importance: 0.16, description: "Tingkat kepahaman dalam menyusun profil komprehensif dari pelanggan." },
-    { name: "sales_funnel", importance: 0.14, description: "Tingkat kepahaman terhadap efektivitas proses pergerakan prospek dalam tahapan penjualan." },
-    { name: "account_plan", importance: 0.12, description: "Tingkat kepahaman mengenai kualitas, penyusunan, dan pelaksanaan account plan." },
-    { name: "bidding_management", importance: 0.10, description: "Tingkat kepahaman dalam mengelola proses penawaran kepada pelanggan secara efisien." },
-    { name: "customer_matching", importance: 0.08, description: "Tingkat kepahaman dalam mencocokkan kebutuhan pelanggan dengan solusi yang tepat." },
-    { name: "customer_introduction", importance: 0.07, description: "Tingkat kepahaman dalam memperkenalkan produk atau layanan kepada pelanggan secara efektif." },
-    { name: "solusi", importance: 0.05, description: "Tingkat kepahaman terhadap penyusunan solusi yang sesuai untuk pelanggan." },
-    { name: "transfer_customer_knowledge", importance: 0.04, description: "Tingkat kepahaman terkait transfer pengetahuan pelanggan." },
-    { name: "project_management", importance: 0.025, description: "Tingkat kepahaman dalam mengelola proyek." },
-    { name: "transfer_customer_documentation", importance: 0.015, description: "Tingkat kepahaman terkait transfer dokumentasi pelanggan." },
-    { name: "saran_pengembangan", importance: 0.010, description: "Tingkat kepahaman dalam pemberian saran pengembangan." },
+    { name: "Visiting Customer", importance: 0.20, description: "Tingkat kepahaman terhadap konsep kunjungan langsung ke pelanggan, yang bertujuan untuk membangun hubungan lebih dekat dan memahami kebutuhan pelanggan secara mendalam." },
+    { name: "Account Profile", importance: 0.16, description: "Tingkat kepahaman dalam menyusun profil komprehensif dari pelanggan." },
+    { name: "Sales Funnel", importance: 0.14, description: "Tingkat kepahaman terhadap efektivitas proses pergerakan prospek dalam tahapan penjualan." },
+    { name: "Account Plan", importance: 0.12, description: "Tingkat kepahaman mengenai kualitas, penyusunan, dan pelaksanaan account plan." },
+    { name: "Bidding Management", importance: 0.10, description: "Tingkat kepahaman dalam mengelola proses penawaran kepada pelanggan secara efisien." },
+    { name: "Customer Matching", importance: 0.08, description: "Tingkat kepahaman dalam mencocokkan kebutuhan pelanggan dengan solusi yang tepat." },
+    { name: "Customer Introduction", importance: 0.07, description: "Tingkat kepahaman dalam memperkenalkan produk atau layanan kepada pelanggan secara efektif." },
+    { name: "Solusi", importance: 0.05, description: "Tingkat kepahaman terhadap penyusunan solusi yang sesuai untuk pelanggan." },
+    { name: "Transfer Customer Knowledge", importance: 0.04, description: "Tingkat kepahaman terkait transfer pengetahuan pelanggan." },
+    { name: "Project Management", importance: 0.025, description: "Tingkat kepahaman dalam mengelola proyek." },
+    { name: "Transfer Customer Documentation", importance: 0.015, description: "Tingkat kepahaman terkait transfer dokumentasi pelanggan." },
+    { name: "Saran Pengembangan", importance: 0.010, description: "Tingkat kepahaman dalam pemberian saran pengembangan." },
     ],
     []
 );
@@ -314,7 +278,7 @@ const model: ModelInfo = useMemo(
           style={{ outlineOffset: -1 }}
         >
           <div className="flex-1 flex flex-col items-start">
-            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search KAMs</div>
+            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search Account Executive</div>
             <SearchBar value={search} onChange={setSearch} className="w-full" />
           </div>
           <div className="flex flex-row items-center gap-4">

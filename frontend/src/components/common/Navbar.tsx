@@ -19,7 +19,7 @@ export default function Navbar() {
           {/* Title */}
           <div className="flex flex-col justify-center">
             <span className="font-bold text-[22px] leading-[28px] text-[#0F172A] w-[180px]">
-              KAMs Journey
+              Account Executive Journey
             </span>
             <span className="text-[13px] font-normal leading-5 text-[#64748B] w-[180px]">
               Dashboard Analytics
@@ -44,7 +44,7 @@ export default function Navbar() {
           className="text-center text-[15px] font-normal leading-[26px] text-[#64748B] hover:text-[#164E9D] transition-colors duration-150 bg-transparent border-none outline-none cursor-pointer whitespace-nowrap"
           style={{ background: "none" }}
         >
-          AM Journey
+          AE Journey
         </button>
       </div>
     </nav>

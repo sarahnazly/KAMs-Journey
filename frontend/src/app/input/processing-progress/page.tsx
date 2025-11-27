@@ -39,8 +39,8 @@ const initialFeatureProgress: FeatureProgress[] = [
       { name: "XGBoost", status: "completed", percent: 80.65 },
       { name: "Random Forest", status: "completed", percent: 80.65 },
       { name: "Decision Tree", status: "completed", percent: 80.65 },
-      { name: "SVM", status: "completed", percent: 80.65 },
-      { name: "Logistic Regression", status: "completed", percent: 80.65 },
+      { name: "SVR", status: "completed", percent: 80.65 },
+      { name: "Linear Regression", status: "completed", percent: 80.65 },
     ],
   },
   {
@@ -51,8 +51,8 @@ const initialFeatureProgress: FeatureProgress[] = [
       { name: "XGBoost", status: "completed", percent: 80.65 },
       { name: "Random Forest", status: "completed", percent: 80.65 },
       { name: "Decision Tree", status: "completed", percent: 80.65 },
-      { name: "SVM", status: "completed", percent: 80.65 },
-      { name: "Logistic Regression", status: "running", percent: null },
+      { name: "SVR", status: "completed", percent: 80.65 },
+      { name: "Linear Regression", status: "running", percent: null },
     ],
   },
   {
@@ -63,8 +63,8 @@ const initialFeatureProgress: FeatureProgress[] = [
       { name: "XGBoost", status: "waiting", percent: null },
       { name: "Random Forest", status: "waiting", percent: null },
       { name: "Decision Tree", status: "waiting", percent: null },
-      { name: "SVM", status: "waiting", percent: null },
-      { name: "Logistic Regression", status: "waiting", percent: null },
+      { name: "SVR", status: "waiting", percent: null },
+      { name: "Linear Regression", status: "waiting", percent: null },
     ],
   },
 ];

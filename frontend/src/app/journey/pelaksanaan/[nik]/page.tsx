@@ -4,12 +4,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/common/Button";
 import Table, { TableColumn } from "@/components/dashboard/Table";
-import WinProbabilityPopup from "@/components/dashboard/on-duty/WinProbabilityPopup";
+import WinProbabilityPopup from "@/components/dashboard/pelaksanaan/WinProbabilityPopup";
 import { ArrowLeftIcon } from "lucide-react";
 
 type Project = {
   idProject: string;
-  namaProject: string;
+  projectName: string;
   customer: string;
   valueProject: string;
   stage: string;
@@ -18,7 +18,7 @@ type Project = {
   winProbability: string;
 };
 
-type KAMData = {
+type AEData = {
   nik: string;
   nama: string;
   projects: Project[];
@@ -35,14 +35,14 @@ export default function OnDutyDetailPage() {
   const params = useParams();
   const nik = params?.nik as string;
 
-  const [kamData, setKamData] = useState<KAMData | null>(null);
+  const [aeData, setAeData] = useState<AEData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<SelectedProject | null>(null);
 
   // Dummy data - replace with actual API call
-  const allKAMData: KAMData[] = useMemo(
+  const allAEData: AEData[] = useMemo(
     () => [
       {
         nik: "20919",
@@ -50,7 +50,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F0",
@@ -60,7 +60,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F1",
@@ -70,7 +70,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F2",
@@ -80,7 +80,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20919",
-            namaProject: "Ratu Nadya Anjania",
+            projectName: "Ratu Nadya Anjania",
             customer: "Mabes TNI",
             valueProject: "Rp20.000.000",
             stage: "F3",
@@ -96,7 +96,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20920",
-            namaProject: "Budi Santoso Project",
+            projectName: "Budi Santoso Project",
             customer: "PT. ABC",
             valueProject: "Rp15.000.000",
             stage: "F0",
@@ -106,7 +106,7 @@ export default function OnDutyDetailPage() {
           },
           {
             idProject: "20920",
-            namaProject: "Budi Santoso Project 2",
+            projectName: "Budi Santoso Project 2",
             customer: "PT. XYZ",
             valueProject: "Rp25.000.000",
             stage: "F1",
@@ -122,7 +122,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20921",
-            namaProject: "Nicholas Project",
+            projectName: "Nicholas Project",
             customer: "Bank Indonesia",
             valueProject: "Rp50.000.000",
             stage: "F2",
@@ -138,7 +138,7 @@ export default function OnDutyDetailPage() {
         projects: [
           {
             idProject: "20922",
-            namaProject: "Pinky Project",
+            projectName: "Pinky Project",
             customer: "Kementerian",
             valueProject: "Rp30.000.000",
             stage: "F1",
@@ -166,24 +166,24 @@ export default function OnDutyDetailPage() {
     setError("");
 
     const timeout = setTimeout(() => {
-      const foundKAM = allKAMData.find((kam) => kam.nik === nik);
+      const foundAE = allAEData.find((ae) => ae.nik === nik);
 
-      if (foundKAM) {
-        setKamData(foundKAM);
+      if (foundAE) {
+        setAeData(foundAE);
       } else {
-        setError("Data KAM tidak ditemukan");
+        setError("Data AE tidak ditemukan");
       }
 
       setLoading(false);
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [nik, allKAMData]);
+  }, [nik, allAEData]);
 
   const columns: TableColumn[] = useMemo(
     () => [
       { label: "Id Project", key: "idProject", sortable: true },
-      { label: "Nama Project", key: "namaProject", sortable: true },
+      { label: "Project Name", key: "projectName", sortable: true },
       { label: "Customer", key: "customer", sortable: true },
       { label: "Value Project", key: "valueProject", sortable: true },
       { label: "Stage", key: "stage", sortable: true },
@@ -195,7 +195,7 @@ export default function OnDutyDetailPage() {
   );
 
   const handleBack = () => {
-    router.push("/journey/on-duty");
+    router.push("/journey/pelaksanaan");
   };
 
   const handleProjectDetail = (row: Record<string, any>) => {
@@ -225,7 +225,7 @@ export default function OnDutyDetailPage() {
     );
   }
 
-  if (error || !kamData) {
+  if (error || !aeData) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC] gap-6">
         <div className="text-[#EF4444] font-inter font-semibold text-lg">
@@ -257,7 +257,7 @@ export default function OnDutyDetailPage() {
 
             <div className="flex flex-col gap-3">
               <h1 className="text-[#0F172A] text-3xl sm:text-4xl lg:text-5xl font-inter font-bold leading-tight">
-                {kamData.nik} - {kamData.nama}
+                {aeData.nik} - {aeData.nama}
               </h1>
               <p className="text-[#64748B] text-base sm:text-lg font-inter font-normal leading-relaxed">
                 List of Projects
@@ -269,7 +269,7 @@ export default function OnDutyDetailPage() {
           <div className="w-full">
             <Table
               columns={columns}
-              data={kamData.projects}
+              data={aeData.projects}
               loading={false}
               error=""
               pageSize={4}

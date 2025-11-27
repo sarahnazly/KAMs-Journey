@@ -9,30 +9,31 @@ import FilterQuarter from "@/components/dashboard/FilterQuarter";
 import TabStage from "@/components/dashboard/TabStage";
 import Card from "@/components/common/Card";
 import Table, { TableColumn } from "@/components/dashboard/Table";
-import { Button } from "@/components/common/Button";
 import FeatureImportanceSection, {
   Feature,
   ModelInfo,
 } from "@/components/dashboard/FeatureImportance";
-import FormalTrainingDetail, { FormalDetailRow } from "@/components/dashboard/pengembangan/FormalTrainingDetail";
 
 type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
 
-type Row = {
+type informalRow = {
   nik: string;
-  nama: string;
-  informal: "BERIMPACT" | "TIDAK BERIMPACT";
-  formalScore: number; // 0..100 (dipakai untuk sort kolom Formal Training)
+  name: string;
+  informalCoaching: "F0" | "F1" | "F2" | "F3" | "F4" | "F5";
+  informalLesson: string;
   year: number;
   quarter: Quarter;
-  formalDetail: {
-    provider: string;
-    title: string;
-    hours: number;
-    date: string;
-    certificateId?: string;
-    topics: string[];
-  };
+};
+
+type formalRow = {
+  nik: string;
+  name: string;
+  courseName: string;
+  certificateId: string;
+  formalCoaching: "F0" | "F1" | "F2" | "F3" | "F4" | "F5";
+  formalLesson: string;
+  year: number;
+  quarter: Quarter;
 };
 
 const stageToPath = (stage: string) => {
@@ -52,69 +53,83 @@ const stageToPath = (stage: string) => {
   }
 };
 
-// Mock data (ganti ke fetch API jika tersedia)
-const ALL_ROWS: Row[] = [
+// Mock informal learning data (ganti ke fetch API nanti)
+const informalData: informalRow[] = [
   {
     nik: "20919",
-    nama: "Ratu Nadya Anjania",
-    informal: "BERIMPACT",
-    formalScore: 92,
+    name: "Ratu Nadya Anjania",
+    informalCoaching: "F1",
+    informalLesson: "perlu perbaikan dokumentasi",
     year: 2025,
     quarter: "Q1",
-    formalDetail: {
-      provider: "Dicoding",
-      title: "Project Management Fundamentals",
-      hours: 24,
-      date: "2025-01-22",
-      certificateId: "PMF-20919-2025-01",
-      topics: ["Scope", "Timeline", "Risk"],
-    },
   },
   {
     nik: "20971",
-    nama: "Sarah Nazly Nuraya",
-    informal: "BERIMPACT",
-    formalScore: 88,
+    name: "Sarah Nazly Nuraya",
+    informalCoaching: "F2",
+    informalLesson: "penerapan meningkatkan demo POC",
     year: 2025,
     quarter: "Q1",
-    formalDetail: {
-      provider: "Coursera",
-      title: "Customer Success 101",
-      hours: 18,
-      date: "2025-02-03",
-      certificateId: "CS-20971-2025-02",
-      topics: ["Onboarding", "Adoption", "Renewal"],
-    },
   },
   {
     nik: "20984",
-    nama: "Anindya Maulida Widyatmoko",
-    informal: "BERIMPACT",
-    formalScore: 76,
+    name: "Anindya Maulida Widyatmoko",
+    informalCoaching: "F0",
+    informalLesson: "improve komunikasi",
     year: 2025,
     quarter: "Q1",
-    formalDetail: {
-      provider: "Udemy",
-      title: "Solution Selling",
-      hours: 12,
-      date: "2025-02-11",
-      topics: ["Discovery", "Objection Handling", "Closing"],
-    },
   },
   {
     nik: "20992",
-    nama: "John Doe",
-    informal: "TIDAK BERIMPACT",
-    formalScore: 55,
+    name: "John Doe",
+    informalCoaching: "F2",
+    informalLesson: "improve komunikasi",
     year: 2025,
     quarter: "Q1",
-    formalDetail: {
-      provider: "Internal",
-      title: "Bid & Proposal Basics",
-      hours: 8,
-      date: "2025-03-01",
-      topics: ["RFP", "Compliance", "Pricing"],
-    },
+  },
+];
+
+// Mock formal learning data (ganti ke fetch API nanti)
+const formalData: formalRow[] = [
+  {
+    nik: "20919",
+    name: "Ratu Nadya Anjania",
+    courseName: "INTRODUCTION TO CYBER",
+    certificateId: "290-029ID201",
+    formalCoaching: "F4",
+    formalLesson: "course meningkatkan skill bidding",
+    year: 2025,
+    quarter: "Q1",
+  },
+  {
+    nik: "20971",
+    name: "Sarah Nazly Nuraya",
+    courseName: "PMP CERTIFICATION",
+    certificateId: "PM3810-01",
+    formalCoaching: "F5",
+    formalLesson: "course membantu memetakan project opportunities untuk pelanggan",
+    year: 2025,
+    quarter: "Q1",
+  },
+  {
+    nik: "20984",
+    name: "Anindya Maulida Widyatmoko",
+    courseName: "SALES ADVANCE",
+    certificateId: "9201SA2010",
+    formalCoaching: "F3",
+    formalLesson: "course meningkatkan skill bidding",
+    year: 2025,
+    quarter: "Q1",
+  },
+  {
+    nik: "20992",
+    name: "John Doe",
+    courseName: "CLOUD COMPUTING",
+    certificateId: "CC2910-020",
+    formalCoaching: "F2",
+    formalLesson: "course kurang terkait praktik lapangan",
+    year: 2025,
+    quarter: "Q1",
   },
 ];
 
@@ -132,12 +147,9 @@ export default function PengembanganPage(): JSX.Element {
   const [error, setError] = useState("");
 
   // Table data
-  const [rows, setRows] = useState<Row[]>([]);
+  const [informalRows, setInformalRows] = useState<informalRow[]>([]);
+  const [formalRows, setFormalRows] = useState<formalRow[]>([]);
   const pageSize = 10;
-
-  // Popup detail
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [detailAM, setDetailAM] = useState<{ nik: string; name: string } | null>(null);
 
   const handleStageChange = (stage: string) => {
     router.push(stageToPath(stage));
@@ -152,16 +164,33 @@ export default function PengembanganPage(): JSX.Element {
       try {
         if (shouldFail) throw new Error("Gagal mengambil data dari server. Coba lagi nanti.");
 
-        let filtered = ALL_ROWS.filter((r) => r.year === year && r.quarter === quarter);
+        let filteredInformal = informalData.filter(
+          (r) => r.year === year && r.quarter === quarter
+        );
+        let filteredFormal = formalData.filter(
+          (r) => r.year === year && r.quarter === quarter
+        );
+
         if (search.trim()) {
           const q = search.toLowerCase();
-          filtered = filtered.filter((r) => r.nik.includes(search) || r.nama.toLowerCase().includes(q));
+          filteredInformal = filteredInformal.filter(
+            (r) => 
+              r.nik.includes(search) || 
+            r.name.toLowerCase().includes(q)
+          );
+          filteredFormal = filteredFormal.filter(
+            (r) => 
+              r.nik.includes(search) ||
+            r.name.toLowerCase().includes(q)
+          );
         }
 
-        setRows(filtered);
+        setInformalRows(filteredInformal);
+        setFormalRows(filteredFormal);
       } catch (e: any) {
         setError(e?.message || "Terjadi kesalahan tak terduga.");
-        setRows([]);
+        setInformalRows([]);
+        setFormalRows([]);
       } finally {
         setLoading(false);
       }
@@ -169,47 +198,43 @@ export default function PengembanganPage(): JSX.Element {
     return () => clearTimeout(t);
   }, [search, year, quarter, searchParams]);
 
-  // Kolom Table (pakai Table.tsx). Sort untuk NIK, Nama, dan Formal Training (pakai formalScore).
-  const columns: TableColumn[] = useMemo(
+  const informalCols: TableColumn[] = useMemo(
     () => [
       { label: "NIK", key: "nik", sortable: true },
-      { label: "Nama", key: "nama", sortable: true },
-      { label: "Hasil Informal Training", key: "informal", sortable: false },
-      {
-        label: "Formal Training",
-        key: "formalScore",
-        sortable: true, // sort berdasarkan nilai formalScore
-        render: (_v, row) => (
-          <Button
-            variant="tertiary"
-            size="table"
-            onClick={() => {
-              setDetailAM({ nik: String(row.nik), name: String(row.nama) });
-              setDetailOpen(true);
-            }}
-          >
-            Detail
-          </Button>
-        ),
-      },
+      { label: "Name", key: "name", sortable: true },
+      { label: "Hasil Coaching", key: "informalCoaching", sortable: true },
+      { label: "Lesson Learned", key: "informalLesson", sortable: true },
     ],
     []
   );
 
-  // Feature Importance data (sesuai daftar yang diminta)
+  const formalCols: TableColumn[] = useMemo(
+    () => [
+      { label: "NIK", key: "nik", sortable: true },
+      { label: "Name", key: "name", sortable: true },
+      { label: "Course Name", key: "courseName", sortable: true },
+      { label: "Certificate ID", key: "certificateId", sortable: true },
+      { label: "Hasil Coaching", key: "formalCoaching", sortable: true },
+      { label: "Lesson Learned", key: "formalLesson", sortable: true },
+    ],
+    []
+  );
+
+  // Feature Importance data
   const features: Feature[] = useMemo(
     () => [
-      { name: "revenue_sales_achievement",   importance: 0.20, description: "Capaian revenue terhadap target penjualan." },
-      { name: "sales_achievement",           importance: 0.16, description: "Jumlah penjualan terhadap target." },
-      { name: "profitability_achievement",   importance: 0.14, description: "Kontribusi margin/laba terhadap target." },
-      { name: "collection_rate_achievement", importance: 0.12, description: "Kinerja collection/payment rate." },
-      { name: "am_tools_achievement",        importance: 0.10, description: "Pemakaian tools AM (CRM, funnel, dsb.)." },
-      { name: "capability_achievement",      importance: 0.08, description: "Peningkatan kapabilitas/sertifikasi." },
-      { name: "behaviour_achievement",       importance: 0.07, description: "Aspek perilaku (discipline, collaboration)." },
-      { name: "survey_am_to_consumer",       importance: 0.05, description: "Hasil survei konsumen terhadap AM." },
-      { name: "nps",                         importance: 0.04, description: "Net Promoter Score pelanggan." },
-      { name: "win_rate",                    importance: 0.025, description: "Rasio kemenangan tender/deal." },
-      { name: "tindak_lanjut_evaluasi",      importance: 0.015, description: "Tindak lanjut dari hasil evaluasi." },
+      { name: "Revenue Sales Ach.",       importance: 0.20, description: "Capaian revenue terhadap target penjualan." },
+      { name: "AE Tools Ach.",            importance: 0.16, description: "Tingkat ketercapaian target pemanfaatan tools AE." },
+      { name: "Profitability Ach.",       importance: 0.14, description: "Kontribusi margin/laba terhadap target." },
+      { name: "Sales Ach. Datin",         importance: 0.12, description: "Jumlah ketercapaian target penjualan produk Data Integration." },
+      { name: "Sales Ach. Wi-Fi",         importance: 0.10, description: "Jumlah ketercapaian target penjualan produk Wi-Fi." },
+      { name: "Collection Rate Ach.",     importance: 0.08, description: "Tingkat ketercapaian target pembayaran tagihan pelanggan." },
+      { name: "Behaviour Ach.",           importance: 0.07, description: "Ketercapaian target frekuensi kunjungan pelanggan." },
+      { name: "NPS",                      importance: 0.05, description: "Net Promoter Score Pelanggan." },
+      { name: "Sales Ach. HSI",           importance: 0.04, description: "Jumlah ketercapaian target penjualan produk HSI." },
+      { name: "Sales Ach. Wireline",      importance: 0.035, description: "Jumlah ketercapaian target penjualan produk Wireline." },
+      { name: "Capability Ach.",          importance: 0.025, description: "Jumlah frekuensi pelatihan AE terhadap target." },
+      { name: "Evaluation Quadrant",      importance: 0.015, description: "Kuadran evaluasi berdasarkan ketercapaian target scaling dan sustain." },
     ],
     []
   );
@@ -218,16 +243,6 @@ export default function PengembanganPage(): JSX.Element {
     () => ({ name: "XGBoost", accuracy: 0.85, trainCount: 500 }),
     []
   );
-
-  // Loader untuk detail popup (opsional — ganti dengan API asli jika tersedia)
-  const loadFormalDetails = async (nik: string): Promise<FormalDetailRow[]> => {
-    await new Promise((r) => setTimeout(r, 500));
-    return [
-      { no: 1, certificate: `CERT-${nik}-001`, result: "BERIMPACT" },
-      { no: 2, certificate: `CERT-${nik}-002`, result: "BERIMPACT" },
-      { no: 3, certificate: `CERT-${nik}-003`, result: "TIDAK BERIMPACT" },
-    ];
-  };
 
   return (
     <div className="w-full flex flex-col gap-6">
@@ -265,10 +280,10 @@ export default function PengembanganPage(): JSX.Element {
         </div>
       </div>
 
-      {/* Training Table - format sama seperti Table.tsx */}
+      {/* Informal Learning Table */}
       <div className="w-full flex items-center justify-center">
         <div className="max-w-[1100px] w-full">
-          <Card heading="Training" description="Tracking and evaluation of AM training and certifications">
+          <Card heading="Informal Learning" description="Tracking and evaluation of AE informal learning">
             {loading ? (
               <div className="w-full min-h-[180px] flex items-center justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#CBD5E1] border-r-blue-500" />
@@ -287,14 +302,51 @@ export default function PengembanganPage(): JSX.Element {
                   Coba lagi
                 </button>
               </div>
-            ) : rows.length === 0 ? (
+            ) : informalRows.length === 0 ? (
               <div className="w-full min-h-[140px] flex items-center justify-center text-[#64748B]">
                 Tidak ada data untuk filter yang dipilih.
               </div>
             ) : (
               <div className="-mx-4 sm:-mx-6 md:-mx-8">
                 <div className="px-2 sm:px-4 md:px-6 mt-4">
-                  <Table columns={columns} data={rows} pageSize={pageSize} showAction={false} />
+                  <Table columns={informalCols} data={informalRows} pageSize={pageSize} showAction={false} />
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
+
+      {/* Formal Learning Table */}
+      <div className="w-full flex items-center justify-center">
+        <div className="max-w-[1100px] w-full">
+          <Card heading="Formal Learning" description="Monitoring and evaluation of AE formal learning and certifications">
+            {loading ? (
+              <div className="w-full min-h-[180px] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#CBD5E1] border-r-blue-500" />
+                <span className="ml-3 text-[#164E9D] font-inter font-semibold">Loading...</span>
+              </div>
+            ) : error ? (
+              <div className="w-full min-h-[160px] flex flex-col items-center justify-center">
+                <div className="text-[#EF4444] font-semibold mb-3">{error}</div>
+                <button
+                  onClick={() => {
+                    setQuarter((q) => (q === "Q1" ? "Q2" : "Q1"));
+                    setTimeout(() => setQuarter("Q1"), 0);
+                  }}
+                  className="text-[#164E9D] underline"
+                >
+                  Coba lagi
+                </button>
+              </div>
+            ) : formalRows.length === 0 ? (
+              <div className="w-full min-h-[140px] flex items-center justify-center text-[#64748B]">
+                Tidak ada data untuk filter yang dipilih.
+              </div>
+            ) : (
+              <div className="-mx-4 sm:-mx-6 md:-mx-8">
+                <div className="px-2 sm:px-4 md:px-6 mt-4">
+                  <Table columns={formalCols} data={formalRows} pageSize={pageSize} showAction={false} />
                 </div>
               </div>
             )}
@@ -314,25 +366,6 @@ export default function PengembanganPage(): JSX.Element {
           />
         </div>
       </div>
-
-      {/* Popup Detail Formal Training */}
-      <FormalTrainingDetail
-        isOpen={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        am={detailAM}
-        fetchDetails={async (nik) => {
-          // Ganti ke API asli bila tersedia
-          const data: FormalDetailRow[] = await (async () => {
-            await new Promise((r) => setTimeout(r, 500));
-            return [
-              { no: 1, certificate: `CERT-${nik}-001`, result: "BERIMPACT" },
-              { no: 2, certificate: `CERT-${nik}-002`, result: "BERIMPACT" },
-              { no: 3, certificate: `CERT-${nik}-003`, result: "TIDAK BERIMPACT" },
-            ];
-          })();
-          return data;
-        }}
-      />
     </div>
   );
 }

@@ -367,7 +367,7 @@ export default function PredictionsPage() {
           predicted: predictions.evaluationQuadrant,
           target: 1,
           delta: predictions.evaluationQuadrant - current. evaluationQuadrant,
-          deltaPercent: "", // Kosongkan untuk quadrant
+          deltaPercent: "",
           status: 
             predictions.evaluationQuadrant < current.evaluationQuadrant 
               ? "Improving" 
@@ -590,50 +590,86 @@ export default function PredictionsPage() {
 
           ctx.save();
 
-          ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
+          // Q1 - Top Right: Achieve BOTH (Strongest - Success Navy/Teal)
+          ctx.fillStyle = "rgba(30, 58, 138, 0.25)";     // Deep teal - achievement
           ctx.fillRect(centerX, top, right - centerX, centerY - top);
 
-          ctx.fillStyle = "rgba(59, 130, 246, 0. 15)";
-          ctx.fillRect(left, top, centerX - left, centerY - top);
+          // Q2 - Top Left: Achieve Scaling only (Medium - Primary Navy)
+          ctx.fillStyle = "rgba(37, 99, 180, 0.18)";   // Your theme navy
+          ctx. fillRect(left, top, centerX - left, centerY - top);
 
-          ctx.fillStyle = "rgba(245, 158, 11, 0.15)";
+          // Q3 - Bottom Right: Achieve Sustain only (Medium - Lighter Navy)
+          ctx.fillStyle = "rgba(59, 130, 200, 0.14)";   // Lighter navy variant
           ctx.fillRect(centerX, centerY, right - centerX, bottom - centerY);
 
-          ctx.fillStyle = "rgba(239, 68, 68, 0.15)";
+          // Q4 - Bottom Left: Achieve NONE (Weakest - Muted Slate)
+          ctx.fillStyle = "rgba(148, 163, 184, 0.20)"; // Slate gray - needs attention
           ctx.fillRect(left, centerY, centerX - left, bottom - centerY);
 
+          // Divider lines
           ctx.setLineDash([5, 5]);
           ctx.strokeStyle = "#94a3b8";
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 1.5;
 
           ctx.beginPath();
-          ctx. moveTo(centerX, top);
-          ctx.lineTo(centerX, bottom);
+          ctx.moveTo(centerX, top);
+          ctx. lineTo(centerX, bottom);
           ctx.stroke();
 
-          ctx. beginPath();
-          ctx.moveTo(left, centerY);
+          ctx.beginPath();
+          ctx. moveTo(left, centerY);
           ctx.lineTo(right, centerY);
           ctx.stroke();
 
-          ctx.setLineDash([]);
+          ctx. setLineDash([]);
 
-          ctx.font = "bold 11px Inter, sans-serif";
+          // Quadrant labels
+          ctx.font = "600 11px Inter, sans-serif";
           ctx.textAlign = "center";
 
-          ctx.fillStyle = "#059669";
-          ctx.fillText("Q1 - Star Performer", (centerX + right) / 2, top + 20);
+          // Q1 - Deep teal text
+          ctx.fillStyle = "#02214C";
+          ctx. fillText("1st Quadrant - Ach.  Scaling & Sustain", (centerX + right) / 2, top + 20);
 
-          ctx.fillStyle = "#2563eb";
-          ctx. fillText("Q2 - High Potential", (left + centerX) / 2, top + 20);
+          // Q2 - Navy text (your theme)
+          ctx.fillStyle = "#1e3a8a";
+          ctx.fillText("2nd Quadrant - Ach.  Scaling Only", (left + centerX) / 2, top + 20);
 
-          ctx.fillStyle = "#d97706";
-          ctx.fillText("Q3 - Solid Performer", (centerX + right) / 2, bottom - 10);
+          // Q3 - Medium navy text
+          ctx.fillStyle = "#2d4a7c";
+          ctx.fillText("3rd Quadrant - Ach.  Sustain Only", (centerX + right) / 2, bottom - 10);
 
-          ctx. fillStyle = "#dc2626";
-          ctx.fillText("Q4 - Needs Development", (left + centerX) / 2, bottom - 10);
+          // Q4 - Slate text
+          ctx. fillStyle = "#475569";
+          ctx.fillText("4th Quadrant - Not ach. both", (left + centerX) / 2, bottom - 10);
 
           ctx. restore();
+        },
+      };
+
+      const axisLabelsPlugin = {
+        id: "axisLabels",
+        afterDraw: (chart: any) => {
+          const {
+            ctx,
+            chartArea: { left, top, right, bottom },
+          } = chart;
+
+          ctx.save();
+
+          // "↑ Ach. Scaling" - Top center (above the chart)
+          ctx.font = "bold 13px Inter, sans-serif";
+          ctx.fillStyle = "#0F172A";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "bottom";
+          ctx. fillText("↑ Ach.  Scaling", (left + right) / 2, top - 15);
+
+          // "Ach.  Sustain →" - Right side (middle right of chart)
+          ctx. textAlign = "left";
+          ctx. textBaseline = "middle";
+          ctx.fillText("Ach. Sustain →", right + 15, (top + bottom) / 2);
+
+          ctx.restore();
         },
       };
 
@@ -676,6 +712,13 @@ export default function PredictionsPage() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          layout: {
+            padding: {
+              top: 40,
+              right: 120,
+              left: 120,
+            },
+          },
           plugins: {
             legend: {
               display: false,
@@ -694,12 +737,12 @@ export default function PredictionsPage() {
                   else quadrant = 4;
 
                   const quadrantNames: { [key: number]: string } = {
-                    1: "Star Performer",
-                    2: "High Potential",
-                    3: "Solid Performer",
-                    4: "Needs Development",
+                    1: "Ach. Scaling & Sustain",
+                    2: "Ach. Scaling Only",
+                    3: "Ach. Sustain Only",
+                    4: "Not ach. both",
                   };
-                  return `${label}: Q${quadrant} (${quadrantNames[quadrant]})`;
+                  return `${label}: Quadrant ${quadrant} (${quadrantNames[quadrant]})`;
                 },
               },
             },
@@ -709,14 +752,7 @@ export default function PredictionsPage() {
               min: 0,
               max: 100,
               title: {
-                display: true,
-                text: "Performance →",
-                font: {
-                  size: 13,
-                  family: "Inter, sans-serif",
-                  weight: "bold",
-                },
-                color: "#0F172A",
+                display: false,
               },
               ticks: { display: false },
               grid: { display: false },
@@ -726,14 +762,7 @@ export default function PredictionsPage() {
               min: 0,
               max: 100,
               title: {
-                display: true,
-                text: "↑ Potential",
-                font: {
-                  size: 13,
-                  family: "Inter, sans-serif",
-                  weight: "bold",
-                },
-                color: "#0F172A",
+                display: false,
               },
               ticks: { display: false },
               grid: { display: false },
@@ -741,7 +770,7 @@ export default function PredictionsPage() {
             },
           },
         },
-        plugins: [quadrantBackgroundPlugin],
+        plugins: [quadrantBackgroundPlugin, axisLabelsPlugin],
       });
     };
 
@@ -763,21 +792,21 @@ export default function PredictionsPage() {
         key: "current",
         sortable: true,
         render: (value, row) =>
-          row.name === "Evaluation Quadrant" ? `Q${value}` : `${value}%`,
+          row.name === "Evaluation Quadrant" ? `Quadrant ${value}` : `${value}%`,
       },
       {
         label: "Predicted",
         key: "predicted",
         sortable: true,
         render: (value, row) =>
-          row.name === "Evaluation Quadrant" ? `Q${value}` : `${value}%`,
+          row.name === "Evaluation Quadrant" ? `Quadrant ${value}` : `${value}%`,
       },
       {
         label: "Target",
         key: "target",
         sortable: true,
         render: (value, row) =>
-          row.name === "Evaluation Quadrant" ? `Q${value}` : `${value}%`,
+          row.name === "Evaluation Quadrant" ? `Quadrant ${value}` : `${value}%`,
       },
       {
         label: "Δ (pts)",
@@ -966,13 +995,13 @@ export default function PredictionsPage() {
             className="shadow-sm"
           >
             {/* Current Status Display */}
-            <div className="flex flex-wrap justify-center gap-6 mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex justify-center gap-6 mb-4 p-4 rounded-lg">
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded-full bg-[#64748b] border-2 border-white shadow"></div>
                 <div>
                   <span className="text-sm text-gray-500">Current:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Q{kpiData.find((d) => d. name === "Evaluation Quadrant")?. current || "-"}
+                    Quadrant {kpiData.find((d) => d.name === "Evaluation Quadrant")?. current || "-"}
                   </span>
                 </div>
               </div>
@@ -981,7 +1010,7 @@ export default function PredictionsPage() {
                 <div>
                   <span className="text-sm text-gray-500">Predicted:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Q{kpiData.find((d) => d.name === "Evaluation Quadrant")?.predicted || "-"}
+                    Quadrant {kpiData.find((d) => d.name === "Evaluation Quadrant")?.predicted || "-"}
                   </span>
                 </div>
               </div>
@@ -990,7 +1019,7 @@ export default function PredictionsPage() {
                 <div>
                   <span className="text-sm text-gray-500">Target:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Q{kpiData.find((d) => d.name === "Evaluation Quadrant")?.target || "-"}
+                    Quadrant {kpiData.find((d) => d.name === "Evaluation Quadrant")?.target || "-"}
                   </span>
                 </div>
               </div>

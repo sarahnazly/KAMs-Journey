@@ -16,43 +16,97 @@ type KPIData = {
   deltaPercent: string;
   status: string;
   category?: string;
+  subcategory?: string;
 };
 
-type KPICategory = {
+type KPISubcategory = {
   name: string;
   key: string;
   kpis: string[];
 };
 
+type KPICategory = {
+  name: string;
+  key: string;
+  subcategories?: KPISubcategory[]; // Optional - Process won't have subcategories
+  kpis?: string[]; // Direct KPIs for categories without subcategories
+};
+
 // Define KPI categories for grouping
 const KPI_CATEGORIES: KPICategory[] = [
   {
-    name: "Sales Performance",
-    key: "sales",
-    kpis: [
-      "Revenue Sales Achievement",
-      "Sales Achievement Datin",
-      "Sales Achievement Wi-Fi",
-      "Sales Achievement HSI",
-      "Sales Achievement Wireline",
+    name: "Result",
+    key: "result",
+    subcategories: [
+      {
+        name: "Financial Metrics",
+        key: "financial",
+        kpis: [
+          "Revenue Sales Achievement",
+          "Profitability Achievement",
+          "Collection Rate Achievement",
+        ],
+      },
+      {
+        name: "Sales Performance",
+        key: "sales",
+        kpis: [
+          "Sales Achievement Datin",
+          "Sales Achievement Wi-Fi",
+          "Sales Achievement HSI",
+          "Sales Achievement Wireline",
+        ],
+      },
+      {
+        name: "Customer",
+        key: "customer",
+        kpis: ["NPS"],
+      },
     ],
   },
   {
-    name: "Financial Metrics",
-    key: "financial",
-    kpis: ["Profitability Achievement", "Collection Rate Achievement"],
-  },
-  {
-    name: "Operational & Tools",
-    key: "operational",
-    kpis: ["AE Tools Achievement"],
-  },
-  {
-    name: "People & Culture",
-    key: "people",
-    kpis: ["Capability Achievement", "Behaviour Achievement", "NPS"],
+    name: "Process",
+    key: "process",
+    kpis: [
+      "AE Tools Achievement",
+      "Capability Achievement",
+      "Behaviour Achievement",
+    ],
   },
 ];
+
+// Helper function to check if category has subcategories
+const hasSubcategories = (categoryKey: string): boolean => {
+  const category = KPI_CATEGORIES.find((c) => c.key === categoryKey);
+  return ! !(category?.subcategories && category.subcategories.length > 0);
+};
+
+// Helper function to get all KPIs for a category (without subcategories)
+const getDirectKpis = (categoryKey: string): string[] => {
+  const category = KPI_CATEGORIES.find((c) => c.key === categoryKey);
+  return category?.kpis || [];
+};
+
+// Helper function to get category and subcategory for a KPI
+const getCategoryInfo = (
+  kpiName: string
+): { category: string; subcategory: string } => {
+  for (const cat of KPI_CATEGORIES) {
+    // Check direct KPIs
+    if (cat.kpis?.includes(kpiName)) {
+      return { category: cat.name, subcategory: cat.name };
+    }
+    // Check subcategories
+    if (cat.subcategories) {
+      for (const sub of cat.subcategories) {
+        if (sub.kpis.includes(kpiName)) {
+          return { category: cat.name, subcategory: sub.name };
+        }
+      }
+    }
+  }
+  return { category: "Other", subcategory: "Other" };
+};
 
 // Employee database - static data
 const EMPLOYEE_DATABASE = {
@@ -175,24 +229,49 @@ const EMPLOYEE_DATABASE = {
 export default function PredictionsPage() {
   const router = useRouter();
   const params = useParams();
-  const nik = (params?. nik as string) || "20919";
+  const nik = (params?.nik as string) || "20919";
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<any>(null);
   const quadrantChartRef = useRef<HTMLCanvasElement>(null);
   const quadrantChartInstanceRef = useRef<any>(null);
 
-  // State for active category tab
-  const [activeCategory, setActiveCategory] = useState<string>("sales");
+  // State for active category tab (main tab)
+  const [activeCategory, setActiveCategory] = useState<string>("result");
+
+  // State for active subcategory tab (subtab) - only used for Result
+  const [activeSubcategory, setActiveSubcategory] =
+    useState<string>("financial");
 
   // State for client-side generated data
   const [kpiData, setKpiData] = useState<KPIData[]>([]);
   const [employeeName, setEmployeeName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Generate predictions on client-side only (FOR PROTOTYPE PURPOSES ONLY, WILL BE FIXED)
+  // Check if current category has subcategories
+  const currentHasSubcategories = useMemo(
+    () => hasSubcategories(activeCategory),
+    [activeCategory]
+  );
+
+  // Get subcategories for the active category (only for Result)
+  const activeSubcategories = useMemo(() => {
+    const category = KPI_CATEGORIES.find((c) => c.key === activeCategory);
+    return category?.subcategories || [];
+  }, [activeCategory]);
+
+  // Reset subcategory when category changes
+  useEffect(() => {
+    const category = KPI_CATEGORIES.find((c) => c.key === activeCategory);
+    if (category?.subcategories && category.subcategories.length > 0) {
+      setActiveSubcategory(category.subcategories[0].key);
+    }
+  }, [activeCategory]);
+
+  // Generate predictions on client-side only
   useEffect(() => {
     const generatePredictionsForEmployee = (nikParam: string) => {
-      const employee = EMPLOYEE_DATABASE[nikParam as keyof typeof EMPLOYEE_DATABASE];
+      const employee =
+        EMPLOYEE_DATABASE[nikParam as keyof typeof EMPLOYEE_DATABASE];
       if (!employee) {
         return {
           employeeName: "Unknown Employee",
@@ -209,48 +288,57 @@ export default function PredictionsPage() {
         declining: { min: 0.85, max: 0.98 },
       };
 
-      const multiplier = growthMultipliers[growthTrend as keyof typeof growthMultipliers];
+      const multiplier =
+        growthMultipliers[growthTrend as keyof typeof growthMultipliers];
 
-      const generatePrediction = (currentValue: number, variance: number = 0.1) => {
-        const baseGrowth = multiplier.min + Math.random() * (multiplier.max - multiplier.min);
+      const generatePrediction = (
+        currentValue: number,
+        variance: number = 0.1
+      ) => {
+        const baseGrowth =
+          multiplier.min + Math.random() * (multiplier.max - multiplier.min);
         const varianceAdjustment = 1 + (Math.random() - 0.5) * variance;
-        return Math.round(Math.min(100, currentValue * baseGrowth * varianceAdjustment));
+        return Math.round(
+          Math.min(100, currentValue * baseGrowth * varianceAdjustment)
+        );
       };
 
       const predictions = {
         revenueSales: generatePrediction(current.revenueSales),
         salesDatin: generatePrediction(current.salesDatin),
         salesWiFi: generatePrediction(current.salesWiFi),
-        salesHSI: generatePrediction(current. salesHSI),
+        salesHSI: generatePrediction(current.salesHSI),
         salesWireline: generatePrediction(current.salesWireline),
         profitability: generatePrediction(current.profitability),
         collectionRate: generatePrediction(current.collectionRate, 0.15),
-        aeTools: generatePrediction(current. aeTools, 0.12),
+        aeTools: generatePrediction(current.aeTools, 0.12),
         capability: generatePrediction(current.capability, 0.2),
         behaviour: generatePrediction(current.behaviour, 0.12),
         nps: generatePrediction(current.nps, 0.15),
         evaluationQuadrant: Math.round(
-          Math.min(4, Math.max(1, current.evaluationQuadrant + (Math.random() > 0.5 ? 1 : 0)))
+          Math.min(
+            4,
+            Math.max(
+              1,
+              current.evaluationQuadrant + (Math.random() > 0.5 ? 1 : 0)
+            )
+          )
         ),
       };
 
-      const calculateStatus = (current: number, predicted: number, target: number) => {
+      const calculateStatus = (
+        current: number,
+        predicted: number,
+        target: number
+      ) => {
         if (predicted >= target + 5) return "Exceeds";
         if (predicted >= target - 2) return "On Track";
         if (predicted >= target - 10) return "Near Target";
         return "Needs Focus";
       };
 
-      const getCategory = (kpiName: string): string => {
-        for (const cat of KPI_CATEGORIES) {
-          if (cat.kpis.includes(kpiName)) {
-            return cat. name;
-          }
-        }
-        return "Other";
-      };
-
-      const kpiDataUnsorted = [
+      const kpiDataUnsorted: KPIData[] = [
+        // Result - Financial Metrics
         {
           name: "Revenue Sales Achievement",
           current: current.revenueSales,
@@ -258,48 +346,12 @@ export default function PredictionsPage() {
           target: 90,
           delta: predictions.revenueSales - current.revenueSales,
           deltaPercent: `${predictions.revenueSales >= current.revenueSales ? "+" : ""}${(((predictions.revenueSales - current.revenueSales) / current.revenueSales) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.revenueSales, predictions.revenueSales, 90),
-          category: getCategory("Revenue Sales Achievement"),
-        },
-        {
-          name: "Sales Achievement Datin",
-          current: current. salesDatin,
-          predicted: predictions. salesDatin,
-          target: 90,
-          delta: predictions.salesDatin - current.salesDatin,
-          deltaPercent: `${predictions.salesDatin >= current.salesDatin ? "+" : ""}${(((predictions.salesDatin - current.salesDatin) / current. salesDatin) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.salesDatin, predictions. salesDatin, 90),
-          category: getCategory("Sales Achievement Datin"),
-        },
-        {
-          name: "Sales Achievement Wi-Fi",
-          current: current. salesWiFi,
-          predicted: predictions.salesWiFi,
-          target: 90,
-          delta: predictions.salesWiFi - current.salesWiFi,
-          deltaPercent: `${predictions.salesWiFi >= current.salesWiFi ? "+" : ""}${(((predictions.salesWiFi - current. salesWiFi) / current.salesWiFi) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.salesWiFi, predictions. salesWiFi, 90),
-          category: getCategory("Sales Achievement Wi-Fi"),
-        },
-        {
-          name: "Sales Achievement HSI",
-          current: current.salesHSI,
-          predicted: predictions.salesHSI,
-          target: 85,
-          delta: predictions.salesHSI - current.salesHSI,
-          deltaPercent: `${predictions.salesHSI >= current.salesHSI ? "+" : ""}${(((predictions.salesHSI - current.salesHSI) / current.salesHSI) * 100). toFixed(1)}%`,
-          status: calculateStatus(current.salesHSI, predictions.salesHSI, 85),
-          category: getCategory("Sales Achievement HSI"),
-        },
-        {
-          name: "Sales Achievement Wireline",
-          current: current.salesWireline,
-          predicted: predictions.salesWireline,
-          target: 85,
-          delta: predictions.salesWireline - current.salesWireline,
-          deltaPercent: `${predictions.salesWireline >= current.salesWireline ? "+" : ""}${(((predictions.salesWireline - current.salesWireline) / current.salesWireline) * 100). toFixed(1)}%`,
-          status: calculateStatus(current.salesWireline, predictions.salesWireline, 85),
-          category: getCategory("Sales Achievement Wireline"),
+          status: calculateStatus(
+            current.revenueSales,
+            predictions.revenueSales,
+            90
+          ),
+          ...getCategoryInfo("Revenue Sales Achievement"),
         },
         {
           name: "Profitability Achievement",
@@ -307,9 +359,13 @@ export default function PredictionsPage() {
           predicted: predictions.profitability,
           target: 85,
           delta: predictions.profitability - current.profitability,
-          deltaPercent: `${predictions.profitability >= current.profitability ? "+" : ""}${(((predictions.profitability - current.profitability) / current. profitability) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.profitability, predictions. profitability, 85),
-          category: getCategory("Profitability Achievement"),
+          deltaPercent: `${predictions.profitability >= current.profitability ? "+" : ""}${(((predictions.profitability - current.profitability) / current.profitability) * 100).toFixed(1)}%`,
+          status: calculateStatus(
+            current.profitability,
+            predictions.profitability,
+            85
+          ),
+          ...getCategoryInfo("Profitability Achievement"),
         },
         {
           name: "Collection Rate Achievement",
@@ -317,29 +373,98 @@ export default function PredictionsPage() {
           predicted: predictions.collectionRate,
           target: 85,
           delta: predictions.collectionRate - current.collectionRate,
-          deltaPercent: `${predictions.collectionRate >= current.collectionRate ? "+" : ""}${(((predictions.collectionRate - current.collectionRate) / current. collectionRate) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.collectionRate, predictions. collectionRate, 85),
-          category: getCategory("Collection Rate Achievement"),
+          deltaPercent: `${predictions.collectionRate >= current.collectionRate ? "+" : ""}${(((predictions.collectionRate - current.collectionRate) / current.collectionRate) * 100).toFixed(1)}%`,
+          status: calculateStatus(
+            current.collectionRate,
+            predictions.collectionRate,
+            85
+          ),
+          ...getCategoryInfo("Collection Rate Achievement"),
+        },
+        // Result - Sales Performance
+        {
+          name: "Sales Achievement Datin",
+          current: current.salesDatin,
+          predicted: predictions.salesDatin,
+          target: 90,
+          delta: predictions.salesDatin - current.salesDatin,
+          deltaPercent: `${predictions.salesDatin >= current.salesDatin ? "+" : ""}${(((predictions.salesDatin - current.salesDatin) / current.salesDatin) * 100).toFixed(1)}%`,
+          status: calculateStatus(
+            current.salesDatin,
+            predictions.salesDatin,
+            90
+          ),
+          ...getCategoryInfo("Sales Achievement Datin"),
         },
         {
+          name: "Sales Achievement Wi-Fi",
+          current: current.salesWiFi,
+          predicted: predictions.salesWiFi,
+          target: 90,
+          delta: predictions.salesWiFi - current.salesWiFi,
+          deltaPercent: `${predictions.salesWiFi >= current.salesWiFi ? "+" : ""}${(((predictions.salesWiFi - current.salesWiFi) / current.salesWiFi) * 100).toFixed(1)}%`,
+          status: calculateStatus(current.salesWiFi, predictions.salesWiFi, 90),
+          ...getCategoryInfo("Sales Achievement Wi-Fi"),
+        },
+        {
+          name: "Sales Achievement HSI",
+          current: current.salesHSI,
+          predicted: predictions.salesHSI,
+          target: 85,
+          delta: predictions.salesHSI - current.salesHSI,
+          deltaPercent: `${predictions.salesHSI >= current.salesHSI ? "+" : ""}${(((predictions.salesHSI - current.salesHSI) / current.salesHSI) * 100).toFixed(1)}%`,
+          status: calculateStatus(current.salesHSI, predictions.salesHSI, 85),
+          ...getCategoryInfo("Sales Achievement HSI"),
+        },
+        {
+          name: "Sales Achievement Wireline",
+          current: current.salesWireline,
+          predicted: predictions.salesWireline,
+          target: 85,
+          delta: predictions.salesWireline - current.salesWireline,
+          deltaPercent: `${predictions.salesWireline >= current.salesWireline ? "+" : ""}${(((predictions.salesWireline - current.salesWireline) / current.salesWireline) * 100).toFixed(1)}%`,
+          status: calculateStatus(
+            current.salesWireline,
+            predictions.salesWireline,
+            85
+          ),
+          ...getCategoryInfo("Sales Achievement Wireline"),
+        },
+        // Result - Customer
+        {
+          name: "NPS",
+          current: current.nps,
+          predicted: predictions.nps,
+          target: 80,
+          delta: predictions.nps - current.nps,
+          deltaPercent: `${predictions.nps >= current.nps ? "+" : ""}${(((predictions.nps - current.nps) / current.nps) * 100).toFixed(1)}%`,
+          status: calculateStatus(current.nps, predictions.nps, 80),
+          ...getCategoryInfo("NPS"),
+        },
+        // Process
+        {
           name: "AE Tools Achievement",
-          current: current. aeTools,
-          predicted: predictions. aeTools,
+          current: current.aeTools,
+          predicted: predictions.aeTools,
           target: 90,
           delta: predictions.aeTools - current.aeTools,
-          deltaPercent: `${predictions.aeTools >= current.aeTools ? "+" : ""}${(((predictions.aeTools - current.aeTools) / current. aeTools) * 100).toFixed(1)}%`,
-          status: calculateStatus(current. aeTools, predictions. aeTools, 90),
-          category: getCategory("AE Tools Achievement"),
+          deltaPercent: `${predictions.aeTools >= current.aeTools ? "+" : ""}${(((predictions.aeTools - current.aeTools) / current.aeTools) * 100).toFixed(1)}%`,
+          status: calculateStatus(current.aeTools, predictions.aeTools, 90),
+          ...getCategoryInfo("AE Tools Achievement"),
         },
         {
           name: "Capability Achievement",
-          current: current. capability,
+          current: current.capability,
           predicted: predictions.capability,
           target: 85,
           delta: predictions.capability - current.capability,
-          deltaPercent: `${predictions.capability >= current.capability ? "+" : ""}${(((predictions.capability - current.capability) / current.capability) * 100).toFixed(1)}%`,
-          status: calculateStatus(current. capability, predictions.capability, 85),
-          category: getCategory("Capability Achievement"),
+          deltaPercent: `${predictions.capability >= current.capability ?  "+" : ""}${(((predictions.capability - current.capability) / current.capability) * 100).toFixed(1)}%`,
+          status: calculateStatus(
+            current.capability,
+            predictions.capability,
+            85
+          ),
+          ...getCategoryInfo("Capability Achievement"),
         },
         {
           name: "Behaviour Achievement",
@@ -347,35 +472,31 @@ export default function PredictionsPage() {
           predicted: predictions.behaviour,
           target: 85,
           delta: predictions.behaviour - current.behaviour,
-          deltaPercent: `${predictions. behaviour >= current.behaviour ? "+" : ""}${(((predictions.behaviour - current. behaviour) / current. behaviour) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.behaviour, predictions.behaviour, 85),
-          category: getCategory("Behaviour Achievement"),
+          deltaPercent: `${predictions.behaviour >= current.behaviour ? "+" : ""}${(((predictions.behaviour - current.behaviour) / current.behaviour) * 100).toFixed(1)}%`,
+          status: calculateStatus(
+            current.behaviour,
+            predictions.behaviour,
+            85
+          ),
+          ...getCategoryInfo("Behaviour Achievement"),
         },
-        {
-          name: "NPS",
-          current: current.nps,
-          predicted: predictions. nps,
-          target: 80,
-          delta: predictions.nps - current.nps,
-          deltaPercent: `${predictions. nps >= current. nps ? "+" : ""}${(((predictions.nps - current.nps) / current.nps) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.nps, predictions.nps, 80),
-          category: getCategory("NPS"),
-        },
+        // Evaluation Quadrant
         {
           name: "Evaluation Quadrant",
           current: current.evaluationQuadrant,
           predicted: predictions.evaluationQuadrant,
           target: 1,
-          delta: predictions.evaluationQuadrant - current. evaluationQuadrant,
+          delta: predictions.evaluationQuadrant - current.evaluationQuadrant,
           deltaPercent: "",
-          status: 
-            predictions.evaluationQuadrant < current.evaluationQuadrant 
-              ? "Improving" 
-              : predictions.evaluationQuadrant > current.evaluationQuadrant 
-                ? "Declining" 
+          status:
+            predictions.evaluationQuadrant < current.evaluationQuadrant
+              ?  "Improving"
+              : predictions.evaluationQuadrant > current.evaluationQuadrant
+                ? "Declining"
                 : "Stable",
           category: "Evaluation",
-          }
+          subcategory: "Quadrant",
+        },
       ];
 
       return {
@@ -385,7 +506,7 @@ export default function PredictionsPage() {
     };
 
     const result = generatePredictionsForEmployee(nik);
-    setEmployeeName(result. employeeName);
+    setEmployeeName(result.employeeName);
     setKpiData(result.kpiData);
     setIsLoading(false);
   }, [nik]);
@@ -398,19 +519,37 @@ export default function PredictionsPage() {
     [nik, employeeName]
   );
 
-  // Filter KPIs based on active category for the chart
+  // Filter KPIs based on active category/subcategory
   const filteredKpiData = useMemo(() => {
-    const category = KPI_CATEGORIES. find((c) => c.key === activeCategory);
-    if (!category) return [];
-    return kpiData.filter(
-      (d) => category.kpis. includes(d.name) && d.name !== "Evaluation Quadrant"
-    );
-  }, [kpiData, activeCategory]);
+    // If category has subcategories (Result), filter by subcategory
+    if (currentHasSubcategories) {
+      for (const cat of KPI_CATEGORIES) {
+        if (cat.subcategories) {
+          const sub = cat.subcategories.find(
+            (s) => s.key === activeSubcategory
+          );
+          if (sub) {
+            return kpiData.filter(
+              (d) =>
+                sub.kpis.includes(d.name) && d.name !== "Evaluation Quadrant"
+            );
+          }
+        }
+      }
+    } else {
+      // If no subcategories (Process), filter by direct KPIs
+      const directKpis = getDirectKpis(activeCategory);
+      return kpiData.filter(
+        (d) => directKpis.includes(d.name) && d.name !== "Evaluation Quadrant"
+      );
+    }
+    return [];
+  }, [kpiData, activeCategory, activeSubcategory, currentHasSubcategories]);
 
   // Initialize Chart.js for KPI bars
   useEffect(() => {
     const loadChart = async () => {
-      if (!chartRef. current || filteredKpiData. length === 0) return;
+      if (!chartRef.current || filteredKpiData.length === 0) return;
 
       const { Chart, registerables } = await import("chart.js");
       Chart.register(...registerables);
@@ -425,7 +564,7 @@ export default function PredictionsPage() {
       chartInstanceRef.current = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: filteredKpiData.map((d) => d. name),
+          labels: filteredKpiData.map((d) => d.name),
           datasets: [
             {
               label: "Q1 2025 (Actual)",
@@ -436,7 +575,7 @@ export default function PredictionsPage() {
             },
             {
               label: "Q2 2025 (Predicted)",
-              data: filteredKpiData.map((d) => d. predicted),
+              data: filteredKpiData.map((d) => d.predicted),
               backgroundColor: "#1e3a8a",
               borderRadius: 4,
               maxBarThickness: 40,
@@ -456,7 +595,7 @@ export default function PredictionsPage() {
           maintainAspectRatio: false,
           layout: {
             padding: {
-              top: activeCategory === "all" ? 30 : 0,
+              top: 0,
             },
           },
           plugins: {
@@ -529,7 +668,7 @@ export default function PredictionsPage() {
         chartInstanceRef.current.destroy();
       }
     };
-  }, [filteredKpiData, activeCategory]);
+  }, [filteredKpiData, activeSubcategory, activeCategory]);
 
   // Initialize Quadrant Chart
   useEffect(() => {
@@ -543,19 +682,26 @@ export default function PredictionsPage() {
         quadrantChartInstanceRef.current.destroy();
       }
 
-      const quadrantData = kpiData.find((d) => d.name === "Evaluation Quadrant");
-      if (!quadrantData) return;
+      const quadrantData = kpiData.find(
+        (d) => d.name === "Evaluation Quadrant"
+      );
+      if (! quadrantData) return;
 
       const ctx = quadrantChartRef.current.getContext("2d");
       if (!ctx) return;
 
       const quadrantToCoords = (quadrant: number): { x: number; y: number } => {
         switch (quadrant) {
-          case 1: return { x: 75, y: 75 };
-          case 2: return { x: 25, y: 75 };
-          case 3: return { x: 75, y: 25 };
-          case 4: return { x: 25, y: 25 };
-          default: return { x: 50, y: 50 };
+          case 1:
+            return { x: 75, y: 75 };
+          case 2:
+            return { x: 25, y: 75 };
+          case 3:
+            return { x: 75, y: 25 };
+          case 4:
+            return { x: 25, y: 25 };
+          default:
+            return { x: 50, y: 50 };
         }
       };
 
@@ -590,60 +736,66 @@ export default function PredictionsPage() {
 
           ctx.save();
 
-          // Q1 - Top Right: Achieve BOTH (Strongest - Success Navy/Teal)
-          ctx.fillStyle = "rgba(30, 58, 138, 0.25)";     // Deep teal - achievement
+          ctx.fillStyle = "rgba(30, 58, 138, 0.25)";
           ctx.fillRect(centerX, top, right - centerX, centerY - top);
 
-          // Q2 - Top Left: Achieve Scaling only (Medium - Primary Navy)
-          ctx.fillStyle = "rgba(37, 99, 180, 0.18)";   // Your theme navy
-          ctx. fillRect(left, top, centerX - left, centerY - top);
+          ctx.fillStyle = "rgba(37, 99, 180, 0.18)";
+          ctx.fillRect(left, top, centerX - left, centerY - top);
 
-          // Q3 - Bottom Right: Achieve Sustain only (Medium - Lighter Navy)
-          ctx.fillStyle = "rgba(59, 130, 200, 0.14)";   // Lighter navy variant
+          ctx.fillStyle = "rgba(59, 130, 200, 0.14)";
           ctx.fillRect(centerX, centerY, right - centerX, bottom - centerY);
 
-          // Q4 - Bottom Left: Achieve NONE (Weakest - Muted Slate)
-          ctx.fillStyle = "rgba(148, 163, 184, 0.20)"; // Slate gray - needs attention
+          ctx.fillStyle = "rgba(148, 163, 184, 0.20)";
           ctx.fillRect(left, centerY, centerX - left, bottom - centerY);
 
-          // Divider lines
           ctx.setLineDash([5, 5]);
           ctx.strokeStyle = "#94a3b8";
           ctx.lineWidth = 1.5;
 
           ctx.beginPath();
           ctx.moveTo(centerX, top);
-          ctx. lineTo(centerX, bottom);
+          ctx.lineTo(centerX, bottom);
           ctx.stroke();
 
           ctx.beginPath();
-          ctx. moveTo(left, centerY);
+          ctx.moveTo(left, centerY);
           ctx.lineTo(right, centerY);
           ctx.stroke();
 
-          ctx. setLineDash([]);
+          ctx.setLineDash([]);
 
-          // Quadrant labels
           ctx.font = "600 11px Inter, sans-serif";
           ctx.textAlign = "center";
 
-          // Q1 - Deep teal text
           ctx.fillStyle = "#02214C";
-          ctx. fillText("1st Quadrant - Ach.  Scaling & Sustain", (centerX + right) / 2, top + 20);
+          ctx.fillText(
+            "1st Quadrant - Ach. Scaling & Sustain",
+            (centerX + right) / 2,
+            top + 20
+          );
 
-          // Q2 - Navy text (your theme)
           ctx.fillStyle = "#1e3a8a";
-          ctx.fillText("2nd Quadrant - Ach.  Scaling Only", (left + centerX) / 2, top + 20);
+          ctx.fillText(
+            "2nd Quadrant - Ach. Scaling Only",
+            (left + centerX) / 2,
+            top + 20
+          );
 
-          // Q3 - Medium navy text
           ctx.fillStyle = "#2d4a7c";
-          ctx.fillText("3rd Quadrant - Ach.  Sustain Only", (centerX + right) / 2, bottom - 10);
+          ctx.fillText(
+            "3rd Quadrant - Ach. Sustain Only",
+            (centerX + right) / 2,
+            bottom - 10
+          );
 
-          // Q4 - Slate text
-          ctx. fillStyle = "#475569";
-          ctx.fillText("4th Quadrant - Not ach. both", (left + centerX) / 2, bottom - 10);
+          ctx.fillStyle = "#475569";
+          ctx.fillText(
+            "4th Quadrant - Not ach. both",
+            (left + centerX) / 2,
+            bottom - 10
+          );
 
-          ctx. restore();
+          ctx.restore();
         },
       };
 
@@ -657,16 +809,14 @@ export default function PredictionsPage() {
 
           ctx.save();
 
-          // "↑ Ach. Scaling" - Top center (above the chart)
           ctx.font = "bold 13px Inter, sans-serif";
           ctx.fillStyle = "#0F172A";
           ctx.textAlign = "center";
           ctx.textBaseline = "bottom";
-          ctx. fillText("↑ Ach.  Scaling", (left + right) / 2, top - 15);
+          ctx.fillText("↑ Ach. Scaling", (left + right) / 2, top - 15);
 
-          // "Ach.  Sustain →" - Right side (middle right of chart)
-          ctx. textAlign = "left";
-          ctx. textBaseline = "middle";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
           ctx.fillText("Ach. Sustain →", right + 15, (top + bottom) / 2);
 
           ctx.restore();
@@ -727,8 +877,8 @@ export default function PredictionsPage() {
               callbacks: {
                 label: function (context) {
                   const label = context.dataset.label || "";
-                  const x = context.parsed. x;
-                  const y = context. parsed.y;
+                  const x = context.parsed.x;
+                  const y = context.parsed.y;
 
                   let quadrant = 4;
                   if (x > 50 && y > 50) quadrant = 1;
@@ -751,9 +901,7 @@ export default function PredictionsPage() {
             x: {
               min: 0,
               max: 100,
-              title: {
-                display: false,
-              },
+              title: { display: false },
               ticks: { display: false },
               grid: { display: false },
               border: { display: true, color: "#e2e8f0" },
@@ -761,9 +909,7 @@ export default function PredictionsPage() {
             y: {
               min: 0,
               max: 100,
-              title: {
-                display: false,
-              },
+              title: { display: false },
               ticks: { display: false },
               grid: { display: false },
               border: { display: true, color: "#e2e8f0" },
@@ -788,25 +934,39 @@ export default function PredictionsPage() {
     () => [
       { label: "KPI", key: "name", sortable: true },
       {
+        label: "Category",
+        key: "category",
+        sortable: true,
+        render: (value) => (
+          <span className="text-xs text-gray-500">{value}</span>
+        ),
+      },
+      {
         label: "Current",
         key: "current",
         sortable: true,
         render: (value, row) =>
-          row.name === "Evaluation Quadrant" ? `Quadrant ${value}` : `${value}%`,
+          row.name === "Evaluation Quadrant"
+            ? `Quadrant ${value}`
+            : `${value}%`,
       },
       {
         label: "Predicted",
         key: "predicted",
         sortable: true,
         render: (value, row) =>
-          row.name === "Evaluation Quadrant" ? `Quadrant ${value}` : `${value}%`,
+          row.name === "Evaluation Quadrant"
+            ? `Quadrant ${value}`
+            : `${value}%`,
       },
       {
         label: "Target",
         key: "target",
         sortable: true,
         render: (value, row) =>
-          row.name === "Evaluation Quadrant" ? `Quadrant ${value}` : `${value}%`,
+          row.name === "Evaluation Quadrant"
+            ?  `Quadrant ${value}`
+            : `${value}%`,
       },
       {
         label: "Δ (pts)",
@@ -839,7 +999,6 @@ export default function PredictionsPage() {
         key: "status",
         sortable: true,
         render: (value, row) => {
-          // Special status for Evaluation Quadrant based on delta
           if (row.name === "Evaluation Quadrant") {
             const delta = row.predicted - row.current;
             if (delta < 0) {
@@ -888,8 +1047,8 @@ export default function PredictionsPage() {
   // Calculate dynamic chart height based on number of KPIs
   const chartHeight = useMemo(() => {
     const baseHeight = 100;
-    const heightPerKpi = 50;
-    return Math.max(200, baseHeight + filteredKpiData. length * heightPerKpi);
+    const heightPerKpi = 60;
+    return Math.max(180, baseHeight + filteredKpiData.length * heightPerKpi);
   }, [filteredKpiData]);
 
   // Loading state
@@ -921,7 +1080,7 @@ export default function PredictionsPage() {
 
           <div className="space-y-2">
             <h1 className="text-[28px] sm:text-[32px] font-bold text-[#0F172A] leading-tight">
-              {employeeData. nik} - {employeeData.name}
+              {employeeData.nik} - {employeeData.name}
             </h1>
             <p className="text-[14px] sm:text-[16px] text-[#64748B]">
               Performance Growth Prediction
@@ -944,16 +1103,16 @@ export default function PredictionsPage() {
               <p className="text-[14px] text-[#637381] leading-relaxed">
                 This prediction uses{" "}
                 <span className="font-semibold">XGBoost</span> algorithm with{" "}
-                <span className="font-semibold">85% accuracy rate</span>.  The
+                <span className="font-semibold">85% accuracy rate</span>. The
                 model was trained using{" "}
-                <span className="font-semibold">500 data</span>. 
+                <span className="font-semibold">500 data</span>.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Chart Card with Category Tabs */}
+      {/* Chart Card with Category Tabs and Subtabs */}
       <div className="w-full flex justify-center">
         <div className="max-w-[1100px] w-full px-4 sm:px-6 lg:px-8 pb-6">
           <Card
@@ -961,11 +1120,11 @@ export default function PredictionsPage() {
             description="Current vs Predicted performance metrics by category"
             className="shadow-sm"
           >
-            {/* Category Tabs */}
-            <div className="flex flex-wrap gap-2 mt-4 mb-6 border-b border-gray-200 pb-4">
+            {/* Main Category Tabs */}
+            <div className="flex flex-wrap gap-2 mt-4 pb-4 border-b border-gray-200">
               {KPI_CATEGORIES.map((category) => (
                 <button
-                  key={category. key}
+                  key={category.key}
                   onClick={() => setActiveCategory(category.key)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     activeCategory === category.key
@@ -977,6 +1136,28 @@ export default function PredictionsPage() {
                 </button>
               ))}
             </div>
+
+            {/* Subcategory Tabs */}
+            {currentHasSubcategories && (
+              <div className="flex flex-wrap gap-2 mt-4 mb-6">
+                {activeSubcategories.map((sub) => (
+                  <button
+                    key={sub.key}
+                    onClick={() => setActiveSubcategory(sub.key)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                      activeSubcategory === sub.key
+                        ? "bg-[#1e3a8a]/10 text-[#1e3a8a] border-[#1e3a8a]"
+                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {sub.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Spacer for Process tab */}
+            {! currentHasSubcategories && <div className="mt-6" />}
 
             {/* Chart */}
             <div className="w-full" style={{ height: `${chartHeight}px` }}>
@@ -1001,7 +1182,9 @@ export default function PredictionsPage() {
                 <div>
                   <span className="text-sm text-gray-500">Current:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Quadrant {kpiData.find((d) => d.name === "Evaluation Quadrant")?. current || "-"}
+                    Quadrant{" "}
+                    {kpiData.find((d) => d.name === "Evaluation Quadrant")
+                      ?.current || "-"}
                   </span>
                 </div>
               </div>
@@ -1010,7 +1193,9 @@ export default function PredictionsPage() {
                 <div>
                   <span className="text-sm text-gray-500">Predicted:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Quadrant {kpiData.find((d) => d.name === "Evaluation Quadrant")?.predicted || "-"}
+                    Quadrant{" "}
+                    {kpiData.find((d) => d.name === "Evaluation Quadrant")
+                      ?.predicted || "-"}
                   </span>
                 </div>
               </div>
@@ -1019,7 +1204,9 @@ export default function PredictionsPage() {
                 <div>
                   <span className="text-sm text-gray-500">Target:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Quadrant {kpiData.find((d) => d.name === "Evaluation Quadrant")?.target || "-"}
+                    Quadrant{" "}
+                    {kpiData.find((d) => d.name === "Evaluation Quadrant")
+                      ?.target || "-"}
                   </span>
                 </div>
               </div>

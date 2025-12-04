@@ -35,15 +35,28 @@ type EvaluasiRow = {
   year: number;
 };
 
-type ColumnGroup = "overview" | "sales" | "financial" | "operational" | "people";
+// Main category type
+type ColumnCategory = "overview" | "result" | "process";
 
-// Column group configuration
-const COLUMN_GROUP_CONFIG: { key: ColumnGroup; label: string }[] = [
-  { key: "overview", label: "Overview" },
-  { key: "sales", label: "Sales Performance" },
+// Subcategory type for Result
+type ResultSubcategory = "financial" | "sales" | "customer";
+
+// Category configuration
+const COLUMN_CATEGORIES: {
+  key: ColumnCategory;
+  label: string;
+  hasSubcategories: boolean;
+}[] = [
+  { key: "overview", label: "Overview", hasSubcategories: false },
+  { key: "result", label: "Result", hasSubcategories: true },
+  { key: "process", label: "Process", hasSubcategories: false },
+];
+
+// Subcategory configuration for Result
+const RESULT_SUBCATEGORIES: { key: ResultSubcategory; label: string }[] = [
   { key: "financial", label: "Financial Metrics" },
-  { key: "operational", label: "Operational & Tools" },
-  { key: "people", label: "People & Culture" },
+  { key: "sales", label: "Sales Performance" },
+  { key: "customer", label: "Customer" },
 ];
 
 export default function EvaluasiOverviewPage() {
@@ -55,77 +68,153 @@ export default function EvaluasiOverviewPage() {
   const [year, setYear] = useState<number>(2025);
   const [category, setCategory] = useState<string>("All");
 
-  // Column group state
-  const [columnGroup, setColumnGroup] = useState<ColumnGroup>("overview");
+  // Column category state (main tab)
+  const [columnCategory, setColumnCategory] =
+    useState<ColumnCategory>("overview");
+
+  // Subcategory state (subtab for Result)
+  const [resultSubcategory, setResultSubcategory] =
+    useState<ResultSubcategory>("financial");
 
   // Table state
   const [data, setData] = useState<EvaluasiRow[] | null>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  // Handle Predictions Detail Click - Navigate to [nik] page
+  // Check if current category has subcategories
+  const currentHasSubcategories = useMemo(() => {
+    const cat = COLUMN_CATEGORIES.find((c) => c.key === columnCategory);
+    return cat?.hasSubcategories || false;
+  }, [columnCategory]);
+
+  // Reset subcategory when switching to Result
+  useEffect(() => {
+    if (columnCategory === "result") {
+      setResultSubcategory("financial");
+    }
+  }, [columnCategory]);
+
+  // Handle Predictions Detail Click
   const handlePredictionsDetailClick = (row: Record<string, any>) => {
     router.push(`/journey/evaluasi/${row.nik}/predictions`);
   };
 
-  // Column definitions by group
-  const columnGroups: Record<ColumnGroup, TableColumn[]> = useMemo(
+  // Base columns (NIK and Name - always present)
+  const baseColumns: TableColumn[] = useMemo(
+    () => [
+      { label: "NIK", key: "nik", sortable: true },
+      { label: "Name", key: "name", sortable: true },
+    ],
+    []
+  );
+
+  // Predictions column
+  const predictionsColumn: TableColumn = useMemo(
     () => ({
-      overview: [
-        { label: "NIK", key: "nik", sortable: true },
-        { label: "Name", key: "name", sortable: true },
-        { label: "Revenue Sales Ach. (%)", key: "revenueSalesAch", sortable: true },
-        { label: "Profitability Ach. (%)", key: "profitabilityAch", sortable: true },
-        { label: "AE Tools Ach. (%)", key: "aeToolsAch", sortable: true },
-        { label: "NPS (%)", key: "nps", sortable: true },
-        {
-          label: "Predictions",
-          key: "predictions",
-          sortable: false,
-          render: (_value: any, row: Record<string, any>) => (
-            <button
-              onClick={() => handlePredictionsDetailClick(row)}
-              className="text-[#1464D5] hover:text-[#0D4BA6] transition-colors flex items-center justify-center mx-auto"
-              title="View Predictions"
-            >
-              <Search size={16} />
-            </button>
-          ),
-        },
-        { label: "Evaluation Quadrant", key: "evaluationQuadrant", sortable: true },
-      ],
-      sales: [
-        { label: "NIK", key: "nik", sortable: true },
-        { label: "Name", key: "name", sortable: true },
-        { label: "Revenue Sales Ach. (%)", key: "revenueSalesAch", sortable: true },
-        { label: "Sales Ach. Datin (%)", key: "salesAchDatin", sortable: true },
-        { label: "Sales Ach. Wi-Fi (%)", key: "salesAchWifi", sortable: true },
-        { label: "Sales Ach. HSI (%)", key: "salesAchHSI", sortable: true },
-        { label: "Sales Ach. Wireline (%)", key: "salesAchWireline", sortable: true },
-      ],
-      financial: [
-        { label: "NIK", key: "nik", sortable: true },
-        { label: "Name", key: "name", sortable: true },
-        { label: "Profitability Ach. (%)", key: "profitabilityAch", sortable: true },
-        { label: "Collection Rate Ach. (%)", key: "collectionRateAch", sortable: true },
-      ],
-      operational: [
-        { label: "NIK", key: "nik", sortable: true },
-        { label: "Name", key: "name", sortable: true },
-        { label: "AE Tools (%)", key: "aeToolsAch", sortable: true },
-      ],
-      people: [
-        { label: "NIK", key: "nik", sortable: true },
-        { label: "Name", key: "name", sortable: true },
-        { label: "Capability Ach. (%)", key: "capabilityAch", sortable: true },
-        { label: "Behaviour Ach. (%)", key: "behaviourAch", sortable: false },
-        { label: "NPS (%)", key: "nps", sortable: true },
-      ],
+      label: "Predictions",
+      key: "predictions",
+      sortable: false,
+      render: (_value: any, row: Record<string, any>) => (
+        <button
+          onClick={() => handlePredictionsDetailClick(row)}
+          className="text-[#1464D5] hover:text-[#0D4BA6] transition-colors flex items-center justify-center mx-auto"
+          title="View Predictions"
+        >
+          <Search size={16} />
+        </button>
+      ),
     }),
     []
   );
 
-  const currentColumns = columnGroups[columnGroup];
+  // Column definitions by category/subcategory
+  const currentColumns: TableColumn[] = useMemo(() => {
+    // Overview - keep as is
+    if (columnCategory === "overview") {
+      return [
+        ...baseColumns,
+        {
+          label: "Revenue Sales Ach. (%)",
+          key: "revenueSalesAch",
+          sortable: true,
+        },
+        {
+          label: "Profitability Ach. (%)",
+          key: "profitabilityAch",
+          sortable: true,
+        },
+        { label: "AE Tools Ach. (%)", key: "aeToolsAch", sortable: true },
+        { label: "NPS (%)", key: "nps", sortable: true },
+        predictionsColumn,
+        {
+          label: "Evaluation Quadrant",
+          key: "evaluationQuadrant",
+          sortable: true,
+        },
+      ];
+    }
+
+    // Result with subcategories
+    if (columnCategory === "result") {
+      switch (resultSubcategory) {
+        case "financial":
+          return [
+            ...baseColumns,
+            {
+              label: "Revenue Sales Ach. (%)",
+              key: "revenueSalesAch",
+              sortable: true,
+            },
+            {
+              label: "Profitability Ach. (%)",
+              key: "profitabilityAch",
+              sortable: true,
+            },
+            {
+              label: "Collection Rate Ach. (%)",
+              key: "collectionRateAch",
+              sortable: true,
+            },
+          ];
+        case "sales":
+          return [
+            ...baseColumns,
+            {
+              label: "Sales Ach. Datin (%)",
+              key: "salesAchDatin",
+              sortable: true,
+            },
+            {
+              label: "Sales Ach. Wi-Fi (%)",
+              key: "salesAchWifi",
+              sortable: true,
+            },
+            { label: "Sales Ach. HSI (%)", key: "salesAchHSI", sortable: true },
+            {
+              label: "Sales Ach. Wireline (%)",
+              key: "salesAchWireline",
+              sortable: true,
+            },
+          ];
+        case "customer":
+          return [...baseColumns, { label: "NPS (%)", key: "nps", sortable: true }];
+        default:
+          return baseColumns;
+      }
+    }
+
+    // Process - no subcategories
+    if (columnCategory === "process") {
+      return [
+        ...baseColumns,
+        { label: "AE Tools Ach. (%)", key: "aeToolsAch", sortable: true },
+        { label: "Capability Ach. (%)", key: "capabilityAch", sortable: true },
+        { label: "Behaviour Ach. (%)", key: "behaviourAch", sortable: false },
+      ];
+    }
+
+    return baseColumns;
+  }, [columnCategory, resultSubcategory, baseColumns, predictionsColumn]);
 
   // Dummy data
   const allData: EvaluasiRow[] = useMemo(
@@ -271,7 +360,7 @@ export default function EvaluasiOverviewPage() {
     const seen = new Set<string>();
     const unique: EvaluasiRow[] = [];
     for (const r of rows) {
-      if (!seen. has(r. nik)) {
+      if (!seen.has(r.nik)) {
         seen.add(r.nik);
         unique.push(r);
       }
@@ -284,8 +373,8 @@ export default function EvaluasiOverviewPage() {
     setError("");
 
     const t = setTimeout(() => {
-      let filtered = allData. filter(
-        (row) => row.quarter === quarter && row. year === year
+      let filtered = allData.filter(
+        (row) => row.quarter === quarter && row.year === year
       );
       filtered = dedupeByNik(filtered);
 
@@ -293,7 +382,7 @@ export default function EvaluasiOverviewPage() {
         const q = search.toLowerCase();
         filtered = filtered.filter(
           (row) =>
-            row.name. toLowerCase().includes(q) || row.nik. includes(search)
+            row.name.toLowerCase().includes(q) || row.nik.includes(search)
         );
       }
 
@@ -420,10 +509,10 @@ export default function EvaluasiOverviewPage() {
       {/* Metric Cards */}
       <div className="w-full flex justify-center mb-6">
         <div className="max-w-[1100px] w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard label="Avg. Revenue Sales Achievement" value="92%" />
-          <MetricCard label="Avg. AE Tools Achievement" value="3%" />
-          <MetricCard label="Avg. Profitability Achievement" value="10%" />
-          <MetricCard label="Avg.  NPS" value="3%" />
+          <MetricCard label="Avg.Revenue Sales Achievement" value="92%" />
+          <MetricCard label="Avg.AE Tools Achievement" value="3%" />
+          <MetricCard label="Avg.Profitability Achievement" value="10%" />
+          <MetricCard label="Avg.NPS" value="3%" />
         </div>
       </div>
 
@@ -434,22 +523,44 @@ export default function EvaluasiOverviewPage() {
             heading="Performance Evaluation"
             description="Assessing employee metrics and follow-up details"
           >
-            {/* Column Group Tabs */}
-            <div className="flex flex-wrap gap-2 mt-4 mb-6 border-b border-gray-200 pb-4">
-              {COLUMN_GROUP_CONFIG.map((group) => (
+            {/* Main Category Tabs */}
+            <div className="flex flex-wrap gap-2 mt-4 pb-4 border-b border-gray-200">
+              {COLUMN_CATEGORIES.map((cat) => (
                 <button
-                  key={group.key}
-                  onClick={() => setColumnGroup(group.key)}
+                  key={cat.key}
+                  onClick={() => setColumnCategory(cat.key)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    columnGroup === group.key
+                    columnCategory === cat.key
                       ? "bg-[#1e3a8a] text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
-                  {group.label}
+                  {cat.label}
                 </button>
               ))}
             </div>
+
+            {/* Subcategory Tabs - Only show for Result */}
+            {currentHasSubcategories && (
+              <div className="flex flex-wrap gap-2 mt-4 mb-6">
+                {RESULT_SUBCATEGORIES.map((sub) => (
+                  <button
+                    key={sub.key}
+                    onClick={() => setResultSubcategory(sub.key)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                      resultSubcategory === sub.key
+                        ? "bg-[#1e3a8a]/10 text-[#1e3a8a] border-[#1e3a8a]"
+                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {sub.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Spacer for tabs without subcategories */}
+            {!currentHasSubcategories && <div className="mt-6" />}
 
             {/* Table */}
             <div className="-mx-4 sm:-mx-6 md:-mx-8">

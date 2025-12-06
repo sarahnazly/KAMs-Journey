@@ -126,7 +126,7 @@ export default function KinerjaPage() {
         const modelMeta: ModelInfo = {
           name: fi.meta.best_regressor,
           R2: fi.meta.metrics_overall.R2,
-          trainCount: 0,
+          trainCount: 700,
         };
 
         setFiFeatures(mappedFI);

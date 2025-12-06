@@ -86,6 +86,7 @@ def load_raw_sheets(db):
             filtered = filter_valid_fields(item, Orientasi)
             db.add(Orientasi(
                 quarter=quarter,
+                sheet="orientasi",
                 **filtered
             ))
 
@@ -94,6 +95,7 @@ def load_raw_sheets(db):
             filtered = filter_valid_fields(item, Pelaksanaan)
             db.add(Pelaksanaan(
                 quarter=quarter,
+                sheet="pelaksanaan",
                 **filtered
             ))
 
@@ -102,6 +104,7 @@ def load_raw_sheets(db):
             filtered = filter_valid_fields(item, Kinerja)
             db.add(Kinerja(
                 quarter=quarter,
+                sheet="kinerja",
                 **filtered
             ))
 
@@ -110,6 +113,7 @@ def load_raw_sheets(db):
             filtered = filter_valid_fields(item, EvaluasiKinerja)
             db.add(EvaluasiKinerja(
                 quarter=quarter,
+                sheet="evaluasi kinerja",
                 **filtered
             ))
 
@@ -118,6 +122,7 @@ def load_raw_sheets(db):
             filtered = filter_valid_fields(item, Pengembangan)
             db.add(Pengembangan(
                 quarter=quarter,
+                sheet="pengembangan",
                 **filtered
             ))
 
@@ -126,6 +131,7 @@ def load_raw_sheets(db):
             filtered = filter_valid_fields(item, Project)
             db.add(Project(
                 quarter=quarter,
+                sheet="project",
                 **filtered
             ))
 

@@ -7,11 +7,21 @@ from app.routers.kinerja_router import router as kin_router
 from app.routers.evaluasi_router import router as eva_router
 from app.routers.pengembangan_router import router as peng_router
 from app.routers.project_router import router as proj_router
+from app.routers.search_router import router as search_router
 from app.core.db import Base, engine
+from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="KAMs Journey Backend")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(fi_router)
 app.include_router(wp_router)
@@ -21,3 +31,4 @@ app.include_router(kin_router)
 app.include_router(eva_router)
 app.include_router(peng_router)
 app.include_router(proj_router)
+app.include_router(search_router)

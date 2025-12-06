@@ -6,6 +6,7 @@ class EvaluasiKinerja(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     quarter = Column(String)
+    sheet = Column(String)
 
     nik = Column(Integer)
     name = Column(String)

@@ -24,7 +24,7 @@ export interface Feature {
 }
 export interface ModelInfo {
   name: string;
-  accuracy: number;   // 0..1
+  R2: number;   // 0..1
   trainCount: number;
 }
 export interface FeatureImportanceProps {
@@ -40,6 +40,11 @@ const BAR_GAP = 20;
 const BAR_RADIUS = 4;
 const ROW_H = BAR_HEIGHT + BAR_GAP;
 const INNER_PADDING = 60;
+
+const formatR2 = (v: number | null | undefined) => {
+  if (v === null || v === undefined) return "-";
+  return v.toFixed(4); // contoh: 0.4711
+};
 
 export default function FeatureImportanceSection({
   features,
@@ -221,7 +226,7 @@ export default function FeatureImportanceSection({
         message={
           <>
             This prediction uses <b>{model.name}</b> algorithm with{" "}
-            <b>{(model.accuracy * 100).toFixed(0)}% accuracy rate</b>. The model was trained using{" "}
+            <b>{formatR2(model.R2)} R2 score</b>. The model was trained using{" "}
             <b>{model.trainCount} data</b>.
           </>
         }

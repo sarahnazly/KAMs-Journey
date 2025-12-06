@@ -605,16 +605,16 @@
     },
     "metrics_by_quarter": {
       "Q1 2025": {
-        "R2": 0.582679229348518,
+        "R2": 0.5826792293485181,
         "MAE": 0.5170239435838146,
-        "MSE": 0.40564802533040467,
-        "RMSE": 0.6369050363518919
+        "MSE": 0.4056480253304046,
+        "RMSE": 0.6369050363518918
       },
       "Q2 2025": {
-        "R2": 0.6308356115013994,
-        "MAE": 0.4381449785856644,
-        "MSE": 0.3011019407874515,
-        "RMSE": 0.548727565179162
+        "R2": 0.6308356115013993,
+        "MAE": 0.4381449785856645,
+        "MSE": 0.30110194078745156,
+        "RMSE": 0.5487275651791621
       },
       "Q3 2025": {
         "R2": 0.5949036447662557,
@@ -694,201 +694,201 @@
       "Q1 2025": [
         {
           "feature": "sales_hsi",
-          "importance": 0.25512130528821236,
+          "importance": 0.2551213052882123,
           "description": "Penjualan HSI."
         },
         {
           "feature": "sales_datin",
-          "importance": 0.22577931903262877,
+          "importance": 0.22577931903262882,
           "description": "Penjualan DATIN."
         },
         {
           "feature": "sales_wifi",
-          "importance": 0.1914421462366972,
+          "importance": 0.19144214623669722,
           "description": "Penjualan WiFi."
         },
         {
           "feature": "sales_wireline",
-          "importance": 0.09138582779552835,
+          "importance": 0.09138582779552841,
           "description": "Penjualan wireline."
         },
         {
           "feature": "revenue",
-          "importance": 0.08052349174428082,
+          "importance": 0.08052349174428086,
           "description": "Total pendapatan."
         },
         {
           "feature": "profitability",
-          "importance": 0.0623700911600778,
+          "importance": 0.062370091160077815,
           "description": "Profitabilitas."
         },
         {
           "feature": "collection_rate",
-          "importance": 0.049983531353722827,
+          "importance": 0.04998353135372281,
           "description": "Collection rate."
         },
         {
           "feature": "ae_tools",
-          "importance": 0.013486945605926125,
+          "importance": 0.01348694560592609,
           "description": "Pemanfaatan tools AE."
         },
         {
           "feature": "name",
-          "importance": 0.011147135400993392,
+          "importance": 0.011147135400993304,
           "description": "Nama AE."
         },
         {
           "feature": "behaviour",
-          "importance": 0.008575359563710125,
+          "importance": 0.008575359563710127,
           "description": "Perilaku/soft skill AE."
         },
         {
           "feature": "nps",
-          "importance": 0.004655907907522832,
+          "importance": 0.004655907907522815,
           "description": "Net Promoter Score."
         },
         {
           "feature": "unit",
-          "importance": 0.002894094484972451,
+          "importance": 0.0028940944849725416,
           "description": "Unit kerja AE."
         },
         {
           "feature": "capability",
-          "importance": 0.0026348444257271843,
+          "importance": 0.0026348444257271847,
           "description": "Kapabilitas AE."
         }
       ],
       "Q2 2025": [
         {
           "feature": "sales_hsi",
-          "importance": 0.26102066246168004,
+          "importance": 0.26102066246168076,
           "description": "Penjualan HSI."
         },
         {
           "feature": "sales_datin",
-          "importance": 0.23901920601097373,
+          "importance": 0.23901920601097443,
           "description": "Penjualan DATIN."
         },
         {
           "feature": "sales_wifi",
-          "importance": 0.22851492373838433,
+          "importance": 0.22851492373838495,
           "description": "Penjualan WiFi."
         },
         {
           "feature": "sales_wireline",
-          "importance": 0.07093720443022003,
+          "importance": 0.07093720443022018,
           "description": "Penjualan wireline."
         },
         {
           "feature": "revenue",
-          "importance": 0.05448956381406208,
+          "importance": 0.05448956381406216,
           "description": "Total pendapatan."
         },
         {
           "feature": "collection_rate",
-          "importance": 0.0536287733942799,
+          "importance": 0.05362877339428001,
           "description": "Collection rate."
         },
         {
           "feature": "profitability",
-          "importance": 0.0488624080796594,
+          "importance": 0.048862408079659476,
           "description": "Profitabilitas."
         },
         {
           "feature": "ae_tools",
-          "importance": 0.016937237827019353,
+          "importance": 0.016937237827019343,
           "description": "Pemanfaatan tools AE."
         },
         {
           "feature": "behaviour",
-          "importance": 0.01025336867295831,
+          "importance": 0.010253368672958263,
           "description": "Perilaku/soft skill AE."
         },
         {
           "feature": "name",
-          "importance": 0.009261708249849098,
+          "importance": 0.009261708249847189,
           "description": "Nama AE."
         },
         {
           "feature": "nps",
-          "importance": 0.0036159324070296687,
+          "importance": 0.0036159324070296006,
           "description": "Net Promoter Score."
         },
         {
           "feature": "capability",
-          "importance": 0.0018277201734494032,
+          "importance": 0.0018277201734493136,
           "description": "Kapabilitas AE."
         },
         {
           "feature": "unit",
-          "importance": 0.001631290740434602,
+          "importance": 0.001631290740434305,
           "description": "Unit kerja AE."
         }
       ],
       "Q3 2025": [
         {
           "feature": "sales_hsi",
-          "importance": 0.2551243889442921,
+          "importance": 0.2551243889442928,
           "description": "Penjualan HSI."
         },
         {
           "feature": "sales_datin",
-          "importance": 0.24003944025831392,
+          "importance": 0.24003944025831458,
           "description": "Penjualan DATIN."
         },
         {
           "feature": "sales_wifi",
-          "importance": 0.20341975285358,
+          "importance": 0.2034197528535805,
           "description": "Penjualan WiFi."
         },
         {
           "feature": "sales_wireline",
-          "importance": 0.08176059458591872,
+          "importance": 0.08176059458591889,
           "description": "Penjualan wireline."
         },
         {
           "feature": "collection_rate",
-          "importance": 0.06911901578369449,
+          "importance": 0.06911901578369462,
           "description": "Collection rate."
         },
         {
           "feature": "profitability",
-          "importance": 0.05386896505631456,
+          "importance": 0.053868965056314604,
           "description": "Profitabilitas."
         },
         {
           "feature": "revenue",
-          "importance": 0.052099387260994945,
+          "importance": 0.05209938726099502,
           "description": "Total pendapatan."
         },
         {
           "feature": "ae_tools",
-          "importance": 0.015403649152970036,
+          "importance": 0.015403649152970005,
           "description": "Pemanfaatan tools AE."
         },
         {
           "feature": "behaviour",
-          "importance": 0.010093538970910315,
+          "importance": 0.010093538970910271,
           "description": "Perilaku/soft skill AE."
         },
         {
           "feature": "name",
-          "importance": 0.010079029653943836,
+          "importance": 0.010079029653941987,
           "description": "Nama AE."
         },
         {
           "feature": "nps",
-          "importance": 0.004464129492542232,
+          "importance": 0.004464129492542186,
           "description": "Net Promoter Score."
         },
         {
           "feature": "unit",
-          "importance": 0.002385260560145668,
+          "importance": 0.0023852605601453712,
           "description": "Unit kerja AE."
         },
         {
           "feature": "capability",
-          "importance": 0.002142847426379276,
+          "importance": 0.0021428474263791948,
           "description": "Kapabilitas AE."
         }
       ]
@@ -932,7 +932,7 @@
       {
         "feature": "overall_score",
         "importance": 0.5723577750521187,
-        "description": ""
+        "description": "Skor keseluruhan pencapaian AE."
       },
       {
         "feature": "revenue_sales_achievement",
@@ -1010,7 +1010,7 @@
         {
           "feature": "overall_score",
           "importance": 0.5618558349397574,
-          "description": ""
+          "description": "Skor keseluruhan pencapaian AE."
         },
         {
           "feature": "revenue_sales_achievement",
@@ -1087,7 +1087,7 @@
         {
           "feature": "overall_score",
           "importance": 0.5676221328481538,
-          "description": ""
+          "description": "Skor keseluruhan pencapaian AE."
         },
         {
           "feature": "revenue_sales_achievement",
@@ -1164,7 +1164,7 @@
         {
           "feature": "overall_score",
           "importance": 0.5586877182486257,
-          "description": ""
+          "description": "Skor keseluruhan pencapaian AE."
         },
         {
           "feature": "revenue_sales_achievement",

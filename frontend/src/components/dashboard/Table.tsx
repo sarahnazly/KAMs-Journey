@@ -291,7 +291,10 @@ export const Table: React.FC<TableProps> = ({
                   className="px-3 py-5 text-[15px] text-[#363B3F] text-center font-medium align-middle"
                   style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}
                 >
-                  {col.render ? col.render((row as any)[col.key], row) : (row as any)[col.key] ?? ""}
+                  {col.render ? col.render((row as any)[col.key], row) : typeof (row as any)[col.key] === "number"
+                    ? (row as any)[col.key].toFixed(2)
+                    : (row as any)[col.key] ?? ""
+                  }
                 </td>
               ))}
               {showAction && (

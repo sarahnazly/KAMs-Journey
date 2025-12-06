@@ -18,17 +18,8 @@ const EmptyDataState: React.FC = () => {
         </div>
         <div className="text-[22px] font-bold text-[#64748B] text-center">No Data Yet!</div>
         <div className="text-base font-normal text-[#64748B] text-center mb-4">
-          Upload a file and run processing to see analysis results.
+          No data or result available.
         </div>
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={handleGoToUpload}
-          className="flex items-center gap-2 px-6 py-3 text-base font-semibold"
-        >
-          Go to Upload File Page
-          <ArrowRight size={20} />
-        </Button>
       </div>
     </div>
   );

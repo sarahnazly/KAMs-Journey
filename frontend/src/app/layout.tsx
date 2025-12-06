@@ -62,9 +62,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* Section kanan */}
           <div className="flex flex-row gap-8 pr-5 h-full items-center" style={{ paddingRight: 20 }}>
-            <Link href="/input/upload-file" className={inputBtnClass}>
-              Input Data
-            </Link>
             <Link href="/journey/orientasi" className={journeyBtnClass}>
               AE Journey
             </Link>

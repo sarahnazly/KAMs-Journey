@@ -43,29 +43,6 @@ export default function OrientasiOverviewPage() {
     []
   );
 
-  // Dummy data simulate API
-  const allData: Row[] = useMemo(
-    () => [
-      { nik: "20919", name: "Ratu Nadya Anjania", score1: 90, score2: 80, score3: 86, quarter: "Q1", year: 2025 },
-      { nik: "20920", name: "Budi Santoso",       score1: 85, score2: 75, score3: 81, quarter: "Q1", year: 2025 },
-      { nik: "20921", name: "Nicholas Saputra",   score1: 92, score2: 82, score3: 90, quarter: "Q1", year: 2025 },
-      { nik: "20922", name: "Pinky Siwi",         score1: 88, score2: 78, score3: 85, quarter: "Q1", year: 2025 },
-      // Duplikat contoh (NIK sama dalam Q1-2025) — akan didedup
-      { nik: "20920", name: "Budi Santoso",       score1: 85, score2: 75, score3: 81, quarter: "Q1", year: 2025 },
-
-      // Kuartal lain (bukan duplikat untuk Q1-2025)
-      { nik: "20920", name: "Budi Santoso",       score1: 85, score2: 75, score3: 81, quarter: "Q2", year: 2025 },
-      { nik: "20921", name: "Nicholas Saputra",   score1: 92, score2: 82, score3: 90, quarter: "Q3", year: 2025 },
-      { nik: "20922", name: "Pinky Siwi",         score1: 88, score2: 78, score3: 85, quarter: "Q4", year: 2025 },
-
-      { nik: "20923", name: "Anindya Maulida",    score1: 90, score2: 80, score3: 86, quarter: "Q1", year: 2024 },
-      { nik: "20924", name: "Sarah Nazly",        score1: 85, score2: 75, score3: 81, quarter: "Q2", year: 2024 },
-      { nik: "20925", name: "Celina",             score1: 92, score2: 82, score3: 90, quarter: "Q3", year: 2024 },
-      { nik: "20926", name: "Alya Ghina",         score1: 88, score2: 78, score3: 85, quarter: "Q4", year: 2024 },
-    ],
-    []
-  );
-
   // Map stage TabStage -> route
   const stageToPath = (stage: string) => {
     switch (stage) {
@@ -101,30 +78,54 @@ export default function OrientasiOverviewPage() {
     setLoading(true);
     setError("");
 
-    const t = setTimeout(() => {
-      // 1) Filter by quarter + year
-      let filtered = allData.filter((row) => row.quarter === quarter && row.year === year);
+    const fetchData = async () => {
+      try {
+        const quarterParam = `${quarter} ${year}`; // contoh: "Q1 2025"
 
-      // 2) Dedupe by NIK (hanya tampilkan 1 data untuk NIK yang sama dalam periode yang sama)
-      filtered = dedupeByNik(filtered);
+        const encoded = encodeURIComponent(quarterParam);
+        const res = await fetch(`http://localhost:8000/orientasi/quarter/${encoded}`);
 
-      // 3) Search (by Name or NIK)
-      if (search) {
-        const q = search.toLowerCase();
-        filtered = filtered.filter((row) => row.name.toLowerCase().includes(q) || row.nik.includes(search));
+        if (!res.ok) throw new Error("Failed to fetch data");
+
+        const json = await res.json();
+
+        // map backend data → tabel Row
+        const mapped: Row[] = json.map((item: any) => ({
+          nik: String(item.nik),
+          name: item.name,
+          score1: item.basic_understanding,
+          score2: item.twinning,
+          score3: item.customer_matching,
+          quarter: quarter,
+          year: year,
+        }));
+
+        // apply search
+        let filtered = mapped;
+        if (search) {
+          const q = search.toLowerCase();
+          filtered = mapped.filter(
+            (row) =>
+              row.name.toLowerCase().includes(q) ||
+              row.nik.includes(search)
+          );
+        }
+
+        setData(filtered);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setData(filtered);
-      setLoading(false);
-    }, 400);
+    fetchData();
+  }, [quarter, year, search]);
 
-    return () => clearTimeout(t);
-  }, [allData, quarter, year, search]);
 
-  // Detail button -> /journey/orientasi/[nik]
   const handleDetail = (row: Record<string, any>) => {
     const nik = row?.nik;
-    if (nik) router.push(`/journey/orientasi/${nik}`);
+    if (nik) router.push(`/journey/orientasi/${nik}?quarter=${quarter} ${year}`);
   };
 
   // TabStage navigation
@@ -179,7 +180,7 @@ export default function OrientasiOverviewPage() {
                   data={data}
                   loading={loading}
                   error={error}
-                  pageSize={4}
+                  pageSize={10}
                   onDetail={handleDetail}
                   showAction={true}
                 />

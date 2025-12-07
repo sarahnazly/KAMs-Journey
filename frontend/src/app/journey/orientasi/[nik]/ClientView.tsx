@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Card from "@/components/common/Card";
@@ -45,79 +46,60 @@ function ProgressBar({ value, missing }: { value: number | null; missing?: boole
   );
 }
 
-// Mock fetch detail: contoh berbagai kondisi (sukses, error, missing score)
-async function fetchDetail(nik: string): Promise<Detail> {
-  // Simulasi delay
-  await new Promise((r) => setTimeout(r, 600));
+async function fetchDetailFromAPI(nik: string, quarter: string): Promise<Detail> {
+  const encodedQuarter = encodeURIComponent(quarter);
 
-  // Pakai NIK tertentu untuk paksa error/demo
-  if (nik === "error") {
+  const res = await fetch(`http://localhost:8000/orientasi/nik/${nik}/quarter/${encodedQuarter}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
     throw new Error("Gagal memuat data dari server");
   }
 
-  // Contoh data dengan beberapa skor null (kosong)
-  const directory: Record<string, Detail> = {
-    "20919": {
-      name: "Ratu Nadya Anjania",
-      basic: {
-        total: 90,
-        items: [
-          { title: "Solution", score: 85, sub: "Product knowledge and solution mapping" },
-          { title: "Account Profile", score: 78, sub: "Customer profiling and analysis" },
-          { title: "Account Plan", score: 50, sub: "Strategic account planning" },
-          { title: "Sales Funnel", score: 0, sub: "Pipeline management skills" }, // skor 0
-          { title: "Bidding Management", score: 108, sub: "Proposal and bidding expertise" }, // out of range
-          { title: "Project Management", score: 90, sub: "Project delivery and control" },
-        ],
-      },
-      twinning: {
-        total: 80,
-        items: [
-          { title: "Customer Introduction", score: 90, sub: "Client relationship introduction" },
-          { title: "Visiting Customer", score: 76, sub: "Strategic account planning" },
-          { title: "Transfer Customer Knowledge", score: 68, sub: "Knowledge sharing and documentation" },
-          { title: "Transfer Customer Documentation", score: 82, sub: "Documentation handover process" },
-        ],
-      },
-      cm: {
-        total: null, // total kosong
-        items: [{ title: "Customer Matching Score", score: null, sub: "Client relationship introduction" }],
-      },
-      suggestion: "Perkuat understanding terhadap sales funnel optimization",
+  const o = await res.json();
+
+  // Hitung total
+  const basicItems = [
+    { title: "Solution", score: o.solution, sub: "Product knowledge and solution mapping" },
+    { title: "Account Profile", score: o.account_profile, sub: "Customer profiling and analysis" },
+    { title: "Account Plan", score: o.account_plan, sub: "Strategic account planning" },
+    { title: "Sales Funnel", score: o.sales_funnel, sub: "Pipeline management skills" },
+    { title: "Bidding Management", score: o.bidding_management, sub: "Proposal and bidding expertise" },
+    { title: "Project Management", score: o.project_management, sub: "Project delivery and control" },
+  ];
+
+  const twinningItems = [
+    { title: "Customer Introduction", score: o.customer_introduction, sub: "Client relationship introduction" },
+    { title: "Visiting Customer", score: o.visiting_customer, sub: "Customer visitation effectiveness" },
+    { title: "Transfer Customer Knowledge", score: o.transfer_customer_knowledge, sub: "Knowledge sharing readiness" },
+    { title: "Transfer Customer Documentation", score: o.transfer_customer_documentation, sub: "Documentation delivery consistency" },
+  ];
+
+  const cmItems = [
+    { 
+      title: "Customer Matching Score", 
+      score: o.customer_matching, 
+      sub: "Customer alignment with account strategy" 
     },
-  };
+  ];
 
-  const fallback: Detail = {
-    name: "Account Manager",
-    basic: {
-      total: 82,
-      items: [
-        { title: "Solution", score: 80, sub: "Product knowledge and solution mapping" },
-        { title: "Account Profile", score: 78, sub: "Customer profiling and analysis" },
-      ],
-    },
-    twinning: { total: 79, items: [] }, // contoh array kosong
-    cm: { total: 83, items: [{ title: "Customer Matching Score", score: 83, sub: "Client relationship introduction" }] },
-    suggestion: null, // tidak ada saran
-  };
-
-  const detail = directory[nik] ?? fallback;
-
-  // Contoh duplikasi item -> dedupe by title
-  const dedupe = (items: Metric[]) => {
-    const seen = new Set<string>();
-    return items.filter((i) => (seen.has(i.title) ? false : (seen.add(i.title), true)));
-  };
+  const basicTotal = basicItems.reduce((acc, m) => acc + (m.score ?? 0), 0) / basicItems.length;
+  const twinningTotal = twinningItems.reduce((acc, m) => acc + (m.score ?? 0), 0) / twinningItems.length;
 
   return {
-    ...detail,
-    basic: { ...detail.basic, items: dedupe(detail.basic.items ?? []) },
-    twinning: { ...detail.twinning, items: dedupe(detail.twinning.items ?? []) },
-    cm: { ...detail.cm, items: dedupe(detail.cm.items ?? []) },
+    name: o.name,
+    suggestion: o.saran_pengembangan ?? null,
+    basic: { total: Number(basicTotal.toFixed(2)), items: basicItems },
+    twinning: { total: Number(twinningTotal.toFixed(2)), items: twinningItems },
+    cm: { total: o.customer_matching ?? null, items: cmItems },
   };
 }
 
+
 export default function ClientView({ nik }: { nik: string }) {
+  const searchParams = useSearchParams();
+  const quarter = searchParams.get("quarter") ?? "";
   const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
@@ -127,7 +109,7 @@ export default function ClientView({ nik }: { nik: string }) {
     setStatus("loading");
     setError("");
     try {
-      const d = await fetchDetail(nik);
+      const d = await fetchDetailFromAPI(nik, quarter);
       setDetail(d);
       setStatus("success");
     } catch (e: any) {
@@ -140,7 +122,7 @@ export default function ClientView({ nik }: { nik: string }) {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nik]);
+  }, [nik, quarter]);
 
   // Loading skeleton sederhana
   if (status === "loading") {

@@ -1,0 +1,125 @@
+# =========================================
+# PYTHON / FASTAPI STANDARD IGNORE
+# =========================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environment
+venv/
+.env/
+.env.*
+
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+test-results/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Pydantic cache
+.pydantic/
+
+# SQLite database (if using SQLite for local dev)
+*.db
+*.sqlite
+*.sqlite3
+
+# FastAPI / Uvicorn files
+*.log
+logs/
+uvicorn.log
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.swp
+*.swo
+
+# Compiled translations
+*.mo
+
+# Profiling data
+.prof
+
+# =========================================
+# PROJECT-SPECIFIC IGNORE
+# =========================================
+
+# ML model JSON files (keep only raw, ignore generated debug)
+app/data/*.tmp
+app/data/*_backup.json
+app/data/__old__/
+
+# Auto-generated JSON outputs (optional)
+output/
+results/
+
+# Scripts temporary files
+app/scripts/__pycache__/
+temp/
+tmp/
+
+# Credential files (if any)
+*.key
+*.pem
+secrets.json
+config.local.json

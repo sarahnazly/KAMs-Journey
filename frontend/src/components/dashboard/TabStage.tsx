@@ -51,7 +51,7 @@ const TabStage: React.FC<TabStageProps> = ({ onStageChange, width = "1200px", he
   };
 
   return (
-    <div className="w-full flex justify-center items-center mx-[50px]">
+    <div className="w-full flex justify-center items-center">
       <div
         className="
           w-full

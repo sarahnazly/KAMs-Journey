@@ -1,7 +1,7 @@
 "use client";
 
-import React, { JSX, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import SearchBar from "@/components/dashboard/SearchBar";
 import FilterYear from "@/components/dashboard/FilterYear";
@@ -14,309 +14,239 @@ import FeatureImportanceSection, {
   ModelInfo,
 } from "@/components/dashboard/FeatureImportance";
 
+// -----------------------------
+// Helpers
+// -----------------------------
+const formatRp = (v: number) =>
+  "Rp " + v.toLocaleString("id-ID", { minimumFractionDigits: 0 });
+
+const formatInt = (v: number | null | undefined) => {
+  if (v === null || v === undefined) return "-";
+  return Math.round(v); 
+};
+
+const round2 = (v: number) => Number(v.toFixed(2));
+
 type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
 
-type ProcessRow = {
-  nik: string;
-  name: string;
-  aeTools: number;
-  capability: number;
-  behaviour: number;
-  year: number;
-  quarter: Quarter;
-};
-
-type ResultRow = {
-  nik: string;
-  name: string;
-  revenue: string;
-  salesDatin: number;
-  salesWifi: number;
-  salesHSI: number;
-  salesWireline: number;
-  profitability: number;
-  collectionRate: number;
-  nps: number;
-  year: number;
-  quarter: Quarter;
-};
-
-const processData: ProcessRow[] = [
-  {
-    nik: "20919",
-    name: "Ratu Nadya Anjania",
-    aeTools: 100,
-    capability: 0,
-    behaviour: 14,
-    year: 2025,
-    quarter: "Q1",
-  },
-  {
-    nik: "20971",
-    name: "Sarah Nazly Nuraya",
-    aeTools: 100,
-    capability: 1,
-    behaviour: 15,
-    year: 2025,
-    quarter: "Q1",
-  },
-  {
-    nik: "20984",
-    name: "Anindya Maulida Widyatmoko",
-    aeTools: 100,
-    capability: 1,
-    behaviour: 143,
-    year: 2025,
-    quarter: "Q1",
-  },
-  {
-    nik: "20992",
-    name: "John Doe",
-    aeTools: 100,
-    capability: 0,
-    behaviour: 5,
-    year: 2025,
-    quarter: "Q1",
-  },
-];
-
-const resultData: ResultRow[] = [
-  {
-    nik: "20919",
-    name: "Ratu Nadya Anjania",
-    revenue: "Rp400.000.000",
-    salesDatin: 100,
-    salesWifi: 0,
-    salesHSI: 0,
-    salesWireline: 0,
-    profitability: 0,
-    collectionRate: 0,
-    nps: 71,
-    year: 2025,
-    quarter: "Q1",
-  },
-  {
-    nik: "20971",
-    name: "Sarah Nazly Nuraya",
-    revenue: "Rp400.000.000",
-    salesDatin: 100,
-    salesWifi: 2,
-    salesHSI: 0,
-    salesWireline: 0,
-    profitability: 0,
-    collectionRate: 0,
-    nps: 71,
-    year: 2025,
-    quarter: "Q1",
-  },
-  {
-    nik: "20984",
-    name: "Anindya Maulida Widyatmoko",
-    revenue: "Rp400.000.000",
-    salesDatin: 200,
-    salesWifi: 2,
-    salesHSI: 0,
-    salesWireline: 0,
-    profitability: 0,
-    collectionRate: 0,
-    nps: 71,
-    year: 2025,
-    quarter: "Q1",
-  },
-  {
-    nik: "20992",
-    name: "John Doe",
-    revenue: "Rp400.000.000",
-    salesDatin: 0,
-    salesWifi: 0,
-    salesHSI: 2,
-    salesWireline: 2,
-    profitability: 2,
-    collectionRate: 2,
-    nps: 71,
-    year: 2025,
-    quarter: "Q1",
-  },
-];
-
-export default function KinerjaPage(): JSX.Element {
+// -----------------------------
+// Main Component
+// -----------------------------
+export default function KinerjaPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // Filter state
   const [search, setSearch] = useState("");
-  const [year, setYear] = useState<number>(2025);
+  const [year, setYear] = useState(2025);
   const [quarter, setQuarter] = useState<Quarter>("Q1");
 
-  // Table data state
-  const [processRows, setProcessRows] = useState<ProcessRow[]>(processData);
-  const [resultRows, setResultRows] = useState<ResultRow[]>(resultData);
+  // Data states
+  const [processRows, setProcessRows] = useState<any[]>([]);
+  const [resultRows, setResultRows] = useState<any[]>([]);
+  const [fiFeatures, setFiFeatures] = useState<Feature[]>([]);
+  const [fiModel, setFiModel] = useState<ModelInfo | null>(null);
 
-  // Filter table data (simulate API/filter)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // -----------------------------
+  // Fetch data from backend
+  // -----------------------------
   useEffect(() => {
-    let filteredProcess = processData.filter(
-      (r) => r.year === year && r.quarter === quarter
-    );
-    let filteredResult = resultData.filter(
-      (r) => r.year === year && r.quarter === quarter
-    );
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      filteredProcess = filteredProcess.filter(
-        (r) =>
-          r.nik.includes(search) ||
-          r.name.toLowerCase().includes(q)
-      );
-      filteredResult = filteredResult.filter(
-        (r) =>
-          r.nik.includes(search) ||
-          r.name.toLowerCase().includes(q)
-      );
+        const qParam = `${quarter} ${year}`;
+        const encoded = encodeURIComponent(qParam);
+
+        // -------------------------
+        // FETCH KINERJA DATA
+        // -------------------------
+        const resKin = await fetch(
+          `http://localhost:8000/kinerja/${encoded}`
+        );
+
+        if (!resKin.ok) throw new Error("Failed fetching kinerja");
+
+        const data = await resKin.json();
+
+        // PROCESS TABLE: ae_tools, capability, behaviour
+        const processMapped = data.map((d: any) => ({
+          nik: String(d.nik),
+          name: d.name,
+          aeTools: round2((d.ae_tools ?? 0) * 100),
+          capability: d.capability,
+          behaviour: d.behaviour,
+          quarter,
+          year,
+        }));
+
+        // RESULT TABLE
+        const resultMapped = data.map((d: any) => ({
+          nik: String(d.nik),
+          name: d.name,
+          revenue: formatRp(d.revenue ?? 0),
+          salesDatin: d.sales_datin,
+          salesWifi: d.sales_wifi,
+          salesHSI: d.sales_hsi,
+          salesWireline: d.sales_wireline,
+          profitability: round2((d.profitability ?? 0) * 100),
+          collectionRate: round2((d.collection_rate ?? 0) * 100),
+          nps: d.nps,
+          quarter,
+          year,
+        }));
+
+        // ---- Apply Search ----
+        const q = search.toLowerCase();
+        const filter = (r: any) =>
+          r.nik.includes(search) || r.name.toLowerCase().includes(q);
+
+        setProcessRows(search ? processMapped.filter(filter) : processMapped);
+        setResultRows(search ? resultMapped.filter(filter) : resultMapped);
+
+        // -------------------------
+        // FETCH FEATURE IMPORTANCE
+        // -------------------------
+        const resFI = await fetch(
+          `http://localhost:8000/fi/pelaksanaan_to_kinerja/${encoded}`
+        );
+
+        if (!resFI.ok) throw new Error("FI load failed");
+
+        const fi = await resFI.json();
+
+        const mappedFI: Feature[] = fi.features.map((f: any) => ({
+          name: f.feature,
+          importance: Number(f.importance),
+          description: f.description,
+        }));
+
+        const modelMeta: ModelInfo = {
+          name: fi.meta.best_regressor,
+          R2: fi.meta.metrics_overall.R2,
+          trainCount: 700,
+        };
+
+        setFiFeatures(mappedFI);
+        setFiModel(modelMeta);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    setProcessRows(filteredProcess);
-    setResultRows(filteredResult);
-  }, [search, year, quarter]);
+    load();
+  }, [quarter, year, search]);
 
-  const processCols: TableColumn[] = useMemo(
-    () => [
-      { label: "NIK", key: "nik", sortable: true },
-      { label: "Name", key: "name", sortable: true },
-      { label: "AE Tools (%)", key: "aeTools", sortable: true },
-      { label: "Capability", key: "capability", sortable: true },
-      { label: "Behaviour", key: "behaviour", sortable: true },
-    ],
-    []
-  );
+  // -----------------------------
+  // Table Columns
+  // -----------------------------
+  const processCols: TableColumn[] = [
+    { label: "NIK", key: "nik", sortable: true },
+    { label: "Name", key: "name", sortable: true },
+    { label: "AE Tools (%)", key: "aeTools", sortable: true },
+    { label: "Capability", key: "capability", sortable: true, render: (v) => formatInt(v) },
+    { label: "Behaviour", key: "behaviour", sortable: true, render: (v) => formatInt(v) },
+  ];
 
-  const resultCols: TableColumn[] = useMemo(
-    () => [
-      { label: "NIK", key: "nik", sortable: true },
-      { label: "Name", key: "name", sortable: true },
-      { label: "Revenue", key: "revenue", sortable: true },
-      { label: "Sales Datin", key: "salesDatin", sortable: true },
-      { label: "Sales Wi-Fi", key: "salesWifi", sortable: true },
-      { label: "Sales HSI", key: "salesHSI", sortable: true },
-      { label: "Sales Wireline", key: "salesWireline", sortable: true },
-      { label: "Profitability (%)", key: "profitability", sortable: true },
-      { label: "Collection Rate (%)", key: "collectionRate", sortable: true },
-      { label: "NPS", key: "nps", sortable: true },
-    ],
-    []
-  );
+  const resultCols: TableColumn[] = [
+    { label: "NIK", key: "nik", sortable: true },
+    { label: "Name", key: "name", sortable: true },
+    { label: "Revenue", key: "revenue", sortable: true },
+    { label: "Sales Datin", key: "salesDatin", sortable: true, render: (v) => formatInt(v) },
+    { label: "Sales Wi-Fi", key: "salesWifi", sortable: true, render: (v) => formatInt(v) },
+    { label: "Sales HSI", key: "salesHSI", sortable: true, render: (v) => formatInt(v) },
+    { label: "Sales Wireline", key: "salesWireline", sortable: true, render: (v) => formatInt(v) },
+    { label: "Profitability (%)", key: "profitability", sortable: true },
+    { label: "Collection Rate (%)", key: "collectionRate", sortable: true },
+    { label: "NPS", key: "nps", sortable: true, render: (v) => formatInt(v) },
+  ];
 
-  // Feature Importance data (lihat gambar, contoh acak)
-  const features: Feature[] = useMemo(
-    () => [
-      { name: "Account Profile Duty", importance: 0.38, description: "Frekuensi kunjungan ke pelanggan." },
-      { name: "Account Plan Duty", importance: 0.22, description: "Profil data account yang dikelola." },
-      { name: "Customer Key Person", importance: 0.16, description: "Progress funnel penjualan." },
-      { name: "Customer Requirement", importance: 0.11, description: "Kualitas dan eksekusi account plan." },
-      { name: "Prebid Preparation", importance: 0.06, description: "Pengelolaan proses bidding/tender." },
-      { name: "Invoice Pelanggan", importance: 0.04, description: "Kesesuaian solusi dan kebutuhan customer." },
-      { name: "Proses Delivery", importance: 0.02, description: "Inisiasi pengenalan ke pelanggan baru." },
-    ],
-    []
-  );
-
-  const model: ModelInfo = useMemo(
-    () => ({ name: "XGBoost", accuracy: 0.85, trainCount: 500 }),
-    []
-  );
-
-  // Tab navigation
+  // -----------------------------
+  // Navigation Tabs
+  // -----------------------------
   const handleStageChange = (stage: string) => {
-    switch (stage) {
-      case "Orientasi":
-        router.push("/journey/orientasi");
-        break;
-      case "Pelaksanaan":
-        router.push("/journey/pelaksanaan");
-        break;
-      case "Kinerja":
-        router.push("/journey/kinerja");
-        break;
-      case "Evaluasi":
-        router.push("/journey/evaluasi");
-        break;
-      case "Pengembangan":
-        router.push("/journey/pengembangan");
-        break;
-      default:
-        router.push("/journey/kinerja");
-    }
+    router.push(`/journey/${stage.toLowerCase()}`);
   };
+
+  // -----------------------------
+  // UI
+  // -----------------------------
+  if (loading)
+    return <div className="w-full text-center py-20">Loading...</div>;
+
+  if (error)
+    return <div className="w-full text-center py-20 text-red-500">{error}</div>;
 
   return (
     <div className="w-full flex flex-col gap-6">
+
       {/* Search + Filters */}
       <div className="w-full flex justify-center">
-        <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] flex flex-row items-center gap-4 px-5 py-[30px]" style={{ outlineOffset: -1 }}>
-          <div className="flex-1 flex flex-col items-start">
-            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">Search Account Executive</div>
-            <SearchBar value={search} onChange={setSearch} className="w-full" />
+        <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] px-5 py-[30px] flex flex-row gap-4">
+          <div className="flex-1">
+            <p className="text-[20px] font-semibold mb-1">Search Account Executive</p>
+            <SearchBar value={search} onChange={setSearch} />
           </div>
-          <div className="flex flex-row items-center gap-4">
+
+          <div className="flex flex-row gap-4">
             <div className="w-[200px]">
-              <div className="text-black text-[20px] font-semibold leading-[24px]">Tahun</div>
-              <div className="w-full flex items-center justify-between gap-[72px] bg-white rounded-[5px] border-[#CBD5E1] mt-1">
-                <FilterYear value={year} onChange={setYear} />
-              </div>
+              <p className="text-[20px] font-semibold">Tahun</p>
+              <FilterYear value={year} onChange={setYear} />
             </div>
             <div className="w-[200px]">
-              <div className="text-black text-[20px] font-semibold leading-[24px]">Periode</div>
-              <div className="w-full flex items-center justify-between gap-[72px] bg-white rounded-[5px] border-[#CBD5E1] mt-1">
-                <FilterQuarter value={quarter} onChange={(q) => setQuarter(q as Quarter)} />
-              </div>
+              <p className="text-[20px] font-semibold">Periode</p>
+              <FilterQuarter value={quarter} onChange={(q) => setQuarter(q as Quarter)} />
             </div>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="w-full flex items-center justify-center">
-        <div className="max-w-[1100px] w-full flex items-center justify-center">
+      <div className="flex justify-center">
+        <div className="max-w-[1100px] w-full flex justify-center">
           <TabStage onStageChange={handleStageChange} />
         </div>
       </div>
 
-      {/* Result Table */}
-      <div className="w-full flex items-center justify-center">
+      {/* RESULT TABLE */}
+      <div className="flex justify-center">
         <div className="max-w-[1100px] w-full">
           <Card heading="Result" description="Evaluation and outcomes of AE performance">
-            <div className="-mx-4 sm:-mx-6 md:-mx-8">
-              <div className="px-2 sm:px-4 md:px-6 mt-4">
-                <Table columns={resultCols} data={resultRows} pageSize={4} showAction={false} />
-              </div>
+            <div className="mt-4 px-2 sm:px-4 md:px-6">
+              <Table columns={resultCols} data={resultRows} pageSize={10} showAction={false} />
             </div>
           </Card>
         </div>
       </div>
 
-      {/* Process Table */}
-      <div className="w-full flex items-center justify-center">
+      {/* PROCESS TABLE */}
+      <div className="flex justify-center">
         <div className="max-w-[1100px] w-full">
           <Card heading="Process" description="Tracking and management of AE performance metrics">
-            <div className="-mx-4 sm:-mx-6 md:-mx-8">
-              <div className="px-2 sm:px-4 md:px-6 mt-4">
-                <Table columns={processCols} data={processRows} pageSize={4} showAction={false} />
-              </div>
+            <div className="mt-4 px-2 sm:px-4 md:px-6">
+              <Table columns={processCols} data={processRows} pageSize={10} showAction={false} />
             </div>
           </Card>
         </div>
       </div>
 
-      {/* Feature Importance */}
-      <div className="w-full flex items-center justify-center mb-10">
+      {/* FEATURE IMPORTANCE */}
+      <div className="w-full flex justify-center mt-10 mb-20">
         <div className="max-w-[1100px] w-full">
-          <div className="text-[#0F172A] text-[22px] md:text-[24px] font-bold mb-4">Feature Importance</div>
-          <FeatureImportanceSection
-            features={features}
-            model={model}
-            guidanceFeatureImportance="Feature importance menunjukkan seberapa besar pengaruh sebuah fitur terhadap prediksi model."
-            guidanceFeature="Klik bar untuk melihat penjelasan fitur."
-          />
+          <div className="text-[24px] font-bold mb-3">Feature Importance</div>
+
+          {fiModel && (
+            <FeatureImportanceSection
+              features={fiFeatures}
+              model={fiModel}
+              guidanceFeatureImportance="Feature importance menunjukkan seberapa besar pengaruh sebuah fitur terhadap prediksi model."
+              guidanceFeature="Klik bar untuk melihat penjelasan fitur."
+            />
+          )}
         </div>
       </div>
     </div>

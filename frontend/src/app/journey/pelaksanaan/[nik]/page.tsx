@@ -1,296 +1,275 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { Button } from "@/components/common/Button";
 import Table, { TableColumn } from "@/components/dashboard/Table";
 import WinProbabilityPopup from "@/components/dashboard/pelaksanaan/WinProbabilityPopup";
-import { ArrowLeftIcon } from "lucide-react";
-
-type Project = {
-  idProject: string;
-  projectName: string;
-  customer: string;
-  valueProject: string;
-  stage: string;
-  jumlahAktivitas: number;
-  status: string;
-  winProbability: string;
-};
-
-type AEData = {
-  nik: string;
-  nama: string;
-  projects: Project[];
-};
-
-type SelectedProject = {
-  id: string;
-  probability: number;
-  factors: Array<{ positive: string; risk: string }>;
-};
+import { ArrowLeftIcon, AlertCircle } from "lucide-react";
 
 export default function OnDutyDetailPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
+
   const nik = params?.nik as string;
+  const quarter = searchParams.get("quarter") ?? "Q1 2025";
 
-  const [aeData, setAeData] = useState<AEData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<SelectedProject | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [wpMeta, setWpMeta] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Dummy data - replace with actual API call
-  const allAEData: AEData[] = useMemo(
-    () => [
-      {
-        nik: "20919",
-        nama: "Ratu Nadya Anjania",
-        projects: [
-          {
-            idProject: "20919",
-            projectName: "Ratu Nadya Anjania",
-            customer: "Mabes TNI",
-            valueProject: "Rp20.000.000",
-            stage: "F0",
-            jumlahAktivitas: 86,
-            status: "Draft",
-            winProbability: "86%",
-          },
-          {
-            idProject: "20919",
-            projectName: "Ratu Nadya Anjania",
-            customer: "Mabes TNI",
-            valueProject: "Rp20.000.000",
-            stage: "F1",
-            jumlahAktivitas: 90,
-            status: "Draft",
-            winProbability: "86%",
-          },
-          {
-            idProject: "20919",
-            projectName: "Ratu Nadya Anjania",
-            customer: "Mabes TNI",
-            valueProject: "Rp20.000.000",
-            stage: "F2",
-            jumlahAktivitas: 86,
-            status: "Solusi sudah dibuat",
-            winProbability: "86%",
-          },
-          {
-            idProject: "20919",
-            projectName: "Ratu Nadya Anjania",
-            customer: "Mabes TNI",
-            valueProject: "Rp20.000.000",
-            stage: "F3",
-            jumlahAktivitas: 86,
-            status: "Draft",
-            winProbability: "86%",
-          },
-        ],
-      },
-      {
-        nik: "20920",
-        nama: "Budi Santoso",
-        projects: [
-          {
-            idProject: "20920",
-            projectName: "Budi Santoso Project",
-            customer: "PT. ABC",
-            valueProject: "Rp15.000.000",
-            stage: "F0",
-            jumlahAktivitas: 75,
-            status: "Draft",
-            winProbability: "75%",
-          },
-          {
-            idProject: "20920",
-            projectName: "Budi Santoso Project 2",
-            customer: "PT. XYZ",
-            valueProject: "Rp25.000.000",
-            stage: "F1",
-            jumlahAktivitas: 80,
-            status: "In Progress",
-            winProbability: "80%",
-          },
-        ],
-      },
-      {
-        nik: "20921",
-        nama: "Nicholas Saputra",
-        projects: [
-          {
-            idProject: "20921",
-            projectName: "Nicholas Project",
-            customer: "Bank Indonesia",
-            valueProject: "Rp50.000.000",
-            stage: "F2",
-            jumlahAktivitas: 95,
-            status: "Solusi sudah dibuat",
-            winProbability: "90%",
-          },
-        ],
-      },
-      {
-        nik: "20922",
-        nama: "Pinky Siwi",
-        projects: [
-          {
-            idProject: "20922",
-            projectName: "Pinky Project",
-            customer: "Kementerian",
-            valueProject: "Rp30.000.000",
-            stage: "F1",
-            jumlahAktivitas: 88,
-            status: "Draft",
-            winProbability: "85%",
-          },
-        ],
-      },
-    ],
-    []
-  );
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [selected, setSelected] = useState<any>(null);
 
-  // Dummy factors data
-  const getProjectFactors = (projectId: string) => {
-    return [
-      { positive: "No Competitor", risk: "Not Doing Demo" },
-      { positive: "Customer Requirement Fulfillment", risk: "-" },
-      { positive: "High Value Project", risk: "-" },
-    ];
-  };
+  const formatRp = (v: number) =>
+    "Rp " + v.toLocaleString("id-ID", { minimumFractionDigits: 0 });
 
+  const round2 = (v: number) => Number(v.toFixed(2));
+
+  // ------------------------------------------------------
+  // FETCH PROJECT LIST + WP per project
+  // ------------------------------------------------------
   useEffect(() => {
-    setLoading(true);
-    setError("");
+    async function load() {
+      try {
+        setLoading(true);
 
-    const timeout = setTimeout(() => {
-      const foundAE = allAEData.find((ae) => ae.nik === nik);
+        // 1) Load project list
+        const resProj = await fetch(
+          `http://localhost:8000/project/ae/${nik}/${encodeURIComponent(quarter)}`
+        );
 
-      if (foundAE) {
-        setAeData(foundAE);
-      } else {
-        setError("Data AE tidak ditemukan");
+        let projList = [];
+        if (resProj.status === 404) {
+          projList = [];  // treat as empty result set, NOT an error
+        } else if (!resProj.ok) {
+          throw new Error("Failed loading project data");
+        } else {
+          projList = await resProj.json();
+        }
+
+        // If no project, set empty and stop
+        if (projList.length === 0) {
+          setProjects([]);
+          return;
+        }
+
+        // 2) Enrich with Win Probability
+        const enriched = [];
+
+        for (const p of projList) {
+          const resWP = await fetch(
+            `http://localhost:8000/wp/project/${p.lop_id}/${encodeURIComponent(quarter)}`
+          );
+
+          const wpData = await resWP.json();
+          const prediction = wpData?.data?.[0] ?? null;
+
+          let wpPct = prediction?.win_probability_pct ?? 0;
+          wpPct = round2(wpPct);
+
+          if (p.status?.toLowerCase() === "win") wpPct = 100;
+          if (p.status?.toLowerCase() === "lose") wpPct = 0;
+
+          const clean = (txt = "") =>
+            txt
+              .split(",")
+              .map((s) =>
+                s.replace(/\(.*?\)/g, "").replace("+", "").replace("-", "").trim()
+              );
+
+          enriched.push({
+            ...p,
+            winProbability: wpPct,
+            modelLikelihood: prediction?.win_probability_pct ?? 0,
+            topPositive: clean(prediction?.top_positive_factors),
+            topNegative: clean(prediction?.top_negative_factors),
+          });
+        }
+
+        setProjects(enriched);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
       }
+    }
 
-      setLoading(false);
-    }, 400);
+    load();
+  }, [nik, quarter]);
 
-    return () => clearTimeout(timeout);
-  }, [nik, allAEData]);
+  // ------------------------------------------------------
+  // FETCH WP META (best_model, ACC, etc.)
+  // ------------------------------------------------------
+  useEffect(() => {
+    async function loadMeta() {
+      try {
+        const res = await fetch("http://localhost:8000/wp/all");
+        const json = await res.json();
+        setWpMeta(json.meta);
+      } catch (err) {
+        console.error("Failed to load WP meta");
+      }
+    }
+    loadMeta();
+  }, []);
 
+  // ------------------------------------------------------
+  // TABLE STRUCTURE
+  // ------------------------------------------------------
   const columns: TableColumn[] = useMemo(
     () => [
-      { label: "Id Project", key: "idProject", sortable: true },
-      { label: "Project Name", key: "projectName", sortable: true },
-      { label: "Customer", key: "customer", sortable: true },
-      { label: "Value Project", key: "valueProject", sortable: true },
+      { label: "Project", key: "project_name", sortable: true },
+      { label: "Customer", key: "customer_name", sortable: true },
+      {
+        label: "Value Project",
+        key: "value_projects",
+        sortable: true,
+        render: (v) => formatRp(v),
+      },
       { label: "Stage", key: "stage", sortable: true },
-      { label: "Jumlah Aktivitas", key: "jumlahAktivitas", sortable: true },
+      {
+        label: "Jumlah Aktivitas",
+        key: "jumlah_aktivitas",
+        sortable: true,
+        render: (v) => Math.round(v),
+      },
       { label: "Status", key: "status", sortable: true },
-      { label: "Win Probability", key: "winProbability", sortable: true },
+      {
+        label: "Win Probability (%)",
+        key: "winProbability",
+        sortable: true,
+        render: (v) => `${round2(v)}`,
+      },
     ],
     []
   );
 
-  const handleBack = () => {
-    router.push("/journey/pelaksanaan");
-  };
+  // ------------------------------------------------------
+  // OPEN POPUP
+  // ------------------------------------------------------
+  const openPopup = (row: any) => {
+    const status = row.status?.toLowerCase();
+    const baseLikelihood = row.modelLikelihood; // already 0–100%
 
-  const handleProjectDetail = (row: Record<string, any>) => {
-    // Open popup with project details
-    const probability = parseInt(row.winProbability.replace("%", ""));
-    const factors = getProjectFactors(row.idProject);
-    
-    setSelectedProject({
-      id: row.idProject,
+    let probability = row.winProbability;
+    let likelihoodLabel: "WIN" | "LOSE" | null = null;
+    let likelihoodPct: number | null = null;
+
+    if (status === "win") {
+      probability = 100;
+      likelihoodLabel = "WIN";
+      likelihoodPct = baseLikelihood;
+    } else if (status === "lose") {
+      probability = 0;
+      likelihoodLabel = "LOSE";
+      likelihoodPct = baseLikelihood;
+    } else {
+      // normal case, model prediction only
+      probability = baseLikelihood;
+      likelihoodLabel = null;
+      likelihoodPct = null;
+    }
+
+    setSelected({
+      projectId: row.lop_id,
       probability,
-      factors,
+      likelihoodLabel,
+      likelihoodPct,
+      topPositive: row.topPositive.slice(0, 3),
+      topNegative: row.topNegative.slice(0, 3),
     });
-    setIsPopupOpen(true);
+
+    setPopupOpen(true);
   };
 
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-    setSelectedProject(null);
-  };
-
+  // ------------------------------------------------------
+  // UI — LOADING
+  // ------------------------------------------------------
   if (loading) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#CBD5E1] border-r-blue-500" />
-        <span className="ml-3 text-[#02214C] font-inter font-semibold text-base">Loading...</span>
+      <div className="w-full min-h-screen flex items-center justify-center">
+        Loading...
       </div>
     );
   }
 
-  if (error || !aeData) {
+  // ------------------------------------------------------
+  // UI — ERROR
+  // ------------------------------------------------------
+  if (error) {
     return (
-      <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#F8FAFC] gap-6">
-        <div className="text-[#EF4444] font-inter font-semibold text-lg">
-          {error || "Data tidak ditemukan"}
-        </div>
-        <Button variant="primary" onClick={handleBack}>
-          Kembali
-        </Button>
+      <div className="w-full min-h-screen flex items-center justify-center">
+        {error}
       </div>
     );
   }
 
-  return (
-    <div className="w-full min-h-screen bg-[#F8FAFC] flex flex-col">
-      {/* Main Content */}
-      <div className="flex-1 w-full max-w-[1357px] mx-auto px-6 sm:px-10 py-6 sm:py-8">
-        <div className="flex flex-col gap-8 sm:gap-10">
-          {/* Back Button and Title Section */}
-          <div className="flex flex-col gap-6">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handleBack}
-              className="w-fit"
-            >
-              <ArrowLeftIcon className="mr-2" size={20} />
-              Back
-            </Button>
+  // ------------------------------------------------------
+  // UI — NO PROJECTS
+  // ------------------------------------------------------
+  if (projects.length === 0) {
+    return (
+      <div className="w-full px-6 py-8">
+        <Button variant="primary" onClick={() => router.back()} className="mb-6">
+          <ArrowLeftIcon size={20} className="mr-2" /> Back
+        </Button>
 
-            <div className="flex flex-col gap-3">
-              <h1 className="text-[#0F172A] text-3xl sm:text-4xl lg:text-5xl font-inter font-bold leading-tight">
-                {aeData.nik} - {aeData.nama}
-              </h1>
-              <p className="text-[#64748B] text-base sm:text-lg font-inter font-normal leading-relaxed">
-                List of Projects
-              </p>
+        <div className="w-full flex flex-col items-center justify-center py-16 min-h-[350px]">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="rounded-full bg-[#E2E8F0] p-4 mb-2">
+              <AlertCircle size={60} color="#64748B" />
+            </div>
+            <div className="text-[22px] font-bold text-[#64748B] text-center">
+              No Data Yet!
+            </div>
+            <div className="text-base font-normal text-[#64748B] text-center mb-4">
+              No data or result available.
             </div>
           </div>
-
-          {/* Table Section */}
-          <div className="w-full">
-            <Table
-              columns={columns}
-              data={aeData.projects}
-              loading={false}
-              error=""
-              pageSize={4}
-              onDetail={handleProjectDetail}
-              showAction={true}
-              actionColumnLabel="Action"
-            />
-          </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Win Probability Popup */}
-      {selectedProject && (
+  // ------------------------------------------------------
+  // MAIN UI
+  // ------------------------------------------------------
+  return (
+    <div className="w-full min-h-screen bg-[#F8FAFC] px-6 py-6">
+      <Button variant="primary" onClick={() => router.back()} className="mb-6">
+        <ArrowLeftIcon size={20} className="mr-2" /> Back
+      </Button>
+
+      <h1 className="text-4xl font-bold mb-2">{nik} — Project List</h1>
+      <p className="text-gray-600 mb-6">Quarter: {quarter}</p>
+
+      <Table
+        columns={columns}
+        data={projects}
+        pageSize={10}
+        onDetail={openPopup}
+        actionColumnLabel="Detail"
+      />
+
+      {/* POPUP */}
+      {selected && wpMeta && (
         <WinProbabilityPopup
-          isOpen={isPopupOpen}
-          onClose={handleClosePopup}
-          projectId={selectedProject.id}
-          winProbability={selectedProject.probability}
-          factors={selectedProject.factors}
-          modelName="XGBoost"
-          modelAccuracy={85}
+          isOpen={popupOpen}
+          onClose={() => setPopupOpen(false)}
+          projectId={selected.projectId}
+          winProbability={selected.probability}
+          likelihoodLabel={selected.likelihoodLabel}
+          likelihoodPct={selected.likelihoodPct}
+          factors={[
+            { positive: selected.topPositive[0], risk: selected.topNegative[0] },
+            { positive: selected.topPositive[1], risk: selected.topNegative[1] },
+            { positive: selected.topPositive[2], risk: selected.topNegative[2] },
+          ]}
+          modelName={wpMeta.best_model}
+          modelACC={wpMeta.metrics.ACC}
         />
       )}
     </div>

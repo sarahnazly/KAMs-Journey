@@ -1,11 +1,7 @@
-import React from "react";
 import ClientView from "./ClientView";
 
-export default function OrientasiDetailPage({
-  params,
-}: {
-  params: Promise<{ nik: string }>;
-}) {
-  const { nik } = React.use(params);
+export default async function OrientasiDetailPage({ params }: { params: { nik: string } }) {
+  const { nik } = params; // tidak pakai React.use(), karena server
+
   return <ClientView nik={nik} />;
 }

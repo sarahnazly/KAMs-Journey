@@ -35,12 +35,6 @@ export default function Navbar() {
         style={{ paddingRight: 20 }}
       >
         <button
-          className="text-center text-[15px] font-medium leading-[26px] text-[#02214C] hover:text-[#164E9D] transition-colors duration-150 bg-transparent border-none outline-none cursor-pointer whitespace-nowrap"
-          style={{ background: "none" }}
-        >
-          Input Data
-        </button>
-        <button
           className="text-center text-[15px] font-normal leading-[26px] text-[#64748B] hover:text-[#164E9D] transition-colors duration-150 bg-transparent border-none outline-none cursor-pointer whitespace-nowrap"
           style={{ background: "none" }}
         >

@@ -15,6 +15,9 @@ import FeatureImportanceSection, {
 } from "@/components/dashboard/FeatureImportance";
 import { Search } from "lucide-react";
 
+// ---------------------------------------------
+// TYPE DEFINITIONS
+// ---------------------------------------------
 type EvaluasiRow = {
   nik: string;
   name: string;
@@ -29,315 +32,73 @@ type EvaluasiRow = {
   capabilityAch: number;
   behaviourAch: number;
   nps: number;
-  prediction: string;
   evaluationQuadrant: number;
-  quarter: "Q1" | "Q2" | "Q3" | "Q4";
+  quarter: string;
   year: number;
 };
 
-// Main category type
 type ColumnCategory = "overview" | "result" | "process";
-
-// Subcategory type for Result
 type ResultSubcategory = "financial" | "sales" | "customer";
+type Quarter = "Q1" | "Q2" | "Q3" | "Q4";
 
-// Category configuration
-const COLUMN_CATEGORIES: {
-  key: ColumnCategory;
-  label: string;
-  hasSubcategories: boolean;
-}[] = [
+// ---------------------------------------------
+// CATEGORY CONFIG
+// ---------------------------------------------
+const COLUMN_CATEGORIES = [
   { key: "overview", label: "Overview", hasSubcategories: false },
   { key: "result", label: "Result", hasSubcategories: true },
   { key: "process", label: "Process", hasSubcategories: false },
-];
+] as const;
 
-// Subcategory configuration for Result
-const RESULT_SUBCATEGORIES: { key: ResultSubcategory; label: string }[] = [
+const RESULT_SUBCATEGORIES = [
   { key: "financial", label: "Financial Metrics" },
   { key: "sales", label: "Sales Performance" },
   { key: "customer", label: "Customer" },
-];
+] as const;
 
+// ---------------------------------------------
+// MAIN COMPONENT
+// ---------------------------------------------
 export default function EvaluasiOverviewPage() {
   const router = useRouter();
 
-  // Filters
+  // FILTER STATE
   const [search, setSearch] = useState("");
-  const [quarter, setQuarter] = useState<"Q1" | "Q2" | "Q3" | "Q4">("Q1");
-  const [year, setYear] = useState<number>(2025);
-  const [category, setCategory] = useState<string>("All");
+  const [quarter, setQuarter] = useState("Q1");
+  const [year, setYear] = useState(2025);
 
-  // Column category state (main tab)
+  // TABLE STATE
+  const [data, setData] = useState<EvaluasiRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // CATEGORY STATE
   const [columnCategory, setColumnCategory] =
     useState<ColumnCategory>("overview");
-
-  // Subcategory state (subtab for Result)
   const [resultSubcategory, setResultSubcategory] =
     useState<ResultSubcategory>("financial");
 
-  // Table state
-  const [data, setData] = useState<EvaluasiRow[] | null>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  // FEATURE IMPORTANCE
+  const [fiFeatures, setFiFeatures] = useState<Feature[]>([]);
+  const [fiModel, setFiModel] = useState<ModelInfo | null>(null);
 
-  // Check if current category has subcategories
+  // ---------------------------------------------
+  // CHECK SUBCATEGORY SUPPORT
+  // ---------------------------------------------
   const currentHasSubcategories = useMemo(() => {
-    const cat = COLUMN_CATEGORIES.find((c) => c.key === columnCategory);
-    return cat?.hasSubcategories || false;
+    const found = COLUMN_CATEGORIES.find((c) => c.key === columnCategory);
+    return found?.hasSubcategories ?? false;
   }, [columnCategory]);
 
-  // Reset subcategory when switching to Result
   useEffect(() => {
     if (columnCategory === "result") {
       setResultSubcategory("financial");
     }
   }, [columnCategory]);
 
-  // Handle Predictions Detail Click
-  const handlePredictionsDetailClick = (row: Record<string, any>) => {
-    router.push(`/journey/evaluasi/${row.nik}/predictions`);
-  };
-
-  // Base columns (NIK and Name - always present)
-  const baseColumns: TableColumn[] = useMemo(
-    () => [
-      { label: "NIK", key: "nik", sortable: true },
-      { label: "Name", key: "name", sortable: true },
-    ],
-    []
-  );
-
-  // Predictions column
-  const predictionsColumn: TableColumn = useMemo(
-    () => ({
-      label: "Predictions",
-      key: "predictions",
-      sortable: false,
-      render: (_value: any, row: Record<string, any>) => (
-        <button
-          onClick={() => handlePredictionsDetailClick(row)}
-          className="text-[#1464D5] hover:text-[#0D4BA6] transition-colors flex items-center justify-center mx-auto"
-          title="View Predictions"
-        >
-          <Search size={16} />
-        </button>
-      ),
-    }),
-    []
-  );
-
-  // Column definitions by category/subcategory
-  const currentColumns: TableColumn[] = useMemo(() => {
-    // Overview - keep as is
-    if (columnCategory === "overview") {
-      return [
-        ...baseColumns,
-        {
-          label: "Revenue Sales Ach. (%)",
-          key: "revenueSalesAch",
-          sortable: true,
-        },
-        {
-          label: "Profitability Ach. (%)",
-          key: "profitabilityAch",
-          sortable: true,
-        },
-        { label: "AE Tools Ach. (%)", key: "aeToolsAch", sortable: true },
-        { label: "NPS (%)", key: "nps", sortable: true },
-        predictionsColumn,
-        {
-          label: "Evaluation Quadrant",
-          key: "evaluationQuadrant",
-          sortable: true,
-        },
-      ];
-    }
-
-    // Result with subcategories
-    if (columnCategory === "result") {
-      switch (resultSubcategory) {
-        case "financial":
-          return [
-            ...baseColumns,
-            {
-              label: "Revenue Sales Ach. (%)",
-              key: "revenueSalesAch",
-              sortable: true,
-            },
-            {
-              label: "Profitability Ach. (%)",
-              key: "profitabilityAch",
-              sortable: true,
-            },
-            {
-              label: "Collection Rate Ach. (%)",
-              key: "collectionRateAch",
-              sortable: true,
-            },
-          ];
-        case "sales":
-          return [
-            ...baseColumns,
-            {
-              label: "Sales Ach. Datin (%)",
-              key: "salesAchDatin",
-              sortable: true,
-            },
-            {
-              label: "Sales Ach. Wi-Fi (%)",
-              key: "salesAchWifi",
-              sortable: true,
-            },
-            { label: "Sales Ach. HSI (%)", key: "salesAchHSI", sortable: true },
-            {
-              label: "Sales Ach. Wireline (%)",
-              key: "salesAchWireline",
-              sortable: true,
-            },
-          ];
-        case "customer":
-          return [...baseColumns, { label: "NPS (%)", key: "nps", sortable: true }];
-        default:
-          return baseColumns;
-      }
-    }
-
-    // Process - no subcategories
-    if (columnCategory === "process") {
-      return [
-        ...baseColumns,
-        { label: "AE Tools Ach. (%)", key: "aeToolsAch", sortable: true },
-        { label: "Capability Ach. (%)", key: "capabilityAch", sortable: true },
-        { label: "Behaviour Ach. (%)", key: "behaviourAch", sortable: false },
-      ];
-    }
-
-    return baseColumns;
-  }, [columnCategory, resultSubcategory, baseColumns, predictionsColumn]);
-
-  // Dummy data
-  const allData: EvaluasiRow[] = useMemo(
-    () => [
-      {
-        nik: "20919",
-        name: "Ratu Nadya Anjania",
-        revenueSalesAch: 80,
-        salesAchDatin: 80,
-        salesAchWifi: 80,
-        salesAchHSI: 70,
-        salesAchWireline: 75,
-        profitabilityAch: 55,
-        collectionRateAch: 3,
-        aeToolsAch: 3,
-        capabilityAch: 3,
-        behaviourAch: 5.8,
-        nps: 3,
-        prediction: "detail",
-        evaluationQuadrant: 4,
-        quarter: "Q1",
-        year: 2025,
-      },
-      {
-        nik: "20971",
-        name: "Sarah Nazly Nuraya",
-        revenueSalesAch: 80,
-        salesAchDatin: 80,
-        salesAchWifi: 80,
-        salesAchHSI: 75,
-        salesAchWireline: 80,
-        profitabilityAch: 55,
-        collectionRateAch: 3,
-        aeToolsAch: 3,
-        capabilityAch: 3,
-        behaviourAch: 6.3,
-        nps: 3,
-        prediction: "detail",
-        evaluationQuadrant: 2,
-        quarter: "Q1",
-        year: 2025,
-      },
-      {
-        nik: "20984",
-        name: "Anindya Maulida Widyatmoko",
-        revenueSalesAch: 80,
-        salesAchDatin: 80,
-        salesAchWifi: 80,
-        salesAchHSI: 80,
-        salesAchWireline: 78,
-        profitabilityAch: 55,
-        collectionRateAch: 3,
-        aeToolsAch: 3,
-        capabilityAch: 3,
-        behaviourAch: 7.5,
-        nps: 3,
-        prediction: "detail",
-        evaluationQuadrant: 4,
-        quarter: "Q1",
-        year: 2025,
-      },
-      {
-        nik: "20992",
-        name: "John Doe",
-        revenueSalesAch: 80,
-        salesAchDatin: 80,
-        salesAchWifi: 80,
-        salesAchHSI: 65,
-        salesAchWireline: 80,
-        profitabilityAch: 55,
-        collectionRateAch: 3,
-        aeToolsAch: 3,
-        capabilityAch: 3,
-        behaviourAch: 5.8,
-        nps: 3,
-        prediction: "detail",
-        evaluationQuadrant: 3,
-        quarter: "Q1",
-        year: 2025,
-      },
-      {
-        nik: "20993",
-        name: "Jane Smith",
-        revenueSalesAch: 80,
-        salesAchDatin: 80,
-        salesAchWifi: 80,
-        salesAchHSI: 65,
-        salesAchWireline: 80,
-        profitabilityAch: 55,
-        collectionRateAch: 3,
-        aeToolsAch: 3,
-        capabilityAch: 3,
-        behaviourAch: 5.8,
-        nps: 3,
-        prediction: "detail",
-        evaluationQuadrant: 3,
-        quarter: "Q1",
-        year: 2025,
-      },
-      {
-        nik: "20994",
-        name: "Ahmad Yani",
-        revenueSalesAch: 80,
-        salesAchDatin: 80,
-        salesAchWifi: 80,
-        salesAchHSI: 65,
-        salesAchWireline: 80,
-        profitabilityAch: 55,
-        collectionRateAch: 3,
-        aeToolsAch: 3,
-        capabilityAch: 3,
-        behaviourAch: 5.8,
-        nps: 3,
-        prediction: "detail",
-        evaluationQuadrant: 3,
-        quarter: "Q1",
-        year: 2025,
-      },
-    ],
-    []
-  );
-
-  // Map stage TabStage -> route
+  // ---------------------------------------------
+  // ROUTE MAPPER
+  // ---------------------------------------------
   const stageToPath = (stage: string) => {
     switch (stage) {
       case "Orientasi":
@@ -355,184 +116,230 @@ export default function EvaluasiOverviewPage() {
     }
   };
 
-  // Dedupe helper
-  const dedupeByNik = (rows: EvaluasiRow[]) => {
-    const seen = new Set<string>();
-    const unique: EvaluasiRow[] = [];
-    for (const r of rows) {
-      if (!seen.has(r.nik)) {
-        seen.add(r.nik);
-        unique.push(r);
+  const handleStageChange = (stage: string) => {
+    router.push(stageToPath(stage));
+  };
+
+  // ---------------------------------------------
+  // FETCH EVALUASI DATA
+  // ---------------------------------------------
+  useEffect(() => {
+    async function loadEvaluasi() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const q = `${quarter} ${year}`;
+        const res = await fetch(`http://localhost:8000/evaluasi/${q}`);
+
+        if (!res.ok) throw new Error("Failed fetching evaluasi data");
+
+        const raw = await res.json();
+
+        const mapped: EvaluasiRow[] = raw.map((r: any) => ({
+          nik: r.nik,
+          name: r.name,
+          revenueSalesAch: r.revenue_sales_achievement * 100,
+          salesAchDatin: r.sales_achievement_datin * 100,
+          salesAchWifi: r.sales_achievement_wifi * 100,
+          salesAchHSI: r.sales_achievement_hsi * 100,
+          salesAchWireline: r.sales_achievement_wireline * 100,
+          profitabilityAch: r.profitability_achievement * 100,
+          collectionRateAch: r.collection_rate_achievement * 100,
+          aeToolsAch: r.ae_tools_achievement * 100,
+          capabilityAch: r.capability_achievement * 100,
+          behaviourAch: r.behaviour_achievement * 100,
+          nps: r.nps_achievement * 100,
+          evaluationQuadrant: r.kuadran,
+          prediction: "detail",
+          quarter: r.quarter,
+          year: year,
+        }));
+
+        setData(mapped);
+      } catch (e: any) {
+        setError(e.message);
+        setData([]);
+      } finally {
+        setLoading(false);
       }
     }
-    return unique;
-  };
 
+    loadEvaluasi();
+  }, [quarter, year]);
+
+  // ---------------------------------------------
+  // CALCULATE METRIC AVERAGES
+  // ---------------------------------------------
+  const avg = (arr: number[]) =>
+    arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : "0";
+
+  const avgRevenue = avg(data.map((d) => d.revenueSalesAch));
+  const avgTools = avg(data.map((d) => d.aeToolsAch));
+  const avgProfit = avg(data.map((d) => d.profitabilityAch));
+  const avgNPS = avg(data.map((d) => d.nps));
+
+  // ---------------------------------------------
+  // FETCH FEATURE IMPORTANCE
+  // ---------------------------------------------
   useEffect(() => {
-    setLoading(true);
-    setError("");
-
-    const t = setTimeout(() => {
-      let filtered = allData.filter(
-        (row) => row.quarter === quarter && row.year === year
-      );
-      filtered = dedupeByNik(filtered);
-
-      if (search) {
-        const q = search.toLowerCase();
-        filtered = filtered.filter(
-          (row) =>
-            row.name.toLowerCase().includes(q) || row.nik.includes(search)
+    async function loadFI() {
+      try {
+        const q = `${quarter} ${year}`;
+        const res = await fetch(
+          `http://localhost:8000/fi/kinerja_to_evaluasi/${q}`
         );
+        const json = await res.json();
+
+        const modelName = json.meta.best_regressor;
+        const modelR2 = json.meta.metrics_overall.R2;
+
+        setFiModel({
+          name: modelName,
+          R2: modelR2,
+          trainCount: 700,
+        });
+
+        const fi = json.features
+          .filter((f: any) => f.quarter === `${quarter} ${year}`)
+          .map((f: any) => ({
+            name: f.feature,
+            importance: f.importance,
+            description: f.description,
+          }));
+
+        setFiFeatures(fi);
+      } catch (e) {
+        console.log("FI LOAD ERROR:", e);
       }
+    }
 
-      setData(filtered);
-      setLoading(false);
-    }, 400);
+    loadFI();
+  }, [quarter, year]);
 
-    return () => clearTimeout(t);
-  }, [allData, quarter, year, search, category]);
+  // ---------------------------------------------
+  // TABLE COLUMN DEFINITIONS
+  // ---------------------------------------------
+  const baseColumns: TableColumn[] = [
+    { label: "NIK", key: "nik", sortable: true },
+    { label: "Name", key: "name", sortable: true },
+  ];
 
-  // TabStage navigation
-  const handleStageChange = (stage: string) => {
-    const path = stageToPath(stage);
-    router.push(path);
+  const predictionsColumn: TableColumn = {
+    label: "Predictions",
+    key: "pred",
+    sortable: false,
+    render: (_v, row) => (
+      <button
+        onClick={() => router.push(`/journey/evaluasi/${row.nik}/predictions`)}
+        className="text-[#1464D5]"
+      >
+        <Search size={16} />
+      </button>
+    ),
   };
 
-  // Feature Importance data
-  const features: Feature[] = useMemo(
-    () => [
-      {
-        name: "Revenue",
-        importance: 0.35,
-        description: "Keseluruhan pendapatan AE per kuartal.",
-      },
-      {
-        name: "Behaviour",
-        importance: 0.3,
-        description: "Jumlah frekuensi AE melakukan kunjungan pelanggan.",
-      },
-      {
-        name: "Profitability",
-        importance: 0.25,
-        description: "Keseluruhan profitabilitas AE per kuartal.",
-      },
-      {
-        name: "AE Tools",
-        importance: 0.15,
-        description: "Tingkat penggunaan tools AE.",
-      },
-      {
-        name: "Collection Rate",
-        importance: 0.1,
-        description: "Jumlah persentase pembayaran oleh pelanggan AE.",
-      },
-      {
-        name: "NPS",
-        importance: 0.08,
-        description: "Net Promoter Score pelanggan.",
-      },
-      {
-        name: "Sales Datin",
-        importance: 0.08,
-        description: "Jumlah penjualan produk Data Integration.",
-      },
-      {
-        name: "Sales Wi-Fi",
-        importance: 0.076,
-        description: "Jumlah penjualan produk Wi-Fi.",
-      },
-      {
-        name: "Sales HSI",
-        importance: 0.075,
-        description: "Jumlah penjualan produk HSI.",
-      },
-      {
-        name: "Sales Wireline",
-        importance: 0.0,
-        description: "Jumlah penjualan produk Wireline.",
-      },
-    ],
-    []
-  );
+  const currentColumns: TableColumn[] = useMemo(() => {
+    if (columnCategory === "overview") {
+      return [
+        ...baseColumns,
+        { label: "Revenue Sales Ach. (%)", key: "revenueSalesAch" },
+        { label: "Profitability Ach. (%)", key: "profitabilityAch" },
+        { label: "AE Tools Ach. (%)", key: "aeToolsAch" },
+        { label: "NPS (%)", key: "nps" },
+        predictionsColumn,
+        { label: "Evaluation Quadrant", key: "evaluationQuadrant" },
+      ];
+    }
 
-  const model: ModelInfo = useMemo(
-    () => ({ name: "XGBoost", accuracy: 0.85, trainCount: 500 }),
-    []
-  );
+    if (columnCategory === "result") {
+      switch (resultSubcategory) {
+        case "financial":
+          return [
+            ...baseColumns,
+            { label: "Revenue Sales Ach. (%)", key: "revenueSalesAch" },
+            { label: "Profitability Ach. (%)", key: "profitabilityAch" },
+            { label: "Collection Rate Ach. (%)", key: "collectionRateAch" },
+          ];
+        case "sales":
+          return [
+            ...baseColumns,
+            { label: "Sales Ach. Datin (%)", key: "salesAchDatin" },
+            { label: "Sales Ach. Wi-Fi (%)", key: "salesAchWifi" },
+            { label: "Sales Ach. HSI (%)", key: "salesAchHSI" },
+            { label: "Sales Ach. Wireline (%)", key: "salesAchWireline" },
+          ];
+        case "customer":
+          return [...baseColumns, { label: "NPS (%)", key: "nps" }];
+      }
+    }
 
+    // PROCESS TAB
+    return [
+      ...baseColumns,
+      { label: "AE Tools Ach. (%)", key: "aeToolsAch" },
+      { label: "Capability Ach. (%)", key: "capabilityAch" },
+      { label: "Behaviour Ach. (%)", key: "behaviourAch" },
+    ];
+  }, [columnCategory, resultSubcategory]);
+
+  // ---------------------------------------------
+  // RENDER
+  // ---------------------------------------------
   return (
-    <div className="w-full">
-      {/* Search + Filters card */}
+    <div className="w-full flex flex-col gap-6">
+      {/* Search + Filters */}
       <div className="w-full flex justify-center">
-        <div
-          className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] flex flex-row items-center gap-4 px-5 py-[30px]"
-          style={{ outlineOffset: -1 }}
-        >
-          <div className="flex-1 flex flex-col items-start">
-            <div className="w-full text-black text-[20px] font-semibold leading-[30px]">
-              Search Account Executive
-            </div>
-            <SearchBar value={search} onChange={setSearch} className="w-full" />
+        <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] px-5 py-[30px] flex flex-row gap-4">
+          <div className="flex-1">
+            <p className="text-[20px] font-semibold mb-1">Search Account Executive</p>
+            <SearchBar value={search} onChange={setSearch} />
           </div>
-          <div className="flex flex-row items-center gap-4">
+
+          <div className="flex flex-row gap-4">
             <div className="w-[200px]">
-              <div className="text-black text-[20px] font-semibold leading-[24px]">
-                Tahun
-              </div>
-              <div className="w-full flex items-center justify-between gap-[72px] bg-white rounded-[5px] border-[#CBD5E1] mt-1">
-                <FilterYear value={year} onChange={setYear} />
-              </div>
+              <p className="text-[20px] font-semibold">Tahun</p>
+              <FilterYear value={year} onChange={setYear} />
             </div>
             <div className="w-[200px]">
-              <div className="text-black text-[20px] font-semibold leading-[24px]">
-                Periode
-              </div>
-              <div className="w-full flex items-center justify-between gap-[72px] bg-white rounded-[5px] border-[#CBD5E1] mt-1">
-                <FilterQuarter
-                  value={quarter}
-                  onChange={(q) => setQuarter(q as any)}
-                />
-              </div>
+              <p className="text-[20px] font-semibold">Periode</p>
+              <FilterQuarter value={quarter} onChange={(q) => setQuarter(q as Quarter)} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* TabStage align center */}
-      <div className="w-full flex items-center justify-center mb-4 mt-4">
-        <div className="max-w-[1100px] w-full flex items-center justify-center">
+      {/* Tabs */}
+      <div className="flex justify-center">
+        <div className="max-w-[1100px] w-full flex justify-center">
           <TabStage onStageChange={handleStageChange} />
         </div>
       </div>
 
-      {/* Metric Cards */}
+      {/* AVERAGE CARDS */}
       <div className="w-full flex justify-center mb-6">
         <div className="max-w-[1100px] w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard label="Avg.Revenue Sales Achievement" value="92%" />
-          <MetricCard label="Avg.AE Tools Achievement" value="3%" />
-          <MetricCard label="Avg.Profitability Achievement" value="10%" />
-          <MetricCard label="Avg.NPS" value="3%" />
+          <MetricCard label="Avg.Revenue Sales Achievement" value={`${avgRevenue}%`} />
+          <MetricCard label="Avg.AE Tools Achievement" value={`${avgTools}%`} />
+          <MetricCard label="Avg.Profitability Achievement" value={`${avgProfit}%`} />
+          <MetricCard label="Avg.NPS" value={`${avgNPS}%`} />
         </div>
       </div>
 
-      {/* Performance Evaluation Card */}
-      <div className="w-full flex items-center justify-center mb-6">
+      {/* MAIN TABLE */}
+      <div className="w-full flex justify-center mb-6">
         <div className="max-w-[1100px] w-full">
-          <Card
-            heading="Performance Evaluation"
-            description="Assessing employee metrics and follow-up details"
-          >
-            {/* Main Category Tabs */}
-            <div className="flex flex-wrap gap-2 mt-4 pb-4 border-b border-gray-200">
+          <Card heading="Performance Evaluation" description="Assess metrics and follow-up details">
+            {/* CATEGORY TABS */}
+            <div className="flex gap-2 mt-4 mb-4 border-b pb-4">
               {COLUMN_CATEGORIES.map((cat) => (
                 <button
                   key={cat.key}
                   onClick={() => setColumnCategory(cat.key)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-lg ${
                     columnCategory === cat.key
                       ? "bg-[#1e3a8a] text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      : "bg-gray-200 text-gray-600"
                   }`}
                 >
                   {cat.label}
@@ -540,57 +347,51 @@ export default function EvaluasiOverviewPage() {
               ))}
             </div>
 
-            {/* Subcategory Tabs - Only show for Result */}
+            {/* SUBCATEGORIES */}
             {currentHasSubcategories && (
-              <div className="flex flex-wrap gap-2 mt-4 mb-6">
-                {RESULT_SUBCATEGORIES.map((sub) => (
+              <div className="flex gap-2 mb-6">
+                {RESULT_SUBCATEGORIES.map((s) => (
                   <button
-                    key={sub.key}
-                    onClick={() => setResultSubcategory(sub.key)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                      resultSubcategory === sub.key
-                        ? "bg-[#1e3a8a]/10 text-[#1e3a8a] border-[#1e3a8a]"
-                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                    key={s.key}
+                    onClick={() => setResultSubcategory(s.key)}
+                    className={`px-3 py-1.5 rounded-full border ${
+                      resultSubcategory === s.key
+                        ? "bg-blue-100 text-blue-700 border-blue-700"
+                        : "bg-white text-gray-600 border-gray-300"
                     }`}
                   >
-                    {sub.label}
+                    {s.label}
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Spacer for tabs without subcategories */}
-            {!currentHasSubcategories && <div className="mt-6" />}
-
-            {/* Table */}
-            <div className="-mx-4 sm:-mx-6 md:-mx-8">
-              <div className="px-2 sm:px-4 md:px-6">
-                <Table
-                  columns={currentColumns}
-                  data={data}
-                  loading={loading}
-                  error={error}
-                  pageSize={4}
-                  showAction={false}
-                />
-              </div>
-            </div>
+            {/* TABLE */}
+            <Table
+              columns={currentColumns}
+              data={data}
+              loading={loading}
+              error={error}
+              pageSize={4}
+              showAction={false}
+            />
           </Card>
         </div>
       </div>
 
-      {/* Feature Importance */}
-      <div className="w-full flex items-center justify-center mb-10">
+      {/* FEATURE IMPORTANCE */}
+      <div className="w-full flex justify-center mb-10">
         <div className="max-w-[1100px] w-full">
-          <div className="text-[#0F172A] text-[22px] md:text-[24px] font-bold mb-3">
-            Feature Importance
-          </div>
-          <FeatureImportanceSection
-            features={features}
-            model={model}
-            guidanceFeatureImportance="Feature importance menunjukkan seberapa besar pengaruh sebuah fitur terhadap prediksi model evaluasi kinerja AE."
-            guidanceFeature="Klik bar untuk melihat penjelasan fitur."
-          />
+          <div className="text-[24px] font-bold mb-3">Feature Importance</div>
+
+          {fiModel && (
+            <FeatureImportanceSection
+              features={fiFeatures}
+              model={fiModel}
+              guidanceFeatureImportance="Feature importance menunjukkan seberapa besar pengaruh sebuah fitur terhadap prediksi model evaluasi kinerja AE."
+              guidanceFeature="Klik bar untuk melihat penjelasan fitur."
+            />
+          )}
         </div>
       </div>
     </div>

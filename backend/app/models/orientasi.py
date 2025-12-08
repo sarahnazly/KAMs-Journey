@@ -24,7 +24,7 @@ class Orientasi(Base):
     visiting_customer = Column(Integer)
     transfer_customer_knowledge = Column(Integer)
     transfer_customer_documentation = Column(Integer)
-    customer_matching = Column(Integer)
+    customer_matching = Column(Float)
 
     periode = Column(String)
     unit = Column(String)

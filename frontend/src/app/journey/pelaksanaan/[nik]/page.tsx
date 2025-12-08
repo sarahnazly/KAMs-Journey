@@ -23,10 +23,11 @@ export default function OnDutyDetailPage() {
   const [popupOpen, setPopupOpen] = useState(false);
   const [selected, setSelected] = useState<any>(null);
 
-  const formatRp = (v: number) =>
-    "Rp " + v.toLocaleString("id-ID", { minimumFractionDigits: 0 });
+  const formatRp = (v: number | null | undefined) =>
+    "Rp " + (v ?? 0).toLocaleString("id-ID", { minimumFractionDigits: 0 });
 
-  const round2 = (v: number) => Number(v.toFixed(2));
+  const round2 = (v: number | null | undefined) =>
+    v == null ? 0 : Number(v.toFixed(2));
 
   // ------------------------------------------------------
   // FETCH PROJECT LIST + WP per project
@@ -152,7 +153,7 @@ export default function OnDutyDetailPage() {
   // ------------------------------------------------------
   const openPopup = (row: any) => {
     const status = row.status?.toLowerCase();
-    const baseLikelihood = row.modelLikelihood; // already 0–100%
+    const baseLikelihood = row.modelLikelihood ?? 0;
 
     let probability = row.winProbability;
     let likelihoodLabel: "WIN" | "LOSE" | null = null;
@@ -161,29 +162,29 @@ export default function OnDutyDetailPage() {
     if (status === "win") {
       probability = 100;
       likelihoodLabel = "WIN";
-      likelihoodPct = baseLikelihood;
+      likelihoodPct = round2(baseLikelihood);
     } else if (status === "lose") {
       probability = 0;
       likelihoodLabel = "LOSE";
-      likelihoodPct = baseLikelihood;
+      likelihoodPct = round2(baseLikelihood);
     } else {
-      // normal case, model prediction only
-      probability = baseLikelihood;
+      probability = round2(baseLikelihood);
       likelihoodLabel = null;
       likelihoodPct = null;
     }
 
     setSelected({
       projectId: row.lop_id,
-      probability,
+      probability: round2(probability),          
       likelihoodLabel,
-      likelihoodPct,
+      likelihoodPct: likelihoodPct !== null ? round2(likelihoodPct) : null,
       topPositive: row.topPositive.slice(0, 3),
       topNegative: row.topNegative.slice(0, 3),
     });
 
     setPopupOpen(true);
   };
+
 
   // ------------------------------------------------------
   // UI — LOADING

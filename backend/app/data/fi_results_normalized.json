@@ -1,0 +1,598 @@
+{
+  "orientasi_to_pelaksanaan": {
+    "phase": "orientasi_to_pelaksanaan",
+    "phase_config": {
+      "X_sheet": "orientasi",
+      "y_sheet": "pelaksanaan",
+      "y_col": "account_plan_duty"
+    },
+    "best_regressor": "xgboost",
+    "metrics_overall": {
+      "R2": 0.9373446969284358,
+      "MAE": 0.902819561958313,
+      "MSE": 1.5155342739857316,
+      "RMSE": 1.231070377348806
+    },
+    "metrics_by_quarter": {
+      "Q1 2025": {
+        "R2": 0.9373446969284358,
+        "MAE": 0.902819561958313,
+        "MSE": 1.5155342739857316,
+        "RMSE": 1.231070377348806
+      }
+    },
+    "features_overall": [
+      {
+        "feature": "account_plan",
+        "importance": 0.4007337212234562,
+        "description": "Kualitas rencana pengelolaan akun."
+      },
+      {
+        "feature": "unit",
+        "importance": 0.12992703333823233,
+        "description": "Unit kerja AE."
+      },
+      {
+        "feature": "customer_introduction",
+        "importance": 0.10232400436741095,
+        "description": "Aktivitas pengenalan ke pelanggan."
+      },
+      {
+        "feature": "saran_pengembangan",
+        "importance": 0.07334113538230351,
+        "description": "Masukan pengembangan AE."
+      },
+      {
+        "feature": "customer_matching",
+        "importance": 0.04263880658274263,
+        "description": "Kecocokan solusi dengan pelanggan."
+      },
+      {
+        "feature": "transfer_customer_documentation",
+        "importance": 0.0413812901952286,
+        "description": "Dokumentasi pelanggan yang dibagikan."
+      },
+      {
+        "feature": "visiting_customer",
+        "importance": 0.039771923880044045,
+        "description": "Intensitas kunjungan pelanggan."
+      },
+      {
+        "feature": "sales_funnel",
+        "importance": 0.03302448095271822,
+        "description": "Kesehatan pipeline penjualan."
+      },
+      {
+        "feature": "transfer_customer_knowledge",
+        "importance": 0.03260326239750106,
+        "description": "Transfer pengetahuan pelanggan."
+      },
+      {
+        "feature": "bidding_management",
+        "importance": 0.03067783129165331,
+        "description": "Kemampuan kelola bidding/tender."
+      },
+      {
+        "feature": "project_management",
+        "importance": 0.027122684473275344,
+        "description": "Kemampuan kelola pelaksanaan proyek."
+      },
+      {
+        "feature": "account_profile",
+        "importance": 0.026827488757931197,
+        "description": "Kelengkapan profil akun."
+      },
+      {
+        "feature": "solution",
+        "importance": 0.0196263371575026,
+        "description": "Penilaian kemampuan AE memahami dan menawarkan solusi."
+      }
+    ],
+    "features_by_quarter": {
+      "Q1 2025": [
+        {
+          "feature": "account_plan",
+          "importance": 0.5860532336170791,
+          "description": "Kualitas rencana pengelolaan akun."
+        },
+        {
+          "feature": "customer_introduction",
+          "importance": 0.1600135318638388,
+          "description": "Aktivitas pengenalan ke pelanggan."
+        },
+        {
+          "feature": "customer_matching",
+          "importance": 0.0348390552102923,
+          "description": "Kecocokan solusi dengan pelanggan."
+        },
+        {
+          "feature": "sales_funnel",
+          "importance": 0.034069654302169704,
+          "description": "Kesehatan pipeline penjualan."
+        },
+        {
+          "feature": "visiting_customer",
+          "importance": 0.029904833796770974,
+          "description": "Intensitas kunjungan pelanggan."
+        },
+        {
+          "feature": "transfer_customer_documentation",
+          "importance": 0.02907660033476724,
+          "description": "Dokumentasi pelanggan yang dibagikan."
+        },
+        {
+          "feature": "account_profile",
+          "importance": 0.02674272560475173,
+          "description": "Kelengkapan profil akun."
+        },
+        {
+          "feature": "transfer_customer_knowledge",
+          "importance": 0.024392565575159494,
+          "description": "Transfer pengetahuan pelanggan."
+        },
+        {
+          "feature": "solution",
+          "importance": 0.022001324261723836,
+          "description": "Penilaian kemampuan AE memahami dan menawarkan solusi."
+        },
+        {
+          "feature": "project_management",
+          "importance": 0.019970767422535902,
+          "description": "Kemampuan kelola pelaksanaan proyek."
+        },
+        {
+          "feature": "bidding_management",
+          "importance": 0.01826140685789127,
+          "description": "Kemampuan kelola bidding/tender."
+        },
+        {
+          "feature": "unit",
+          "importance": 0.01225233965726503,
+          "description": "Unit kerja AE."
+        },
+        {
+          "feature": "saran_pengembangan",
+          "importance": 0.002421961495754856,
+          "description": "Masukan pengembangan AE."
+        }
+      ]
+    }
+  },
+  "pelaksanaan_to_kinerja": {
+    "phase": "pelaksanaan_to_kinerja",
+    "phase_config": {
+      "X_sheet": "pelaksanaan",
+      "y_sheet": "kinerja",
+      "y_col": "revenue"
+    },
+    "best_regressor": "xgboost",
+    "metrics_overall": {
+      "R2": 0.783243530612452,
+      "MAE": 943526.321875,
+      "MSE": 2021348852548.796,
+      "RMSE": 1421741.4858365764
+    },
+    "metrics_by_quarter": {
+      "Q1 2025": {
+        "R2": 0.783243530612452,
+        "MAE": 943526.321875,
+        "MSE": 2021348852548.796,
+        "RMSE": 1421741.4858365764
+      }
+    },
+    "features_overall": [
+      {
+        "feature": "unit",
+        "importance": 0.28685885145423407,
+        "description": "Unit kerja AE."
+      },
+      {
+        "feature": "proses_delivery",
+        "importance": 0.09644254378295879,
+        "description": "Kualitas proses delivery."
+      },
+      {
+        "feature": "risk_project_assessment",
+        "importance": 0.09176328819452088,
+        "description": "Penilaian risiko proyek."
+      },
+      {
+        "feature": "invoice_pelanggan",
+        "importance": 0.08595513543847245,
+        "description": "Kinerja penagihan invoice."
+      },
+      {
+        "feature": "prebid_preparation",
+        "importance": 0.08564516145675895,
+        "description": "Kesiapan dokumen pra-bid."
+      },
+      {
+        "feature": "customer_key_person",
+        "importance": 0.0811663339541319,
+        "description": "Hubungan dengan key person."
+      },
+      {
+        "feature": "identifikasi_potensi_proyek",
+        "importance": 0.07813731505408229,
+        "description": "Identifikasi potensi proyek."
+      },
+      {
+        "feature": "customer_requirement",
+        "importance": 0.07589207494824277,
+        "description": "Identifikasi kebutuhan pelanggan."
+      },
+      {
+        "feature": "account_profile_duty",
+        "importance": 0.06400039595368917,
+        "description": "Pelaksanaan update profil akun."
+      },
+      {
+        "feature": "account_plan_duty",
+        "importance": 0.05413889976290872,
+        "description": "Pelaksanaan rencana akun."
+      }
+    ],
+    "features_by_quarter": {
+      "Q1 2025": [
+        {
+          "feature": "proses_delivery",
+          "importance": 0.25959268836563315,
+          "description": "Kualitas proses delivery."
+        },
+        {
+          "feature": "identifikasi_potensi_proyek",
+          "importance": 0.1552422041998408,
+          "description": "Identifikasi potensi proyek."
+        },
+        {
+          "feature": "risk_project_assessment",
+          "importance": 0.1408021874145735,
+          "description": "Penilaian risiko proyek."
+        },
+        {
+          "feature": "account_profile_duty",
+          "importance": 0.0912927892407113,
+          "description": "Pelaksanaan update profil akun."
+        },
+        {
+          "feature": "customer_requirement",
+          "importance": 0.08463382668914679,
+          "description": "Identifikasi kebutuhan pelanggan."
+        },
+        {
+          "feature": "invoice_pelanggan",
+          "importance": 0.07664488361267262,
+          "description": "Kinerja penagihan invoice."
+        },
+        {
+          "feature": "prebid_preparation",
+          "importance": 0.07278807271888628,
+          "description": "Kesiapan dokumen pra-bid."
+        },
+        {
+          "feature": "customer_key_person",
+          "importance": 0.06902374388872738,
+          "description": "Hubungan dengan key person."
+        },
+        {
+          "feature": "account_plan_duty",
+          "importance": 0.03212172806793154,
+          "description": "Pelaksanaan rencana akun."
+        },
+        {
+          "feature": "unit",
+          "importance": 0.017857875801876633,
+          "description": "Unit kerja AE."
+        }
+      ]
+    }
+  },
+  "kinerja_to_evaluasi": {
+    "phase": "kinerja_to_evaluasi",
+    "phase_config": {
+      "X_sheet": "kinerja",
+      "y_sheet": "evaluasi kinerja",
+      "y_col": "kuadran"
+    },
+    "best_regressor": "xgboost",
+    "metrics_overall": {
+      "R2": 0.8309837492634261,
+      "MAE": 0.27435273706912994,
+      "MSE": 0.14196942521245368,
+      "RMSE": 0.3767883029135242
+    },
+    "metrics_by_quarter": {
+      "Q1 2025": {
+        "R2": 0.8309837492634261,
+        "MAE": 0.27435273706912994,
+        "MSE": 0.14196942521245368,
+        "RMSE": 0.3767883029135242
+      }
+    },
+    "features_overall": [
+      {
+        "feature": "unit",
+        "importance": 0.23747405689016407,
+        "description": "Unit kerja AE."
+      },
+      {
+        "feature": "collection_rate",
+        "importance": 0.10499487109444075,
+        "description": "Collection rate."
+      },
+      {
+        "feature": "profitability",
+        "importance": 0.10449749264847433,
+        "description": "Profitabilitas."
+      },
+      {
+        "feature": "ae_tools",
+        "importance": 0.10368604985520614,
+        "description": "Pemanfaatan tools AE."
+      },
+      {
+        "feature": "behaviour",
+        "importance": 0.07510083728289882,
+        "description": "Perilaku/soft skill AE."
+      },
+      {
+        "feature": "sales_wifi",
+        "importance": 0.06471923475855848,
+        "description": "Penjualan WiFi."
+      },
+      {
+        "feature": "capability",
+        "importance": 0.06232817190350383,
+        "description": "Kapabilitas AE."
+      },
+      {
+        "feature": "sales_datin",
+        "importance": 0.06058549959849563,
+        "description": "Penjualan DATIN."
+      },
+      {
+        "feature": "revenue",
+        "importance": 0.05893126196647152,
+        "description": "Total pendapatan."
+      },
+      {
+        "feature": "sales_wireline",
+        "importance": 0.05833838569658888,
+        "description": "Penjualan wireline."
+      },
+      {
+        "feature": "nps",
+        "importance": 0.048247251529041794,
+        "description": "Net Promoter Score."
+      },
+      {
+        "feature": "sales_hsi",
+        "importance": 0.02109688677615574,
+        "description": "Penjualan HSI."
+      }
+    ],
+    "features_by_quarter": {
+      "Q1 2025": [
+        {
+          "feature": "profitability",
+          "importance": 0.29778862003564693,
+          "description": "Profitabilitas."
+        },
+        {
+          "feature": "collection_rate",
+          "importance": 0.23003347418469006,
+          "description": "Collection rate."
+        },
+        {
+          "feature": "ae_tools",
+          "importance": 0.16198292190434838,
+          "description": "Pemanfaatan tools AE."
+        },
+        {
+          "feature": "behaviour",
+          "importance": 0.09585996958696753,
+          "description": "Perilaku/soft skill AE."
+        },
+        {
+          "feature": "revenue",
+          "importance": 0.09442608273259347,
+          "description": "Total pendapatan."
+        },
+        {
+          "feature": "sales_datin",
+          "importance": 0.051613412925712136,
+          "description": "Penjualan DATIN."
+        },
+        {
+          "feature": "nps",
+          "importance": 0.02832627097112302,
+          "description": "Net Promoter Score."
+        },
+        {
+          "feature": "unit",
+          "importance": 0.020452101104143534,
+          "description": "Unit kerja AE."
+        },
+        {
+          "feature": "capability",
+          "importance": 0.01094213321200447,
+          "description": "Kapabilitas AE."
+        },
+        {
+          "feature": "sales_wireline",
+          "importance": 0.0061677714800947615,
+          "description": "Penjualan wireline."
+        },
+        {
+          "feature": "sales_wifi",
+          "importance": 0.001649250027997606,
+          "description": "Penjualan WiFi."
+        },
+        {
+          "feature": "sales_hsi",
+          "importance": 0.0007579918346782606,
+          "description": "Penjualan HSI."
+        }
+      ]
+    }
+  },
+  "evaluasi_to_pengembangan": {
+    "phase": "evaluasi_to_pengembangan",
+    "phase_config": {
+      "X_sheet": "evaluasi kinerja",
+      "y_sheet": "pengembangan",
+      "y_col": "coaching_result_formal"
+    },
+    "best_regressor": "xgboost",
+    "metrics_overall": {
+      "R2": 0.8480860052268175,
+      "MAE": 0.3108569820143748,
+      "MSE": 0.20309381961226766,
+      "RMSE": 0.4506593165710298
+    },
+    "metrics_by_quarter": {
+      "Q1 2025": {
+        "R2": 0.8480860052268175,
+        "MAE": 0.3108569820143748,
+        "MSE": 0.20309381961226766,
+        "RMSE": 0.4506593165710298
+      }
+    },
+    "features_overall": [
+      {
+        "feature": "kuadran",
+        "importance": 0.49347295346073344,
+        "description": "Posisi kuadran kinerja AE."
+      },
+      {
+        "feature": "unit",
+        "importance": 0.12811730539558389,
+        "description": "Unit kerja AE."
+      },
+      {
+        "feature": "profitability_achievement",
+        "importance": 0.06491497025999302,
+        "description": "Pencapaian profitabilitas."
+      },
+      {
+        "feature": "behaviour_achievement",
+        "importance": 0.06142946579358704,
+        "description": "Pencapaian perilaku."
+      },
+      {
+        "feature": "ae_tools_achievement",
+        "importance": 0.046856651985229605,
+        "description": "Pencapaian tools AE."
+      },
+      {
+        "feature": "revenue_sales_achievement",
+        "importance": 0.038243874123911156,
+        "description": "Pencapaian revenue vs target."
+      },
+      {
+        "feature": "collection_rate_achievement",
+        "importance": 0.034356135171060474,
+        "description": "Pencapaian collection."
+      },
+      {
+        "feature": "sales_achievement_hsi",
+        "importance": 0.02759654018364485,
+        "description": "Pencapaian penjualan HSI."
+      },
+      {
+        "feature": "nps_achievement",
+        "importance": 0.024565744641752558,
+        "description": "Pencapaian NPS."
+      },
+      {
+        "feature": "capability_achievement",
+        "importance": 0.024170491349184132,
+        "description": "Pencapaian kapabilitas."
+      },
+      {
+        "feature": "sales_achievement_datin",
+        "importance": 0.02146570340521124,
+        "description": "Pencapaian penjualan DATIN."
+      },
+      {
+        "feature": "sales_achievement_wireline",
+        "importance": 0.01876245028080986,
+        "description": "Pencapaian penjualan wireline."
+      },
+      {
+        "feature": "sales_achievement_wifi",
+        "importance": 0.01604771394929876,
+        "description": "Pencapaian penjualan WiFi."
+      }
+    ],
+    "features_by_quarter": {
+      "Q1 2025": [
+        {
+          "feature": "kuadran",
+          "importance": 0.18867179245431806,
+          "description": "Posisi kuadran kinerja AE."
+        },
+        {
+          "feature": "revenue_sales_achievement",
+          "importance": 0.18264720794635875,
+          "description": "Pencapaian revenue vs target."
+        },
+        {
+          "feature": "profitability_achievement",
+          "importance": 0.1752696973521563,
+          "description": "Pencapaian profitabilitas."
+        },
+        {
+          "feature": "behaviour_achievement",
+          "importance": 0.17117024109032528,
+          "description": "Pencapaian perilaku."
+        },
+        {
+          "feature": "ae_tools_achievement",
+          "importance": 0.09335517820390471,
+          "description": "Pencapaian tools AE."
+        },
+        {
+          "feature": "collection_rate_achievement",
+          "importance": 0.05819235651609025,
+          "description": "Pencapaian collection."
+        },
+        {
+          "feature": "nps_achievement",
+          "importance": 0.05458906923044635,
+          "description": "Pencapaian NPS."
+        },
+        {
+          "feature": "sales_achievement_datin",
+          "importance": 0.030868132759717653,
+          "description": "Pencapaian penjualan DATIN."
+        },
+        {
+          "feature": "unit",
+          "importance": 0.022391849407328416,
+          "description": "Unit kerja AE."
+        },
+        {
+          "feature": "capability_achievement",
+          "importance": 0.015941654229685326,
+          "description": "Pencapaian kapabilitas."
+        },
+        {
+          "feature": "sales_achievement_wireline",
+          "importance": 0.003078778844350331,
+          "description": "Pencapaian penjualan wireline."
+        },
+        {
+          "feature": "sales_achievement_hsi",
+          "importance": 0.002528423017628856,
+          "description": "Pencapaian penjualan HSI."
+        },
+        {
+          "feature": "sales_achievement_wifi",
+          "importance": 0.001295618947689736,
+          "description": "Pencapaian penjualan WiFi."
+        }
+      ]
+    }
+  }
+}

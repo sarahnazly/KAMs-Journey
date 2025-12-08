@@ -18,7 +18,7 @@ BASE_PATH = os.path.join(BASE_DIR, "data")
 # ============================================================
 
 def load_fi_results(db):
-    fi_path = os.path.join(BASE_PATH, "fi_results_v17_normalized.json")
+    fi_path = os.path.join(BASE_PATH, "fi_results_normalized.json")
     print(f"📌 Loading Feature Importance from {fi_path}")
 
     with open(fi_path, "r") as f:

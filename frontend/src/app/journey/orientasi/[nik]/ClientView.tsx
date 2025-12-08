@@ -58,6 +58,8 @@ async function fetchDetailFromAPI(nik: string, quarter: string): Promise<Detail>
   }
 
   const o = await res.json();
+  
+  const round2 = (v: number) => Number(v.toFixed(2));
 
   // Hitung total
   const basicItems = [
@@ -78,9 +80,9 @@ async function fetchDetailFromAPI(nik: string, quarter: string): Promise<Detail>
 
   const cmItems = [
     { 
-      title: "Customer Matching Score", 
-      score: o.customer_matching, 
-      sub: "Customer alignment with account strategy" 
+      title: "Customer Matching Score",
+      score: o.customer_matching != null ? round2(o.customer_matching * 100) : null,
+      sub: "Customer alignment with account strategy",
     },
   ];
 
@@ -92,10 +94,12 @@ async function fetchDetailFromAPI(nik: string, quarter: string): Promise<Detail>
     suggestion: o.saran_pengembangan ?? null,
     basic: { total: Number(basicTotal.toFixed(2)), items: basicItems },
     twinning: { total: Number(twinningTotal.toFixed(2)), items: twinningItems },
-    cm: { total: o.customer_matching ?? null, items: cmItems },
+    cm: { 
+      total: o.customer_matching != null ? round2(o.customer_matching * 100) : null, 
+      items: cmItems 
+    },
   };
 }
-
 
 export default function ClientView({ nik }: { nik: string }) {
   const searchParams = useSearchParams();

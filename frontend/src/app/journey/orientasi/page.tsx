@@ -95,7 +95,9 @@ export default function OrientasiOverviewPage() {
           name: item.name,
           score1: item.basic_understanding,
           score2: item.twinning,
-          score3: item.customer_matching,
+          score3: item.customer_matching != null 
+            ? Number((item.customer_matching * 100).toFixed(2)) 
+            : 0,
           quarter: quarter,
           year: year,
         }));

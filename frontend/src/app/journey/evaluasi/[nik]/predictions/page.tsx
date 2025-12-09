@@ -1,235 +1,44 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Card from "@/components/common/Card";
 import { Button } from "@/components/common/Button";
 import Table, { TableColumn } from "@/components/dashboard/Table";
 import { ArrowLeft } from "lucide-react";
-
-type KPIData = {
-  name: string;
-  current: number;
-  predicted: number;
-  target: number;
-  delta: number;
-  deltaPercent: string;
-  status: string;
-  category?: string;
-  subcategory?: string;
-};
-
-type KPISubcategory = {
-  name: string;
-  key: string;
-  kpis: string[];
-};
-
-type KPICategory = {
-  name: string;
-  key: string;
-  subcategories?: KPISubcategory[]; // Optional - Process won't have subcategories
-  kpis?: string[]; // Direct KPIs for categories without subcategories
-};
-
-// Define KPI categories for grouping
-const KPI_CATEGORIES: KPICategory[] = [
-  {
-    name: "Result",
-    key: "result",
-    subcategories: [
-      {
-        name: "Financial Metrics",
-        key: "financial",
-        kpis: [
-          "Revenue Sales Achievement",
-          "Profitability Achievement",
-          "Collection Rate Achievement",
-        ],
-      },
-      {
-        name: "Sales Performance",
-        key: "sales",
-        kpis: [
-          "Sales Achievement Datin",
-          "Sales Achievement Wi-Fi",
-          "Sales Achievement HSI",
-          "Sales Achievement Wireline",
-        ],
-      },
-      {
-        name: "Customer",
-        key: "customer",
-        kpis: ["NPS"],
-      },
-    ],
-  },
-  {
-    name: "Process",
-    key: "process",
-    kpis: [
-      "AE Tools Achievement",
-      "Capability Achievement",
-      "Behaviour Achievement",
-    ],
-  },
-];
+import { KPIData } from "@/interfaces/evaluasi/types";
+import { fetchEvaluasiByNik } from "@/services/evaluasiService";
+import { fetchPredictionForNik } from "@/services/evaluationPredictionService";
+import {
+  mapToAEDetail,
+} from "@/utils/mappers/evaluasi/mapApiToUi";
+import { KPI_CATEGORIES } from "@/utils/mappers/evaluasi/kpiCategories";
 
 // Helper function to check if category has subcategories
 const hasSubcategories = (categoryKey: string): boolean => {
   const category = KPI_CATEGORIES.find((c) => c.key === categoryKey);
-  return ! !(category?.subcategories && category.subcategories.length > 0);
+  return !!(category?.subcategories && category.subcategories.length > 0);
 };
 
-// Helper function to get all KPIs for a category (without subcategories)
-const getDirectKpis = (categoryKey: string): string[] => {
-  const category = KPI_CATEGORIES.find((c) => c.key === categoryKey);
-  return category?.kpis || [];
-};
-
-// Helper function to get category and subcategory for a KPI
-const getCategoryInfo = (
-  kpiName: string
-): { category: string; subcategory: string } => {
-  for (const cat of KPI_CATEGORIES) {
-    // Check direct KPIs
-    if (cat.kpis?.includes(kpiName)) {
-      return { category: cat.name, subcategory: cat.name };
-    }
-    // Check subcategories
-    if (cat.subcategories) {
-      for (const sub of cat.subcategories) {
-        if (sub.kpis.includes(kpiName)) {
-          return { category: cat.name, subcategory: sub.name };
-        }
-      }
-    }
+function getNextQuarter(q: string) {
+  switch (q) {
+    case "Q1": return { quarter: "Q2", yearDelta: 0 };
+    case "Q2": return { quarter: "Q3", yearDelta: 0 };
+    case "Q3": return { quarter: "Q4", yearDelta: 0 };
+    case "Q4": return { quarter: "Q1", yearDelta: 1 };
+    default:   return { quarter: "Q4", yearDelta: 0 }; 
   }
-  return { category: "Other", subcategory: "Other" };
-};
-
-// Employee database - static data
-const EMPLOYEE_DATABASE = {
-  "20919": {
-    name: "Ratu Nadya Anjania",
-    current: {
-      revenueSales: 80,
-      salesDatin: 80,
-      salesWiFi: 80,
-      salesHSI: 75,
-      salesWireline: 70,
-      profitability: 80,
-      collectionRate: 70,
-      aeTools: 75,
-      capability: 55,
-      behaviour: 85,
-      nps: 78,
-      evaluationQuadrant: 3,
-    },
-    growthTrend: "high",
-    evaluationCategory: "Melanjutkan",
-  },
-  "20971": {
-    name: "Sarah Nazly Nuraya",
-    current: {
-      revenueSales: 80,
-      salesDatin: 80,
-      salesWiFi: 85,
-      salesHSI: 80,
-      salesWireline: 75,
-      profitability: 80,
-      collectionRate: 75,
-      aeTools: 80,
-      capability: 55,
-      behaviour: 90,
-      nps: 82,
-      evaluationQuadrant: 3,
-    },
-    growthTrend: "high",
-    evaluationCategory: "Melanjutkan",
-  },
-  "20984": {
-    name: "Anindya Maulida Widyatmoko",
-    current: {
-      revenueSales: 80,
-      salesDatin: 78,
-      salesWiFi: 80,
-      salesHSI: 75,
-      salesWireline: 72,
-      profitability: 80,
-      collectionRate: 80,
-      aeTools: 78,
-      capability: 55,
-      behaviour: 75,
-      nps: 70,
-      evaluationQuadrant: 2,
-    },
-    growthTrend: "moderate",
-    evaluationCategory: "Perlu Pengembangan Kompetensi",
-  },
-  "20992": {
-    name: "John Doe",
-    current: {
-      revenueSales: 80,
-      salesDatin: 75,
-      salesWiFi: 70,
-      salesHSI: 68,
-      salesWireline: 65,
-      profitability: 80,
-      collectionRate: 65,
-      aeTools: 80,
-      capability: 55,
-      behaviour: 60,
-      nps: 55,
-      evaluationQuadrant: 2,
-    },
-    growthTrend: "low",
-    evaluationCategory: "SP 3",
-  },
-  "20993": {
-    name: "Jane Smith",
-    current: {
-      revenueSales: 85,
-      salesDatin: 85,
-      salesWiFi: 88,
-      salesHSI: 82,
-      salesWireline: 80,
-      profitability: 85,
-      collectionRate: 80,
-      aeTools: 85,
-      capability: 60,
-      behaviour: 88,
-      nps: 85,
-      evaluationQuadrant: 3,
-    },
-    growthTrend: "moderate",
-    evaluationCategory: "SP 1",
-  },
-  "20994": {
-    name: "Ahmad Yani",
-    current: {
-      revenueSales: 60,
-      salesDatin: 58,
-      salesWiFi: 55,
-      salesHSI: 52,
-      salesWireline: 50,
-      profitability: 60,
-      collectionRate: 50,
-      aeTools: 55,
-      capability: 40,
-      behaviour: 45,
-      nps: 40,
-      evaluationQuadrant: 1,
-    },
-    growthTrend: "declining",
-    evaluationCategory: "Diberhentikan",
-  },
-};
+}
 
 export default function PredictionsPage() {
   const router = useRouter();
   const params = useParams();
-  const nik = (params?.nik as string) || "20919";
+  const searchParams = useSearchParams();
+
+  const actualQuarterSelected = searchParams.get("quarter") || "Q3";
+  const actualYearSelected = Number(searchParams.get("year") || 2025);
+
+  const nik = params?.nik as string;
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<any>(null);
   const quadrantChartRef = useRef<HTMLCanvasElement>(null);
@@ -239,13 +48,24 @@ export default function PredictionsPage() {
   const [activeCategory, setActiveCategory] = useState<string>("result");
 
   // State for active subcategory tab (subtab) - only used for Result
-  const [activeSubcategory, setActiveSubcategory] =
-    useState<string>("financial");
+  const [activeSubcategory, setActiveSubcategory] = useState<string>("financial");
 
   // State for client-side generated data
   const [kpiData, setKpiData] = useState<KPIData[]>([]);
   const [employeeName, setEmployeeName] = useState<string>("");
+  const [predictedMeta, setPredictedMeta] = useState<{ quarter: string; year: number } | null>(null);
+  const [currentQuadrant, setCurrentQuadrant] = useState<number>(0);
+  const [predictedQuadrant, setPredictedQuadrant] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>("");
+
+  const [modelInfo, setModelInfo] = useState<{
+    regressor: string;
+    classifier: string;
+    mean_r2: number;
+    f1_macro:  number;
+    dataCount: number;
+  } | null>(null);
 
   // Check if current category has subcategories
   const currentHasSubcategories = useMemo(
@@ -267,253 +87,67 @@ export default function PredictionsPage() {
     }
   }, [activeCategory]);
 
-  // Generate predictions on client-side only
   useEffect(() => {
-    const generatePredictionsForEmployee = (nikParam: string) => {
-      const employee =
-        EMPLOYEE_DATABASE[nikParam as keyof typeof EMPLOYEE_DATABASE];
-      if (!employee) {
-        return {
-          employeeName: "Unknown Employee",
-          kpiData: [],
-        };
-      }
+    async function loadData() {
+      if (!nik) return;
 
-      const { current, growthTrend } = employee;
+      try {
+        setIsLoading(true);
+        setError("");
 
-      const growthMultipliers = {
-        high: { min: 1.1, max: 1.25 },
-        moderate: { min: 1.05, max: 1.15 },
-        low: { min: 1.0, max: 1.08 },
-        declining: { min: 0.85, max: 0.98 },
-      };
+        const next = getNextQuarter(actualQuarterSelected);
 
-      const multiplier =
-        growthMultipliers[growthTrend as keyof typeof growthMultipliers];
+        const actualQuarter = `${actualQuarterSelected} ${actualYearSelected}`;
+        const predictedQuarter = next.quarter;
+        const predictedYear = actualYearSelected + next.yearDelta;
 
-      const generatePrediction = (
-        currentValue: number,
-        variance: number = 0.1
-      ) => {
-        const baseGrowth =
-          multiplier.min + Math.random() * (multiplier.max - multiplier.min);
-        const varianceAdjustment = 1 + (Math.random() - 0.5) * variance;
-        return Math.round(
-          Math.min(100, currentValue * baseGrowth * varianceAdjustment)
+        // Fetch both in parallel
+        const [actualData, predictionResponse] = await Promise.all([
+          fetchEvaluasiByNik(parseInt(nik), actualQuarter),
+          fetchPredictionForNik(parseInt(nik), predictedQuarter, predictedYear),
+        ]);
+
+        // Use mapper to transform data
+        const aeDetail = mapToAEDetail(
+          actualData,
+          predictionResponse
         );
-      };
 
-      const predictions = {
-        revenueSales: generatePrediction(current.revenueSales),
-        salesDatin: generatePrediction(current.salesDatin),
-        salesWiFi: generatePrediction(current.salesWiFi),
-        salesHSI: generatePrediction(current.salesHSI),
-        salesWireline: generatePrediction(current.salesWireline),
-        profitability: generatePrediction(current.profitability),
-        collectionRate: generatePrediction(current.collectionRate, 0.15),
-        aeTools: generatePrediction(current.aeTools, 0.12),
-        capability: generatePrediction(current.capability, 0.2),
-        behaviour: generatePrediction(current.behaviour, 0.12),
-        nps: generatePrediction(current.nps, 0.15),
-        evaluationQuadrant: Math.round(
-          Math.min(
-            4,
-            Math.max(
-              1,
-              current.evaluationQuadrant + (Math.random() > 0.5 ? 1 : 0)
-            )
-          )
-        ),
-      };
+        setEmployeeName(aeDetail.name);
+        setKpiData(aeDetail.kpis);
+        setCurrentQuadrant(aeDetail.quadrant.current);
+        setPredictedQuadrant(aeDetail.quadrant.predicted || 0);
 
-      const calculateStatus = (
-        current: number,
-        predicted: number,
-        target: number
-      ) => {
-        if (predicted >= target + 5) return "Exceeds";
-        if (predicted >= target - 2) return "On Track";
-        if (predicted >= target - 10) return "Near Target";
-        return "Needs Focus";
-      };
+        // Extract model metadata
+        setModelInfo({
+          regressor: predictionResponse.meta.best_regressor,
+          classifier: predictionResponse.meta.best_classifier,
+          mean_r2: predictionResponse.meta.metrics.regression.mean_r2,
+          f1_macro: 
+            predictionResponse.meta.metrics.classification.f1_macro,
+          dataCount: 700,
+        });
 
-      const kpiDataUnsorted: KPIData[] = [
-        // Result - Financial Metrics
-        {
-          name: "Revenue Sales Achievement",
-          current: current.revenueSales,
-          predicted: predictions.revenueSales,
-          target: 90,
-          delta: predictions.revenueSales - current.revenueSales,
-          deltaPercent: `${predictions.revenueSales >= current.revenueSales ? "+" : ""}${(((predictions.revenueSales - current.revenueSales) / current.revenueSales) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.revenueSales,
-            predictions.revenueSales,
-            90
-          ),
-          ...getCategoryInfo("Revenue Sales Achievement"),
-        },
-        {
-          name: "Profitability Achievement",
-          current: current.profitability,
-          predicted: predictions.profitability,
-          target: 85,
-          delta: predictions.profitability - current.profitability,
-          deltaPercent: `${predictions.profitability >= current.profitability ? "+" : ""}${(((predictions.profitability - current.profitability) / current.profitability) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.profitability,
-            predictions.profitability,
-            85
-          ),
-          ...getCategoryInfo("Profitability Achievement"),
-        },
-        {
-          name: "Collection Rate Achievement",
-          current: current.collectionRate,
-          predicted: predictions.collectionRate,
-          target: 85,
-          delta: predictions.collectionRate - current.collectionRate,
-          deltaPercent: `${predictions.collectionRate >= current.collectionRate ? "+" : ""}${(((predictions.collectionRate - current.collectionRate) / current.collectionRate) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.collectionRate,
-            predictions.collectionRate,
-            85
-          ),
-          ...getCategoryInfo("Collection Rate Achievement"),
-        },
-        // Result - Sales Performance
-        {
-          name: "Sales Achievement Datin",
-          current: current.salesDatin,
-          predicted: predictions.salesDatin,
-          target: 90,
-          delta: predictions.salesDatin - current.salesDatin,
-          deltaPercent: `${predictions.salesDatin >= current.salesDatin ? "+" : ""}${(((predictions.salesDatin - current.salesDatin) / current.salesDatin) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.salesDatin,
-            predictions.salesDatin,
-            90
-          ),
-          ...getCategoryInfo("Sales Achievement Datin"),
-        },
-        {
-          name: "Sales Achievement Wi-Fi",
-          current: current.salesWiFi,
-          predicted: predictions.salesWiFi,
-          target: 90,
-          delta: predictions.salesWiFi - current.salesWiFi,
-          deltaPercent: `${predictions.salesWiFi >= current.salesWiFi ? "+" : ""}${(((predictions.salesWiFi - current.salesWiFi) / current.salesWiFi) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.salesWiFi, predictions.salesWiFi, 90),
-          ...getCategoryInfo("Sales Achievement Wi-Fi"),
-        },
-        {
-          name: "Sales Achievement HSI",
-          current: current.salesHSI,
-          predicted: predictions.salesHSI,
-          target: 85,
-          delta: predictions.salesHSI - current.salesHSI,
-          deltaPercent: `${predictions.salesHSI >= current.salesHSI ? "+" : ""}${(((predictions.salesHSI - current.salesHSI) / current.salesHSI) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.salesHSI, predictions.salesHSI, 85),
-          ...getCategoryInfo("Sales Achievement HSI"),
-        },
-        {
-          name: "Sales Achievement Wireline",
-          current: current.salesWireline,
-          predicted: predictions.salesWireline,
-          target: 85,
-          delta: predictions.salesWireline - current.salesWireline,
-          deltaPercent: `${predictions.salesWireline >= current.salesWireline ? "+" : ""}${(((predictions.salesWireline - current.salesWireline) / current.salesWireline) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.salesWireline,
-            predictions.salesWireline,
-            85
-          ),
-          ...getCategoryInfo("Sales Achievement Wireline"),
-        },
-        // Result - Customer
-        {
-          name: "NPS",
-          current: current.nps,
-          predicted: predictions.nps,
-          target: 80,
-          delta: predictions.nps - current.nps,
-          deltaPercent: `${predictions.nps >= current.nps ? "+" : ""}${(((predictions.nps - current.nps) / current.nps) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.nps, predictions.nps, 80),
-          ...getCategoryInfo("NPS"),
-        },
-        // Process
-        {
-          name: "AE Tools Achievement",
-          current: current.aeTools,
-          predicted: predictions.aeTools,
-          target: 90,
-          delta: predictions.aeTools - current.aeTools,
-          deltaPercent: `${predictions.aeTools >= current.aeTools ? "+" : ""}${(((predictions.aeTools - current.aeTools) / current.aeTools) * 100).toFixed(1)}%`,
-          status: calculateStatus(current.aeTools, predictions.aeTools, 90),
-          ...getCategoryInfo("AE Tools Achievement"),
-        },
-        {
-          name: "Capability Achievement",
-          current: current.capability,
-          predicted: predictions.capability,
-          target: 85,
-          delta: predictions.capability - current.capability,
-          deltaPercent: `${predictions.capability >= current.capability ?  "+" : ""}${(((predictions.capability - current.capability) / current.capability) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.capability,
-            predictions.capability,
-            85
-          ),
-          ...getCategoryInfo("Capability Achievement"),
-        },
-        {
-          name: "Behaviour Achievement",
-          current: current.behaviour,
-          predicted: predictions.behaviour,
-          target: 85,
-          delta: predictions.behaviour - current.behaviour,
-          deltaPercent: `${predictions.behaviour >= current.behaviour ? "+" : ""}${(((predictions.behaviour - current.behaviour) / current.behaviour) * 100).toFixed(1)}%`,
-          status: calculateStatus(
-            current.behaviour,
-            predictions.behaviour,
-            85
-          ),
-          ...getCategoryInfo("Behaviour Achievement"),
-        },
-        // Evaluation Quadrant
-        {
-          name: "Evaluation Quadrant",
-          current: current.evaluationQuadrant,
-          predicted: predictions.evaluationQuadrant,
-          target: 1,
-          delta: predictions.evaluationQuadrant - current.evaluationQuadrant,
-          deltaPercent: "",
-          status:
-            predictions.evaluationQuadrant < current.evaluationQuadrant
-              ?  "Improving"
-              : predictions.evaluationQuadrant > current.evaluationQuadrant
-                ? "Declining"
-                : "Stable",
-          category: "Evaluation",
-          subcategory: "Quadrant",
-        },
-      ];
+        const predictedQuarterFromMeta = predictionResponse.meta.quarter;
+        const predictedYearFromMeta = predictionResponse.meta.year;
 
-      return {
-        employeeName: employee.name,
-        kpiData: kpiDataUnsorted,
-      };
-    };
+        setPredictedMeta({
+          quarter: predictedQuarterFromMeta,
+          year: predictedYearFromMeta
+        });
+      } catch (err: any) {
+        setError(err.message || "Failed to load data");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-    const result = generatePredictionsForEmployee(nik);
-    setEmployeeName(result.employeeName);
-    setKpiData(result.kpiData);
-    setIsLoading(false);
-  }, [nik]);
+    loadData();
+  }, [nik, actualQuarterSelected, actualYearSelected]);
 
   const employeeData = useMemo(
     () => ({
-      nik: nik,
+      nik:  nik,
       name: employeeName,
     }),
     [nik, employeeName]
@@ -521,32 +155,57 @@ export default function PredictionsPage() {
 
   // Filter KPIs based on active category/subcategory
   const filteredKpiData = useMemo(() => {
-    // If category has subcategories (Result), filter by subcategory
     if (currentHasSubcategories) {
-      for (const cat of KPI_CATEGORIES) {
-        if (cat.subcategories) {
-          const sub = cat.subcategories.find(
-            (s) => s.key === activeSubcategory
-          );
-          if (sub) {
-            return kpiData.filter(
-              (d) =>
-                sub.kpis.includes(d.name) && d.name !== "Evaluation Quadrant"
-            );
-          }
-        }
-      }
-    } else {
-      // If no subcategories (Process), filter by direct KPIs
-      const directKpis = getDirectKpis(activeCategory);
-      return kpiData.filter(
-        (d) => directKpis.includes(d.name) && d.name !== "Evaluation Quadrant"
+      // Result tab has subcategories
+      const activeSubcategoryObj = activeSubcategories.find(
+        (s) => s.key === activeSubcategory
       );
-    }
-    return [];
-  }, [kpiData, activeCategory, activeSubcategory, currentHasSubcategories]);
 
-  // Initialize Chart.js for KPI bars
+      if (!activeSubcategoryObj) return [];
+
+      // Get KPI keys from the subcategory definition
+      const subcategoryKpiKeys = activeSubcategoryObj.kpis.map((k:  any) => k.key);
+
+      // Filter by matching KPI keys
+      return kpiData.filter((d) => subcategoryKpiKeys.includes(d.key));
+    } else {
+      // Overview or Process tabs (no subcategories)
+      const category = KPI_CATEGORIES.find((c) => c.key === activeCategory);
+      
+      if (!category || !category.subcategories[0]) return [];
+
+      // Get KPI keys from the category definition
+      const categoryKpiKeys = category.subcategories[0].kpis.map((k: any) => k.key);
+
+      // Filter by matching KPI keys
+      return kpiData.filter((d) => categoryKpiKeys.includes(d.key));
+    }
+  }, [
+    kpiData,
+    activeCategory,
+    activeSubcategory,
+    currentHasSubcategories,
+    activeSubcategories,
+  ]);
+
+  const tableKpiData = useMemo(() => {
+    // Get all KPI keys inside Result category
+    const resultKeys = KPI_CATEGORIES
+      .find((c) => c.key === "result")
+      ?.subcategories.flatMap((sub) => sub.kpis.map((k) => k.key)) || [];
+
+    // Get all KPI keys inside Process category
+    const processKeys = KPI_CATEGORIES
+      .find((c) => c.key === "process")
+      ?.subcategories.flatMap((sub) => sub.kpis.map((k) => k.key)) || [];
+
+    const allowedKeys = [...resultKeys, ...processKeys];
+
+    // Filter KPI data based on the allowed list
+    return kpiData.filter((kpi) => allowedKeys.includes(kpi.key));
+  }, [kpiData]);
+
+  // Initialize Bar Chart
   useEffect(() => {
     const loadChart = async () => {
       if (!chartRef.current || filteredKpiData.length === 0) return;
@@ -561,28 +220,31 @@ export default function PredictionsPage() {
       const ctx = chartRef.current.getContext("2d");
       if (!ctx) return;
 
+      // Calculate min/max to handle negative values
+      const allValues = filteredKpiData.flatMap((d) => [
+        d.current,
+        d.predicted || 0,
+      ]);
+      const minValue = Math.min(0, ...allValues); // Allow negative
+      const maxValue = Math.max(100, ...allValues); // Allow >100%
+
       chartInstanceRef.current = new Chart(ctx, {
         type: "bar",
         data: {
           labels: filteredKpiData.map((d) => d.name),
           datasets: [
             {
-              label: "Q1 2025 (Actual)",
+              label: `${actualQuarterSelected} ${actualYearSelected} (Actual)`,
               data: filteredKpiData.map((d) => d.current),
-              backgroundColor: "#64748b",
-              borderRadius: 4,
-              maxBarThickness: 40,
-            },
-            {
-              label: "Q2 2025 (Predicted)",
-              data: filteredKpiData.map((d) => d.predicted),
               backgroundColor: "#1e3a8a",
               borderRadius: 4,
               maxBarThickness: 40,
             },
             {
-              label: "Target",
-              data: filteredKpiData.map((d) => d.target),
+              label: predictedMeta 
+                ? `${predictedMeta.quarter} ${predictedMeta.year} (Predicted)` 
+                : "Predicted",
+              data: filteredKpiData.map((d) => d.predicted),
               backgroundColor: "#94a3b8",
               borderRadius: 4,
               maxBarThickness: 40,
@@ -616,17 +278,21 @@ export default function PredictionsPage() {
             tooltip: {
               callbacks: {
                 label: function (context) {
-                  const label = context.dataset.label || "";
-                  const value = context.parsed.x;
-                  return label + ": " + value + "%";
+                  return (
+                    context.dataset.label +
+                    ": " +
+                    context.parsed.x.toFixed(1) +
+                    "%"
+                  );
                 },
               },
             },
           },
           scales: {
             x: {
-              beginAtZero: true,
-              max: 100,
+              // Dynamic min/max to handle negative and >100% values
+              min: minValue,
+              max:  maxValue,
               ticks: {
                 callback: function (value) {
                   return value + "%";
@@ -639,6 +305,7 @@ export default function PredictionsPage() {
               },
               grid: {
                 color: "#E5E7EB",
+                lineWidth: 1,
               },
             },
             y: {
@@ -651,7 +318,7 @@ export default function PredictionsPage() {
                 color: "#6B7280",
                 padding: 8,
               },
-              grid: {
+              grid:  {
                 display: false,
               },
             },
@@ -673,7 +340,7 @@ export default function PredictionsPage() {
   // Initialize Quadrant Chart
   useEffect(() => {
     const loadQuadrantChart = async () => {
-      if (!quadrantChartRef.current || kpiData.length === 0) return;
+      if (!quadrantChartRef.current || ! currentQuadrant) return;
 
       const { Chart, registerables } = await import("chart.js");
       Chart.register(...registerables);
@@ -681,11 +348,6 @@ export default function PredictionsPage() {
       if (quadrantChartInstanceRef.current) {
         quadrantChartInstanceRef.current.destroy();
       }
-
-      const quadrantData = kpiData.find(
-        (d) => d.name === "Evaluation Quadrant"
-      );
-      if (! quadrantData) return;
 
       const ctx = quadrantChartRef.current.getContext("2d");
       if (!ctx) return;
@@ -697,20 +359,19 @@ export default function PredictionsPage() {
           case 2:
             return { x: 25, y: 75 };
           case 3:
-            return { x: 75, y: 25 };
+            return { x: 75, y:  25 };
           case 4:
-            return { x: 25, y: 25 };
+            return { x:  25, y: 25 };
           default:
             return { x: 50, y: 50 };
         }
       };
 
-      const currentCoords = quadrantToCoords(quadrantData.current);
-      const predictedCoords = quadrantToCoords(quadrantData.predicted);
-      const targetCoords = quadrantToCoords(quadrantData.target);
+      const currentCoords = quadrantToCoords(currentQuadrant);
+      const predictedCoords = quadrantToCoords(predictedQuadrant);
 
       const addOffset = (
-        coords: { x: number; y: number },
+        coords: { x: number; y:  number },
         offsetX: number,
         offsetY: number
       ) => ({
@@ -720,15 +381,14 @@ export default function PredictionsPage() {
 
       const currentWithOffset = addOffset(currentCoords, -10, -5);
       const predictedWithOffset = addOffset(predictedCoords, 0, 5);
-      const targetWithOffset = addOffset(targetCoords, 10, -5);
 
       const quadrantBackgroundPlugin = {
         id: "quadrantBackground",
-        beforeDatasetsDraw: (chart: any) => {
+        beforeDatasetsDraw:  (chart:  any) => {
           const {
             ctx,
             chartArea: { left, top, right, bottom },
-            scales: { x, y },
+            scales:  { x, y },
           } = chart;
 
           const centerX = x.getPixelForValue(50);
@@ -834,28 +494,18 @@ export default function PredictionsPage() {
               borderColor: "#ffffff",
               borderWidth: 2,
               pointRadius: 14,
-              pointHoverRadius: 18,
+              pointHoverRadius:  18,
               pointStyle: "circle",
             },
             {
-              label: "Predicted Position",
+              label:  "Predicted Position",
               data: [predictedWithOffset],
               backgroundColor: "#1e3a8a",
-              borderColor: "#ffffff",
-              borderWidth: 2,
-              pointRadius: 14,
+              borderColor:  "#ffffff",
+              borderWidth:  2,
+              pointRadius:  14,
               pointHoverRadius: 18,
               pointStyle: "circle",
-            },
-            {
-              label: "Target",
-              data: [targetWithOffset],
-              backgroundColor: "#10B981",
-              borderColor: "#ffffff",
-              borderWidth: 2,
-              pointRadius: 14,
-              pointHoverRadius: 18,
-              pointStyle: "triangle",
             },
           ],
         },
@@ -886,13 +536,13 @@ export default function PredictionsPage() {
                   else if (x > 50 && y <= 50) quadrant = 3;
                   else quadrant = 4;
 
-                  const quadrantNames: { [key: number]: string } = {
+                  const quadrantNames:  { [key: number]: string } = {
                     1: "Ach. Scaling & Sustain",
                     2: "Ach. Scaling Only",
                     3: "Ach. Sustain Only",
                     4: "Not ach. both",
                   };
-                  return `${label}: Quadrant ${quadrant} (${quadrantNames[quadrant]})`;
+                  return `${label}:  Quadrant ${quadrant} (${quadrantNames[quadrant]})`;
                 },
               },
             },
@@ -909,7 +559,7 @@ export default function PredictionsPage() {
             y: {
               min: 0,
               max: 100,
-              title: { display: false },
+              title:  { display: false },
               ticks: { display: false },
               grid: { display: false },
               border: { display: true, color: "#e2e8f0" },
@@ -927,10 +577,10 @@ export default function PredictionsPage() {
         quadrantChartInstanceRef.current.destroy();
       }
     };
-  }, [kpiData]);
+  }, [currentQuadrant, predictedQuadrant]);
 
   // Table columns
-  const columns: TableColumn[] = useMemo(
+  const columns:  TableColumn[] = useMemo(
     () => [
       { label: "KPI", key: "name", sortable: true },
       {
@@ -945,37 +595,20 @@ export default function PredictionsPage() {
         label: "Current",
         key: "current",
         sortable: true,
-        render: (value, row) =>
-          row.name === "Evaluation Quadrant"
-            ? `Quadrant ${value}`
-            : `${value}%`,
+        render: (value) => `${value.toFixed(1)}%`,
       },
       {
-        label: "Predicted",
-        key: "predicted",
-        sortable: true,
-        render: (value, row) =>
-          row.name === "Evaluation Quadrant"
-            ? `Quadrant ${value}`
-            : `${value}%`,
-      },
-      {
-        label: "Target",
-        key: "target",
-        sortable: true,
-        render: (value, row) =>
-          row.name === "Evaluation Quadrant"
-            ?  `Quadrant ${value}`
-            : `${value}%`,
+        label:  "Predicted",
+        key:  "predicted",
+        sortable:  true,
+        render: (value) => (value != null ? `${value.toFixed(1)}%` : "N/A"),
       },
       {
         label: "Δ (pts)",
         key: "delta",
         sortable: true,
-        render: (value, row) => {
-          if (row.name === "Evaluation Quadrant") {
-            return <span className="text-gray-400">-</span>;
-          }
+        render: (value) => {
+          if (value == null) return <span className="text-gray-400">-</span>;
 
           const numValue = Number(value);
           let colorClass = "text-[#64748B]";
@@ -989,49 +622,7 @@ export default function PredictionsPage() {
           return (
             <span className={`font-semibold ${colorClass}`}>
               {numValue > 0 ? "+" : ""}
-              {numValue}
-            </span>
-          );
-        },
-      },
-      {
-        label: "Status",
-        key: "status",
-        sortable: true,
-        render: (value, row) => {
-          if (row.name === "Evaluation Quadrant") {
-            const delta = row.predicted - row.current;
-            if (delta < 0) {
-              return (
-                <span className="inline-block px-3 py-1 rounded text-xs font-semibold bg-[#D1FAE5] text-[#065F46]">
-                  ↑ Improving
-                </span>
-              );
-            } else if (delta > 0) {
-              return (
-                <span className="inline-block px-3 py-1 rounded text-xs font-semibold bg-[#FEE2E2] text-[#DC2626]">
-                  ↓ Declining
-                </span>
-              );
-            }
-            return (
-              <span className="inline-block px-3 py-1 rounded text-xs font-semibold bg-[#E2E8F0] text-[#475569]">
-                → Stable
-              </span>
-            );
-          }
-
-          const statusStyles: Record<string, string> = {
-            Exceeds: "bg-[#E2E8F0] text-[#475569]",
-            "On Track": "bg-[#E2E8F0] text-[#475569]",
-            "Near Target": "bg-[#E2E8F0] text-[#475569]",
-            "Needs Focus": "bg-[#FEE2E2] text-[#DC2626]",
-          };
-          return (
-            <span
-              className={`inline-block px-3 py-1 rounded text-xs font-semibold ${statusStyles[value] || ""}`}
-            >
-              {value}
+              {numValue.toFixed(1)}
             </span>
           );
         },
@@ -1058,6 +649,53 @@ export default function PredictionsPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e3a8a] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading predictions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="w-full min-h-screen bg-[#F8F9FA] flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          {/* Error Icon */}
+          <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
+            <svg
+              className="w-8 h-8 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+
+          {/* Error Title */}
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Something went wrong
+          </h2>
+
+          {/* Error Message */}
+          <p className="text-gray-600 mb-2">
+            We encountered an error while processing your request. 
+          </p>
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 mb-6 font-mono break-words">
+            {error}
+          </p>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row justify-center">
+            <Button variant="primary" onClick={handleBack}>
+              Back to Overview
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -1100,13 +738,31 @@ export default function PredictionsPage() {
               <h2 className="text-[16px] font-semibold text-[#16396E] mb-1">
                 Model Information
               </h2>
-              <p className="text-[14px] text-[#637381] leading-relaxed">
-                This prediction uses{" "}
-                <span className="font-semibold">XGBoost</span> algorithm with{" "}
-                <span className="font-semibold">85% accuracy rate</span>. The
-                model was trained using{" "}
-                <span className="font-semibold">500 data</span>.
-              </p>
+              {modelInfo ?  (
+                <p className="text-[14px] text-[#637381] leading-relaxed">
+                  This prediction uses{" "}
+                  <span className="font-semibold">{modelInfo.regressor}</span>{" "}
+                  algorithm for regression with{" "}
+                  <span className="font-semibold">
+                    {modelInfo.mean_r2.toFixed(4)} mean R² score
+                  </span>
+                  <span> and </span>
+                  <span className="font-semibold">{modelInfo.classifier}</span>{" "}
+                  algorithm for quadrant classification with{" "}
+                  <span className="font-semibold">
+                    {modelInfo.f1_macro.toFixed(4)} macro F1 score
+                  </span>
+                  . The model was trained using{" "}
+                  <span className="font-semibold">
+                    {modelInfo.dataCount} employee data
+                  </span>
+                  .
+                </p>
+              ) : (
+                <p className="text-[14px] text-[#637381] leading-relaxed">
+                  Loading model information...
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -1138,8 +794,8 @@ export default function PredictionsPage() {
             </div>
 
             {/* Subcategory Tabs */}
-            {currentHasSubcategories && (
-              <div className="flex flex-wrap gap-2 mt-4 mb-6">
+            {activeCategory === "result" && (
+                <div className="flex flex-wrap gap-2 mt-4 mb-6">
                 {activeSubcategories.map((sub) => (
                   <button
                     key={sub.key}
@@ -1180,11 +836,9 @@ export default function PredictionsPage() {
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded-full bg-[#64748b] border-2 border-white shadow"></div>
                 <div>
-                  <span className="text-sm text-gray-500">Current:</span>
+                  <span className="text-sm text-gray-500">Current: </span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Quadrant{" "}
-                    {kpiData.find((d) => d.name === "Evaluation Quadrant")
-                      ?.current || "-"}
+                    Quadrant {currentQuadrant || "-"}
                   </span>
                 </div>
               </div>
@@ -1193,22 +847,12 @@ export default function PredictionsPage() {
                 <div>
                   <span className="text-sm text-gray-500">Predicted:</span>
                   <span className="ml-2 font-semibold text-gray-700">
-                    Quadrant{" "}
-                    {kpiData.find((d) => d.name === "Evaluation Quadrant")
-                      ?.predicted || "-"}
+                    Quadrant {predictedQuadrant || "-"}
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[14px] border-b-[#10B981]"></div>
-                <div>
-                  <span className="text-sm text-gray-500">Target:</span>
-                  <span className="ml-2 font-semibold text-gray-700">
-                    Quadrant{" "}
-                    {kpiData.find((d) => d.name === "Evaluation Quadrant")
-                      ?.target || "-"}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -1231,13 +875,13 @@ export default function PredictionsPage() {
             <div className="-mx-6 mt-4">
               <div className="px-6">
                 <Table
-                  columns={columns}
-                  data={kpiData}
-                  loading={false}
-                  error=""
-                  pageSize={12}
-                  showAction={false}
-                />
+                    columns={columns}
+                    data={tableKpiData}
+                    loading={false}
+                    error=""
+                    pageSize={12}
+                    showAction={false}
+                  />
               </div>
             </div>
           </Card>

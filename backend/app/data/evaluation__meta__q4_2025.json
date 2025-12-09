@@ -1,0 +1,98 @@
+{
+  "prediction_quarter": "Q4",
+  "prediction_year": 2025,
+  "generated_date": "2025-12-08T13:44:40.228995",
+  "models": {
+    "regression": {
+      "name": "xgboost",
+      "mean_r2": 0.07441713728329344,
+      "per_target_metrics": {
+        "revenue_sales_achievement": {
+          "R2": 0.15395914416289613,
+          "MAE": 0.5103760350967176,
+          "MSE": 0.8448231750057217,
+          "RMSE": 0.9191426303929775
+        },
+        "sales_achievement_datin": {
+          "R2": 0.017169934786903873,
+          "MAE": 0.25102269131567356,
+          "MSE": 0.12722757357890466,
+          "RMSE": 0.35668974414595195
+        },
+        "sales_achievement_wifi": {
+          "R2": 0.020921695567530096,
+          "MAE": 0.0030855033527995516,
+          "MSE": 0.0007773741461426318,
+          "RMSE": 0.02788143013087083
+        },
+        "sales_achievement_hsi": {
+          "R2": -0.07041491823015278,
+          "MAE": 0.051859015056065154,
+          "MSE": 0.03932136434314847,
+          "RMSE": 0.19829615312241555
+        },
+        "sales_achievement_wireline": {
+          "R2": -0.17621495914011853,
+          "MAE": 0.09082265997861279,
+          "MSE": 0.03884891479276568,
+          "RMSE": 0.19710128054572776
+        },
+        "profitability_achievement": {
+          "R2": 0.24568731201288907,
+          "MAE": 0.1598713035187409,
+          "MSE": 0.046984038864972405,
+          "RMSE": 0.2167580191480177
+        },
+        "collection_rate_achievement": {
+          "R2": 0.3858469098964358,
+          "MAE": 0.18320085015147294,
+          "MSE": 0.05884862707717349,
+          "RMSE": 0.24258735968135992
+        },
+        "ae_tools_achievement": {
+          "R2": 0.19580573927208156,
+          "MAE": 0.14264381452908959,
+          "MSE": 0.03222242921041978,
+          "RMSE": 0.1795060701213744
+        },
+        "capability_achievement": {
+          "R2": 0.20145464465914498,
+          "MAE": 0.08536174009062619,
+          "MSE": 0.01812369591603142,
+          "RMSE": 0.13462427684497108
+        },
+        "behaviour_achievement": {
+          "R2": 0.038501302725596265,
+          "MAE": 0.11008884024459949,
+          "MSE": 0.018694882074302827,
+          "RMSE": 0.13672922904157261
+        },
+        "nps_achievement": {
+          "R2": -0.19412829559697875,
+          "MAE": 0.10478124288328415,
+          "MSE": 0.014376182388553808,
+          "RMSE": 0.11990071888255636
+        }
+      }
+    },
+    "classification": {
+      "name": "logistic_regression",
+      "accuracy": 0.4857142857142857,
+      "f1_macro": 0.4705150256233847,
+      "precision_macro": 0.47566181077694236,
+      "recall_macro": 0.48993055555555554
+    }
+  },
+  "training_samples": 418,
+  "test_samples": 105,
+  "feature_count": 76,
+  "temporal_features": [
+    "lag1",
+    "trend"
+  ],
+  "interaction_features": [
+    "revenue_per_project",
+    "profit_revenue_ratio",
+    "weighted_win_rate"
+  ]
+}

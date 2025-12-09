@@ -27,6 +27,11 @@ const stageToPath = (stage: string) => {
 
 const coachingMap = (v: number) => `F${Math.round(v)}`;
 
+const formatInt = (v: number | null | undefined) => {
+  if (v === null || v === undefined) return "-";
+  return Math.round(v); 
+};
+
 export default function PengembanganPage(): JSX.Element {
 
   const router = useRouter();
@@ -138,14 +143,14 @@ export default function PengembanganPage(): JSX.Element {
   }, [quarter, year]);
 
   const informalCols: TableColumn[] = useMemo(() => [
-    { label: "NIK", key: "nik", sortable: true },
+    { label: "NIK", key: "nik", sortable: true, render: (v) => formatInt(v) },
     { label: "Name", key: "name", sortable: true },
     { label: "Hasil Coaching", key: "informalCoaching", sortable: true },
     { label: "Lesson Learned", key: "informalLesson", sortable: false },
   ], []);
 
   const formalCols: TableColumn[] = useMemo(() => [
-    { label: "NIK", key: "nik", sortable: true },
+    { label: "NIK", key: "nik", sortable: true, render: (v) => formatInt(v) },
     { label: "Name", key: "name", sortable: true },
     { label: "Course Name", key: "courseName", sortable: true },
     { label: "Certificate ID", key: "certificateId", sortable: true },
@@ -156,22 +161,21 @@ export default function PengembanganPage(): JSX.Element {
   return (
     <div className="w-full flex flex-col gap-6">
 
-      {/* SEARCH + FILTERS */}
+      {/* Search + Filters */}
       <div className="w-full flex justify-center">
-        <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] flex flex-row items-center gap-4 px-5 py-[30px]">
-          <div className="flex-1 flex flex-col items-start">
-            <div className="text-[20px] font-semibold">Search Account Executive</div>
+        <div className="w-full max-w-[1100px] bg-white rounded-[20px] border border-[#CBD5E1] px-5 py-[30px] flex flex-row gap-4">
+          <div className="flex-1">
+            <p className="text-[20px] font-semibold mb-1">Search Account Executive</p>
             <SearchBar value={search} onChange={setSearch} />
           </div>
 
           <div className="flex flex-row gap-4">
             <div className="w-[200px]">
-              <div className="font-semibold">Tahun</div>
+              <p className="text-[20px] font-semibold">Tahun</p>
               <FilterYear value={year} onChange={setYear} />
             </div>
-
             <div className="w-[200px]">
-              <div className="font-semibold">Periode</div>
+              <p className="text-[20px] font-semibold">Periode</p>
               <FilterQuarter value={quarter} onChange={(q) => setQuarter(q as any)} />
             </div>
           </div>

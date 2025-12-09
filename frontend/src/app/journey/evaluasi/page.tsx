@@ -14,28 +14,7 @@ import FeatureImportanceSection, {
   ModelInfo,
 } from "@/components/dashboard/FeatureImportance";
 import { Search } from "lucide-react";
-
-// ---------------------------------------------
-// TYPE DEFINITIONS
-// ---------------------------------------------
-type EvaluasiRow = {
-  nik: string;
-  name: string;
-  revenueSalesAch: number;
-  salesAchDatin: number;
-  salesAchWifi: number;
-  salesAchHSI: number;
-  salesAchWireline: number;
-  profitabilityAch: number;
-  collectionRateAch: number;
-  aeToolsAch: number;
-  capabilityAch: number;
-  behaviourAch: number;
-  nps: number;
-  evaluationQuadrant: number;
-  quarter: string;
-  year: number;
-};
+import { EvaluasiRow } from "@/interfaces/evaluasi/types";
 
 type ColumnCategory = "overview" | "result" | "process";
 type ResultSubcategory = "financial" | "sales" | "customer";
@@ -119,6 +98,11 @@ export default function EvaluasiOverviewPage() {
   const handleStageChange = (stage: string) => {
     router.push(stageToPath(stage));
   };
+
+  const formatInt = (v: number | null | undefined) => {
+  if (v === null || v === undefined) return "-";
+  return Math.round(v); 
+};
 
   // ---------------------------------------------
   // FETCH EVALUASI DATA
@@ -221,7 +205,7 @@ export default function EvaluasiOverviewPage() {
   // TABLE COLUMN DEFINITIONS
   // ---------------------------------------------
   const baseColumns: TableColumn[] = [
-    { label: "NIK", key: "nik", sortable: true },
+    { label: "NIK", key: "nik", sortable: true, render: (v) => formatInt(v) },
     { label: "Name", key: "name", sortable: true },
   ];
 
@@ -231,7 +215,10 @@ export default function EvaluasiOverviewPage() {
     sortable: false,
     render: (_v, row) => (
       <button
-        onClick={() => router.push(`/journey/evaluasi/${row.nik}/predictions`)}
+        onClick={() => {
+          const url = `/journey/evaluasi/${row.nik}/predictions?quarter=${quarter}&year=${year}`;
+          router.push(url);
+        }}
         className="text-[#1464D5]"
       >
         <Search size={16} />
@@ -248,7 +235,7 @@ export default function EvaluasiOverviewPage() {
         { label: "AE Tools Ach. (%)", key: "aeToolsAch" },
         { label: "NPS (%)", key: "nps" },
         predictionsColumn,
-        { label: "Evaluation Quadrant", key: "evaluationQuadrant" },
+        { label: "Evaluation Quadrant", key: "evaluationQuadrant", render: (v) => formatInt(v) },
       ];
     }
 
@@ -281,7 +268,7 @@ export default function EvaluasiOverviewPage() {
       { label: "Capability Ach. (%)", key: "capabilityAch" },
       { label: "Behaviour Ach. (%)", key: "behaviourAch" },
     ];
-  }, [columnCategory, resultSubcategory]);
+  }, [columnCategory, resultSubcategory, quarter, year]);
 
   // ---------------------------------------------
   // RENDER
@@ -305,6 +292,17 @@ export default function EvaluasiOverviewPage() {
               <p className="text-[20px] font-semibold">Periode</p>
               <FilterQuarter value={quarter} onChange={(q) => setQuarter(q as Quarter)} />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Notice: Prediction Availability */}
+      <div className="w-full flex justify-center mt-[-10px]">
+        <div className="max-w-[1100px] w-full">
+          <div className="bg-blue-50 border-l-4 border-[#16396E] text-[#16396E] px-4 py-3 rounded-md shadow-sm text-sm">
+            <strong>Info:</strong> Performance prediction is currently available 
+            only for <strong>Q3 2025</strong>. Other quarters do not yet have 
+            prediction data.
           </div>
         </div>
       </div>

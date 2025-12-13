@@ -1,6 +1,8 @@
 import { EvaluasiActualApiResponse } from "@/interfaces/evaluasi/apiTypes";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API = process.env.NEXT_PUBLIC_API_BASE_URL || "https://ae-journey.onrender.com";
+
+console.log("API BASE URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
 
 // Fetch actual evaluation data for a specific employee (NIK)
 export async function fetchEvaluasiByNik(
@@ -8,7 +10,7 @@ export async function fetchEvaluasiByNik(
   quarter: string
 ): Promise<EvaluasiActualApiResponse> {
   const res = await fetch(
-    `${BASE_URL}/evaluasi/ae/${nik}?quarter=${encodeURIComponent(quarter)}`,
+    `${API}/evaluasi/ae/${nik}?quarter=${encodeURIComponent(quarter)}`,
     { cache: "no-store" }
   );
 

@@ -49,7 +49,8 @@ function ProgressBar({ value, missing }: { value: number | null; missing?: boole
 async function fetchDetailFromAPI(nik: string, quarter: string): Promise<Detail> {
   const encodedQuarter = encodeURIComponent(quarter);
 
-  const res = await fetch(`http://localhost:8000/orientasi/nik/${nik}/quarter/${encodedQuarter}`, {
+  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const res = await fetch(`${API}/orientasi/nik/${nik}/quarter/${encodedQuarter}`, {
     cache: "no-store",
   });
 

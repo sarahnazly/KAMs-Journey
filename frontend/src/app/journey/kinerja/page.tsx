@@ -48,6 +48,8 @@ export default function KinerjaPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   // -----------------------------
   // Fetch data from backend
   // -----------------------------
@@ -64,7 +66,7 @@ export default function KinerjaPage() {
         // FETCH KINERJA DATA
         // -------------------------
         const resKin = await fetch(
-          `http://localhost:8000/kinerja/${encoded}`
+          `${API}/kinerja/${encoded}`
         );
 
         if (!resKin.ok) throw new Error("Failed fetching kinerja");
@@ -110,7 +112,7 @@ export default function KinerjaPage() {
         // FETCH FEATURE IMPORTANCE
         // -------------------------
         const resFI = await fetch(
-          `http://localhost:8000/fi/pelaksanaan_to_kinerja`
+          `${API}/fi/pelaksanaan_to_kinerja`
         );
 
         if (!resFI.ok) throw new Error("FI load failed");

@@ -50,6 +50,8 @@ export default function PengembanganPage(): JSX.Element {
   const [fiFeatures, setFiFeatures] = useState<Feature[]>([]);
   const [fiModel, setFiModel] = useState<ModelInfo | null>(null);
 
+  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   useEffect(() => {
     async function load() {
       try {
@@ -57,7 +59,7 @@ export default function PengembanganPage(): JSX.Element {
         setError("");
 
         const q = encodeURIComponent(`${quarter} ${year}`);
-        const res = await fetch(`http://localhost:8000/pengembangan/${q}`);
+        const res = await fetch(`${API}/pengembangan/${q}`);
 
         if (!res.ok) throw new Error("Failed fetching pengembangan data");
 
@@ -112,7 +114,7 @@ export default function PengembanganPage(): JSX.Element {
     async function loadFI() {
       try {
         const q = encodeURIComponent(`${quarter} ${year}`);
-        const res = await fetch(`http://localhost:8000/fi/evaluasi_to_pengembangan`);
+        const res = await fetch(`${API}/fi/evaluasi_to_pengembangan`);
 
         if (!res.ok) throw new Error("Failed fetching FI");
 

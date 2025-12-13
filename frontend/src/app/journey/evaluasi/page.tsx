@@ -113,8 +113,9 @@ export default function EvaluasiOverviewPage() {
         setLoading(true);
         setError("");
 
+        const API = process.env.NEXT_PUBLIC_API_BASE_URL;
         const q = `${quarter} ${year}`;
-        const res = await fetch(`http://localhost:8000/evaluasi/${q}`);
+        const res = await fetch(`${API}/evaluasi/${q}`);
 
         if (!res.ok) throw new Error("Failed fetching evaluasi data");
 
@@ -169,8 +170,9 @@ export default function EvaluasiOverviewPage() {
   useEffect(() => {
     async function loadFI() {
       try {
+        const API = process.env.NEXT_PUBLIC_API_BASE_URL;
         const res = await fetch(
-          "http://localhost:8000/fi/kinerja_to_evaluasi"
+          `${API}/fi/kinerja_to_evaluasi`
         );
 
         if (!res.ok) throw new Error("Failed to load FI");

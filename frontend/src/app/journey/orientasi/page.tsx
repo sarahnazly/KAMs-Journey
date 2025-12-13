@@ -80,10 +80,12 @@ export default function OrientasiOverviewPage() {
 
     const fetchData = async () => {
       try {
-        const quarterParam = `${quarter} ${year}`; // contoh: "Q1 2025"
+        const quarterParam = `${quarter} ${year}`; 
+
+        const API = process.env.NEXT_PUBLIC_API_BASE_URL;
 
         const encoded = encodeURIComponent(quarterParam);
-        const res = await fetch(`http://localhost:8000/orientasi/quarter/${encoded}`);
+        const res = await fetch(`${API}/orientasi/quarter/${encoded}`);
 
         if (!res.ok) throw new Error("Failed to fetch data");
 

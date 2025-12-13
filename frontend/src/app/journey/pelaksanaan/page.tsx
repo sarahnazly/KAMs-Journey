@@ -71,6 +71,8 @@ export default function OnDutyOverviewPage() {
 
   const quarterStr = `${quarter} ${year}`;
 
+  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   // -----------------------------
   // FETCH DATA PELAKSANAAN
   // -----------------------------
@@ -81,7 +83,7 @@ export default function OnDutyOverviewPage() {
         setError("");
 
         const q = encodeURIComponent(quarterStr);
-        const res = await fetch(`http://localhost:8000/pelaksanaan/${q}`);
+        const res = await fetch(`${API}/pelaksanaan/${q}`);
 
         if (!res.ok) throw new Error("Failed to fetch data");
 
@@ -136,7 +138,7 @@ export default function OnDutyOverviewPage() {
       try {
         const q = encodeURIComponent(quarterStr);
         let res = await fetch(
-          `http://localhost:8000/fi/orientasi_to_pelaksanaan`
+          `${API}/fi/orientasi_to_pelaksanaan`
         );
 
         let json = await res.json();

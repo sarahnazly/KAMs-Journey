@@ -136,23 +136,15 @@ export default function OnDutyOverviewPage() {
       try {
         const q = encodeURIComponent(quarterStr);
         let res = await fetch(
-          `http://localhost:8000/fi/orientasi_to_pelaksanaan/${q}`
+          `http://localhost:8000/fi/orientasi_to_pelaksanaan`
         );
 
         let json = await res.json();
 
-        // If quarter has no data → fallback to ALL
-        if (!json.features || json.features.length === 0) {
-          res = await fetch(
-            `http://localhost:8000/fi/orientasi_to_pelaksanaan`
-          );
-          json = await res.json();
-        }
-
         const model: ModelInfo = {
           name: json.meta.best_regressor ?? "Model",
           R2: json.meta.metrics_overall.R2 ?? 0,
-          trainCount: 700
+          trainCount: 2000
         };
 
         const featureList: Feature[] = json.features.map((f: any) => ({

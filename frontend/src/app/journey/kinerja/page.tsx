@@ -110,7 +110,7 @@ export default function KinerjaPage() {
         // FETCH FEATURE IMPORTANCE
         // -------------------------
         const resFI = await fetch(
-          `http://localhost:8000/fi/pelaksanaan_to_kinerja/${encoded}`
+          `http://localhost:8000/fi/pelaksanaan_to_kinerja`
         );
 
         if (!resFI.ok) throw new Error("FI load failed");
@@ -126,7 +126,7 @@ export default function KinerjaPage() {
         const modelMeta: ModelInfo = {
           name: fi.meta.best_regressor,
           R2: fi.meta.metrics_overall.R2,
-          trainCount: 700,
+          trainCount: 2000,
         };
 
         setFiFeatures(mappedFI);

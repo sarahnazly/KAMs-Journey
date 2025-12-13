@@ -30,7 +30,7 @@
       {
         "feature": "unit",
         "importance": 0.12992703333823233,
-        "description": "Unit kerja AE."
+        "description": "Unit bisnis AE."
       },
       {
         "feature": "customer_introduction",
@@ -40,17 +40,17 @@
       {
         "feature": "saran_pengembangan",
         "importance": 0.07334113538230351,
-        "description": "Masukan pengembangan AE."
+        "description": "Masukan pengembangan untuk AE."
       },
       {
         "feature": "customer_matching",
         "importance": 0.04263880658274263,
-        "description": "Kecocokan solusi dengan pelanggan."
+        "description": "Kecocokan antara AE dengan pelanggan."
       },
       {
         "feature": "transfer_customer_documentation",
         "importance": 0.0413812901952286,
-        "description": "Dokumentasi pelanggan yang dibagikan."
+        "description": "Transfer dokumentasi dengan pelanggan."
       },
       {
         "feature": "visiting_customer",
@@ -60,7 +60,7 @@
       {
         "feature": "sales_funnel",
         "importance": 0.03302448095271822,
-        "description": "Kesehatan pipeline penjualan."
+        "description": "Kemampuan dalam kelola pipeline penjualan."
       },
       {
         "feature": "transfer_customer_knowledge",
@@ -103,12 +103,12 @@
         {
           "feature": "customer_matching",
           "importance": 0.0348390552102923,
-          "description": "Kecocokan solusi dengan pelanggan."
+          "description": "Kecocokan antara AE dengan pelanggan."
         },
         {
           "feature": "sales_funnel",
           "importance": 0.034069654302169704,
-          "description": "Kesehatan pipeline penjualan."
+          "description": "Kemampuan dalam kelola pipeline penjualan."
         },
         {
           "feature": "visiting_customer",
@@ -118,7 +118,7 @@
         {
           "feature": "transfer_customer_documentation",
           "importance": 0.02907660033476724,
-          "description": "Dokumentasi pelanggan yang dibagikan."
+          "description": "Transfer dokumentasi dengan pelanggan."
         },
         {
           "feature": "account_profile",
@@ -148,12 +148,12 @@
         {
           "feature": "unit",
           "importance": 0.01225233965726503,
-          "description": "Unit kerja AE."
+          "description": "Unit bisnis AE."
         },
         {
           "feature": "saran_pengembangan",
           "importance": 0.002421961495754856,
-          "description": "Masukan pengembangan AE."
+          "description": "Masukan pengembangan untuk AE."
         }
       ]
     }
@@ -184,52 +184,52 @@
       {
         "feature": "unit",
         "importance": 0.28685885145423407,
-        "description": "Unit kerja AE."
+        "description": "Unit bisnis AE."
       },
       {
         "feature": "proses_delivery",
         "importance": 0.09644254378295879,
-        "description": "Kualitas proses delivery."
+        "description": "Jumlah kontrak yang didapatkan oleh AE dari seluruh pelanggan."
       },
       {
         "feature": "risk_project_assessment",
         "importance": 0.09176328819452088,
-        "description": "Penilaian risiko proyek."
+        "description": "Penilaian risiko proyek dengan memetakannya ke dalam sales funnel F4 (Negotiation)."
       },
       {
         "feature": "invoice_pelanggan",
         "importance": 0.08595513543847245,
-        "description": "Kinerja penagihan invoice."
+        "description": "Jumlah collection atau tagihan yang dibayarkan oleh seluruh pelanggan."
       },
       {
         "feature": "prebid_preparation",
         "importance": 0.08564516145675895,
-        "description": "Kesiapan dokumen pra-bid."
+        "description": "Kesiapan dokumen pra-bid dengan memetakannya ke dalam sales funnel F2 (Solution Manajement)."
       },
       {
         "feature": "customer_key_person",
         "importance": 0.0811663339541319,
-        "description": "Hubungan dengan key person."
+        "description": "Keterisian informasi PIC pelanggan."
       },
       {
         "feature": "identifikasi_potensi_proyek",
         "importance": 0.07813731505408229,
-        "description": "Identifikasi potensi proyek."
+        "description": "Identifikasi potensi proyek dengan pemetaannya ke dalam sales funnel F1 (Opportunity)."
       },
       {
         "feature": "customer_requirement",
         "importance": 0.07589207494824277,
-        "description": "Identifikasi kebutuhan pelanggan."
+        "description": "Identifikasi kebutuhan dan juga value chain analysis industri pelanggan."
       },
       {
         "feature": "account_profile_duty",
         "importance": 0.06400039595368917,
-        "description": "Pelaksanaan update profil akun."
+        "description": "Pelaksanaan update profil akun pelanggan."
       },
       {
         "feature": "account_plan_duty",
         "importance": 0.05413889976290872,
-        "description": "Pelaksanaan rencana akun."
+        "description": "Pelaksanaan rencana akun dengan pemetaannya ke dalam sales funnel F0 (Lead)."
       }
     ],
     "features_by_quarter": {
@@ -237,52 +237,52 @@
         {
           "feature": "proses_delivery",
           "importance": 0.25959268836563315,
-          "description": "Kualitas proses delivery."
+          "description": "Jumlah kontrak yang didapatkan oleh AE dari seluruh pelanggan."
         },
         {
           "feature": "identifikasi_potensi_proyek",
           "importance": 0.1552422041998408,
-          "description": "Identifikasi potensi proyek."
+          "description": "Identifikasi potensi proyek dengan pemetaannya ke dalam sales funnel F1 (Opportunity)."
         },
         {
           "feature": "risk_project_assessment",
           "importance": 0.1408021874145735,
-          "description": "Penilaian risiko proyek."
+          "description": "Penilaian risiko proyek dengan memetakannya ke dalam sales funnel F4 (Negotiation)."
         },
         {
           "feature": "account_profile_duty",
           "importance": 0.0912927892407113,
-          "description": "Pelaksanaan update profil akun."
+          "description": "Pelaksanaan update profil akun pelanggan."
         },
         {
           "feature": "customer_requirement",
           "importance": 0.08463382668914679,
-          "description": "Identifikasi kebutuhan pelanggan."
+          "description": "Identifikasi kebutuhan dan juga value chain analysis industri pelanggan."
         },
         {
           "feature": "invoice_pelanggan",
           "importance": 0.07664488361267262,
-          "description": "Kinerja penagihan invoice."
+          "description": "Jumlah collection atau tagihan yang dibayarkan oleh seluruh pelanggan."
         },
         {
           "feature": "prebid_preparation",
           "importance": 0.07278807271888628,
-          "description": "Kesiapan dokumen pra-bid."
+          "description": "Kesiapan dokumen pra-bid dengan memetakannya ke dalam sales funnel F2 (Solution Manajement)."
         },
         {
           "feature": "customer_key_person",
           "importance": 0.06902374388872738,
-          "description": "Hubungan dengan key person."
+          "description": "Keterisian informasi PIC pelanggan."
         },
         {
           "feature": "account_plan_duty",
           "importance": 0.03212172806793154,
-          "description": "Pelaksanaan rencana akun."
+          "description": "Pelaksanaan rencana akun dengan pemetaannya ke dalam sales funnel F0 (Lead)."
         },
         {
           "feature": "unit",
           "importance": 0.017857875801876633,
-          "description": "Unit kerja AE."
+          "description": "Unit bisnis AE."
         }
       ]
     }
@@ -313,27 +313,27 @@
       {
         "feature": "unit",
         "importance": 0.23747405689016407,
-        "description": "Unit kerja AE."
+        "description": "Unit bisnis AE."
       },
       {
         "feature": "collection_rate",
         "importance": 0.10499487109444075,
-        "description": "Collection rate."
+        "description": "Persentase collection dari total tagihan."
       },
       {
         "feature": "profitability",
         "importance": 0.10449749264847433,
-        "description": "Profitabilitas."
+        "description": "Profitabilitas yang didapat dari penjualan AE."
       },
       {
         "feature": "ae_tools",
         "importance": 0.10368604985520614,
-        "description": "Pemanfaatan tools AE."
+        "description": "Pemanfaatan tools internal AE."
       },
       {
         "feature": "behaviour",
         "importance": 0.07510083728289882,
-        "description": "Perilaku/soft skill AE."
+        "description": "Jumlah visiting ke pelanggan yang dilakukan oleh AE."
       },
       {
         "feature": "sales_wifi",
@@ -343,7 +343,7 @@
       {
         "feature": "capability",
         "importance": 0.06232817190350383,
-        "description": "Kapabilitas AE."
+        "description": "Jumlah pelatihan yang dilakukan oleh AE."
       },
       {
         "feature": "sales_datin",
@@ -376,22 +376,22 @@
         {
           "feature": "profitability",
           "importance": 0.29778862003564693,
-          "description": "Profitabilitas."
+          "description": "Profitabilitas yang didapat dari penjualan AE."
         },
         {
           "feature": "collection_rate",
           "importance": 0.23003347418469006,
-          "description": "Collection rate."
+          "description": "Persentase collection dari total tagihan."
         },
         {
           "feature": "ae_tools",
           "importance": 0.16198292190434838,
-          "description": "Pemanfaatan tools AE."
+          "description": "Pemanfaatan tools internal AE."
         },
         {
           "feature": "behaviour",
           "importance": 0.09585996958696753,
-          "description": "Perilaku/soft skill AE."
+          "description": "Jumlah visiting ke pelanggan yang dilakukan oleh AE."
         },
         {
           "feature": "revenue",
@@ -411,12 +411,12 @@
         {
           "feature": "unit",
           "importance": 0.020452101104143534,
-          "description": "Unit kerja AE."
+          "description": "Unit bisnis AE."
         },
         {
           "feature": "capability",
           "importance": 0.01094213321200447,
-          "description": "Kapabilitas AE."
+          "description": "Jumlah pelatihan yang dilakukan oleh AE."
         },
         {
           "feature": "sales_wireline",
@@ -467,22 +467,22 @@
       {
         "feature": "unit",
         "importance": 0.12811730539558389,
-        "description": "Unit kerja AE."
+        "description": "Unit bisnis AE."
       },
       {
         "feature": "profitability_achievement",
         "importance": 0.06491497025999302,
-        "description": "Pencapaian profitabilitas."
+        "description": "Pencapaian profitabilitas penjualan AE."
       },
       {
         "feature": "behaviour_achievement",
         "importance": 0.06142946579358704,
-        "description": "Pencapaian perilaku."
+        "description": "Pencapaian jumlah visiting ke pelanggan yang dilakukan oleh AE."
       },
       {
         "feature": "ae_tools_achievement",
         "importance": 0.046856651985229605,
-        "description": "Pencapaian tools AE."
+        "description": "Pencapaian pemanfaatan tools internal AE."
       },
       {
         "feature": "revenue_sales_achievement",
@@ -492,7 +492,7 @@
       {
         "feature": "collection_rate_achievement",
         "importance": 0.034356135171060474,
-        "description": "Pencapaian collection."
+        "description": "Pencapaian collection AE."
       },
       {
         "feature": "sales_achievement_hsi",
@@ -507,7 +507,7 @@
       {
         "feature": "capability_achievement",
         "importance": 0.024170491349184132,
-        "description": "Pencapaian kapabilitas."
+        "description": "Pencapaian pelatihan yang dilakukan oleh AE."
       },
       {
         "feature": "sales_achievement_datin",
@@ -540,22 +540,22 @@
         {
           "feature": "profitability_achievement",
           "importance": 0.1752696973521563,
-          "description": "Pencapaian profitabilitas."
+          "description": "Pencapaian profitabilitas penjualan AE."
         },
         {
           "feature": "behaviour_achievement",
           "importance": 0.17117024109032528,
-          "description": "Pencapaian perilaku."
+          "description": "Pencapaian jumlah visiting ke pelanggan yang dilakukan oleh AE."
         },
         {
           "feature": "ae_tools_achievement",
           "importance": 0.09335517820390471,
-          "description": "Pencapaian tools AE."
+          "description": "Pencapaian pemanfaatan tools internal AE."
         },
         {
           "feature": "collection_rate_achievement",
           "importance": 0.05819235651609025,
-          "description": "Pencapaian collection."
+          "description": "Pencapaian collection AE."
         },
         {
           "feature": "nps_achievement",
@@ -570,12 +570,12 @@
         {
           "feature": "unit",
           "importance": 0.022391849407328416,
-          "description": "Unit kerja AE."
+          "description": "Unit bisnis AE."
         },
         {
           "feature": "capability_achievement",
           "importance": 0.015941654229685326,
-          "description": "Pencapaian kapabilitas."
+          "description": "Pencapaian pelatihan yang dilakukan oleh AE."
         },
         {
           "feature": "sales_achievement_wireline",

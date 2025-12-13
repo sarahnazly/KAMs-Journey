@@ -2,7 +2,7 @@ import {
   EvaluationPredictionApiResponse,
 } from "@/interfaces/evaluasi/apiTypes";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API = process.env.NEXT_PUBLIC_API_BASE_URL || "https://ae-journey.onrender.com";
 
 // Fetch prediction for a specific AE (NIK)
 export async function fetchPredictionForNik(
@@ -11,7 +11,7 @@ export async function fetchPredictionForNik(
   year:  number
 ): Promise<EvaluationPredictionApiResponse> {
   const res = await fetch(
-    `${BASE_URL}/ep/${nik}/predictions?quarter=${quarter}&year=${year}`,
+    `${API}/ep/${nik}/predictions?quarter=${quarter}&year=${year}`,
     { cache: "no-store" }
   );
 

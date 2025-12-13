@@ -29,6 +29,8 @@ export default function OnDutyDetailPage() {
   const round2 = (v: number | null | undefined) =>
     v == null ? 0 : Number(v.toFixed(2));
 
+  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+
   // ------------------------------------------------------
   // FETCH PROJECT LIST + WP per project
   // ------------------------------------------------------
@@ -39,7 +41,7 @@ export default function OnDutyDetailPage() {
 
         // 1) Load project list
         const resProj = await fetch(
-          `http://localhost:8000/project/ae/${nik}/${encodeURIComponent(quarter)}`
+          `${API}/project/ae/${nik}/${encodeURIComponent(quarter)}`
         );
 
         let projList = [];
@@ -62,7 +64,7 @@ export default function OnDutyDetailPage() {
 
         for (const p of projList) {
           const resWP = await fetch(
-            `http://localhost:8000/wp/project/${p.lop_id}/${encodeURIComponent(quarter)}`
+            `${API}/wp/project/${p.lop_id}/${encodeURIComponent(quarter)}`
           );
 
           const wpData = await resWP.json();
@@ -107,7 +109,7 @@ export default function OnDutyDetailPage() {
   useEffect(() => {
     async function loadMeta() {
       try {
-        const res = await fetch("http://localhost:8000/wp/all");
+        const res = await fetch(`${API}/wp/all`);
         const json = await res.json();
         setWpMeta(json.meta);
       } catch (err) {

@@ -169,37 +169,38 @@ export default function EvaluasiOverviewPage() {
   useEffect(() => {
     async function loadFI() {
       try {
-        const q = `${quarter} ${year}`;
         const res = await fetch(
-          `http://localhost:8000/fi/kinerja_to_evaluasi/${q}`
+          "http://localhost:8000/fi/kinerja_to_evaluasi"
         );
+
+        if (!res.ok) throw new Error("Failed to load FI");
+
         const json = await res.json();
 
-        const modelName = json.meta.best_regressor;
-        const modelR2 = json.meta.metrics_overall.R2;
-
         setFiModel({
-          name: modelName,
-          R2: modelR2,
-          trainCount: 700,
+          name: json.meta.best_regressor,
+          R2: json.meta.metrics_overall.R2,
+          trainCount: 2000,
         });
 
-        const fi = json.features
-          .filter((f: any) => f.quarter === `${quarter} ${year}`)
-          .map((f: any) => ({
-            name: f.feature,
-            importance: f.importance,
-            description: f.description,
-          }));
+        // ⬇️ TANPA FILTER QUARTER
+        const fi = json.features.map((f: any) => ({
+          name: f.feature,
+          importance: f.importance,
+          description: f.description,
+        }));
 
         setFiFeatures(fi);
       } catch (e) {
-        console.log("FI LOAD ERROR:", e);
+        console.error("FI LOAD ERROR:", e);
+        setFiFeatures([]);
+        setFiModel(null);
       }
     }
 
     loadFI();
-  }, [quarter, year]);
+  }, []);
+
 
   // ---------------------------------------------
   // TABLE COLUMN DEFINITIONS

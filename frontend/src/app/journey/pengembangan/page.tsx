@@ -112,7 +112,7 @@ export default function PengembanganPage(): JSX.Element {
     async function loadFI() {
       try {
         const q = encodeURIComponent(`${quarter} ${year}`);
-        const res = await fetch(`http://localhost:8000/fi/evaluasi_to_pengembangan/${q}`);
+        const res = await fetch(`http://localhost:8000/fi/evaluasi_to_pengembangan`);
 
         if (!res.ok) throw new Error("Failed fetching FI");
 
@@ -132,7 +132,7 @@ export default function PengembanganPage(): JSX.Element {
         setFiModel({
           name: meta.best_regressor,
           R2: Number(meta.metrics_overall.R2),
-          trainCount: 700,
+          trainCount: 2000,
         });
       } catch (err) {
         console.log("FI Error:", err);

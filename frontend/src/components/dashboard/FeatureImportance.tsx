@@ -227,7 +227,7 @@ export default function FeatureImportanceSection({
           <>
             This prediction uses <b>{model.name}</b> algorithm with{" "}
             <b>{formatR2(model.R2)} R² score</b>. The model was trained using{" "}
-            <b>{model.trainCount} data</b>.
+            <b>{model.trainCount} data </b> from <b>all quarters</b>.
           </>
         }
       />

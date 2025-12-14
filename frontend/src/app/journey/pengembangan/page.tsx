@@ -1,6 +1,6 @@
 "use client";
 
-import React, { JSX, useEffect, useMemo, useState } from "react";
+import React, { JSX, useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import SearchBar from "@/components/dashboard/SearchBar";
@@ -32,7 +32,7 @@ const formatInt = (v: number | null | undefined) => {
   return Math.round(v); 
 };
 
-export default function PengembanganPage(): JSX.Element {
+function PengembanganContent(): JSX.Element {
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -244,5 +244,13 @@ export default function PengembanganPage(): JSX.Element {
       </div>
 
     </div>
+  );
+}
+
+export default function PengembanganPage(): JSX.Element {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PengembanganContent />
+    </Suspense>
   );
 }
